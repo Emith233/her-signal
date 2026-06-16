@@ -116,6 +116,8 @@ function swap(from, to, reveal) {
 
 setTimeout(function() { titleScreen.style.cursor = 'pointer'; }, 1400);
 function startStory() {
+  document.getElementById('continueHint')?.remove();
+  titleScreen.style.cursor = '';
   swap(titleScreen, storyScreen, () => revealLines(storyScreen, firstLines, {
     after: () => {
       addButton(storyScreen, '走向前去', () => {

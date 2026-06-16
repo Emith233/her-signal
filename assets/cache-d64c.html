@@ -261,6 +261,8 @@ preloadAssets();
 
 setTimeout(function() { titleScreen.style.cursor = 'pointer'; document.getElementById('continueHint')?.classList.add('show'); }, 1400);
 function startStory() {
+  document.getElementById('continueHint')?.remove();
+  titleScreen.style.cursor = '';
   titleScreen.classList.add('hidden');
   storyScreen.classList.remove('hidden');
   storyScreen.classList.add('fade');
