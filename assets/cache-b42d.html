@@ -81,12 +81,11 @@ function revealLines() {
   });
 }
 
-setTimeout(() => {
+function startStory() {
   titleScreen.classList.add('hidden');
   storyScreen.classList.remove('hidden');
   storyScreen.classList.add('fade');
   revealLines();
-});
 }
 titleScreen.addEventListener('click', startStory);
 </script>
