@@ -769,27 +769,15 @@ form.search-form {
       new BroadcastChannel('citymystery').postMessage({ type: 'citymystery-sujianwei-ritual-seen' });
     } catch(e) {}
   }
-  function isCollectRoute() {
-    var currentParams = new URLSearchParams(location.search);
-    return location.pathname.replace(/\/+$/, '').endsWith('/collect') ||
-      location.hash === '#/collect' ||
-      currentParams.get('path') === '/collect' ||
-      currentParams.has('collect');
+  function routeMatch(hashOrParam) {
+    var p = new URLSearchParams(location.search);
+    var h = location.hash.replace(/^#/, '').replace(/\/+$/, '');
+    var q = String(p.get('path') || '').replace(/\/+$/, '');
+    return h === hashOrParam || h.endsWith('/' + hashOrParam) ||
+      q === hashOrParam || q.endsWith('/' + hashOrParam) || p.has(hashOrParam);
   }
-  function isSujianweiRoute() {
-    var currentParams = new URLSearchParams(location.search);
-    var pathname = location.pathname.replace(/\/+$/, '');
-    var hashPath = location.hash.replace(/^#/, '').replace(/\/+$/, '');
-    var paramPath = String(currentParams.get('path') || '').replace(/\/+$/, '');
-    return pathname.endsWith('/sujianwei') ||
-      hashPath === '/sujianwei' ||
-      hashPath === 'sujianwei' ||
-      hashPath.endsWith('/sujianwei') ||
-      paramPath === '/sujianwei' ||
-      paramPath === 'sujianwei' ||
-      paramPath.endsWith('/sujianwei') ||
-      currentParams.has('sujianwei');
-  }
+  function isCollectRoute() { return routeMatch('collect'); }
+  function isSujianweiRoute() { return routeMatch('sujianwei'); }
   var nodeOrder = [7, 12, 19, 2, 20, 11, 4, 21, 8, 14, 9, 1, 10, 16, 15, 18, 5, 17, 13, 3, 6, 0];
   var lastFlippedNode = null;
   var tarotNameHints = ['愚者', '魔术师', '女祭司', '女皇', '皇帝', '教皇', '恋人', '战车', '力量', '隐者', '命运之轮', '正义', '倒吊人', '死神', '节制', '恶魔', '高塔', '星星', '月亮', '太阳', '审判', '世界'];
