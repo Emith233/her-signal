@@ -773,8 +773,9 @@ form.search-form {
     var p = new URLSearchParams(location.search);
     var h = location.hash.replace(/^#/, '').replace(/\/+$/, '');
     var q = String(p.get('path') || '').replace(/\/+$/, '');
-    return h === hashOrParam || h.endsWith('/' + hashOrParam) ||
-      q === hashOrParam || q.endsWith('/' + hashOrParam) || p.has(hashOrParam);
+    // 支持带斜杠和不带斜杠
+    return h === hashOrParam || h === '/' + hashOrParam || h.endsWith('/' + hashOrParam) ||
+      q === hashOrParam || q === '/' + hashOrParam || q.endsWith('/' + hashOrParam) || p.has(hashOrParam);
   }
   function isCollectRoute() { return routeMatch('collect'); }
   function isSujianweiRoute() { return routeMatch('sujianwei'); }
