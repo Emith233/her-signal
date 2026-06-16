@@ -2,23 +2,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>跳转中...</title>
 <script>
 (function() {
   var path = location.pathname.replace(/\/+$/, '');
-  var searchBase = location.origin + location.pathname.substring(0, path.lastIndexOf('/') + 1);
+  var idx = path.indexOf('/assets/');
+  var base = location.origin + (idx >= 0 ? path.substring(0, idx + 7) : '/');
 
   if (path.endsWith('/collect')) {
-    location.replace(searchBase + 'emith-search.html#/collect');
+    location.replace(base + 'emith-search.html#/collect');
   } else if (path.endsWith('/sujianwei')) {
-    location.replace(searchBase + 'emith-search.html#/sujianwei');
+    location.replace(base + 'profile-sjw-74.html');
   }
-  // 其他 404 不做特殊处理
 })();
 </script>
 </head>
 <body>
-<p>页面未找到，正在跳转...</p>
+<p>跳转中...</p>
 </body>
 </html>
