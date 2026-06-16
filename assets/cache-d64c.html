@@ -209,25 +209,23 @@ function preloadAssets() {
 })();
 
 function openCameraPrompt() {
-  window.setTimeout(() => {
+  window.setTimeout(function() {
     while (!window.confirm('是否打开摄像头？')) {}
+    // 确认后立即播放音频（用户手势窗口内）
+    try { endingAudio.play().catch(function(){}); } catch(e) {}
     showMeeting();
   }, 1500);
 }
 
 function showMeeting() {
-  fadeOutFourthScreen(() => {
+  fadeOutFourthScreen(function() {
     fourthScreen.classList.add('hidden');
     meetingScreen.classList.remove('hidden');
     meetingScreen.classList.add('fade');
-    try {
-      var p = endingAudio.play();
-      if (p && p.catch) p.catch(function(){});
-    } catch(e) {}
-    window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(function() {
       meetingImage.classList.add('visible');
     });
-    window.setTimeout(() => {
+    window.setTimeout(function() {
       meetingImage.classList.add('revealing');
     }, 4000);
   });
