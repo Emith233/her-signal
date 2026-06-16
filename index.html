@@ -2324,27 +2324,32 @@ function startYanHandSequence() {
   yanNoteReady = false;
   yanHandFinished = false;
   signalScreen.classList.add('yan-haunted');
-  const flash = document.createElement('div');
-  flash.className = 'yan-hand-flash';
-  const zone = document.createElement('div');
-  zone.className = 'yan-hand-zone';
-  const hand = document.createElement('img');
-  hand.className = 'yan-hand-grip';
-  hand.src = 'assets/hand-grip.png';
-  hand.alt = '';
-  const rect = signalScreen.getBoundingClientRect();
-  const handWidth = Math.min(330, window.innerWidth * 0.34);
-  const edgeGrip = Math.min(58, Math.max(38, rect.width * 0.045));
-  hand.style.setProperty('--yan-hand-left', Math.round(rect.left + edgeGrip - handWidth) + 'px');
-  hand.style.setProperty('--yan-hand-top', Math.round(rect.top + rect.height * 0.2) + 'px');
-  signalOverlay.appendChild(flash);
-  zone.appendChild(hand);
-  signalOverlay.appendChild(zone);
-  yanHandTimer = setTimeout(() => {
-    clearYanHandEffect();
-    yanHandFinished = true;
-    sendYanNoteStartIfReady();
-  }, 3120);
+  // 先预加载手部图片，加载完成后再播放动画
+  const preload = new Image();
+  preload.onload = function() {
+    const flash = document.createElement('div');
+    flash.className = 'yan-hand-flash';
+    const zone = document.createElement('div');
+    zone.className = 'yan-hand-zone';
+    const hand = document.createElement('img');
+    hand.className = 'yan-hand-grip';
+    hand.src = preload.src;
+    hand.alt = '';
+    const rect = signalScreen.getBoundingClientRect();
+    const handWidth = Math.min(330, window.innerWidth * 0.34);
+    const edgeGrip = Math.min(58, Math.max(38, rect.width * 0.045));
+    hand.style.setProperty('--yan-hand-left', Math.round(rect.left + edgeGrip - handWidth) + 'px');
+    hand.style.setProperty('--yan-hand-top', Math.round(rect.top + rect.height * 0.2) + 'px');
+    signalOverlay.appendChild(flash);
+    zone.appendChild(hand);
+    signalOverlay.appendChild(zone);
+    yanHandTimer = setTimeout(() => {
+      clearYanHandEffect();
+      yanHandFinished = true;
+      sendYanNoteStartIfReady();
+    }, 3120);
+  };
+  preload.src = 'assets/hand-grip.png';
 }
 
 function sendYanNoteStartIfReady() {
