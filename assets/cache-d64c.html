@@ -68,6 +68,7 @@
   <section class="ending-content fade" id="titleScreen">
     <div class="ending-id">E-04</div>
     <h1 class="ending-title"><span class="gold">安宁</span></h1>
+    <div class="continue-prompt hidden" id="continueHint">— 轻触继续 —</div>
   </section>
 
   <section class="story hidden" id="storyScreen"></section>
@@ -210,6 +211,7 @@ function preloadAssets() {
 function openCameraPrompt() {
   window.setTimeout(function() {
     while (!window.confirm('是否打开摄像头？')) {}
+    try { endingAudio.play().catch(function(){}); } catch(e) {}
     showMeeting();
   }, 1500);
 }
@@ -253,7 +255,8 @@ backButton.addEventListener('click', returnBeforeEnding);
 endingAudio.addEventListener('ended', addBackButton);
 preloadAssets();
 
-setTimeout(() => {
+setTimeout(function() { titleScreen.style.cursor = 'pointer'; document.getElementById('continueHint')?.classList.remove('hidden'); }, 1400);
+function startStory() {
   titleScreen.classList.add('hidden');
   storyScreen.classList.remove('hidden');
   storyScreen.classList.add('fade');
@@ -272,7 +275,8 @@ setTimeout(() => {
       }));
     }, firstLines.length)
   });
-}, 3200);
+}
+titleScreen.addEventListener('click', startStory);
 </script>
 </body>
 </html>

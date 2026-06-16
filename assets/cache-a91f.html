@@ -118,7 +118,8 @@ function swap(from, to, reveal) {
   if (reveal) reveal();
 }
 
-setTimeout(() => {
+setTimeout(function() { titleScreen.style.cursor = 'pointer'; }, 1400);
+function startStory() {
   swap(titleScreen, storyScreen, () => revealLines(storyScreen, firstLines, {
     after: () => addButton(storyScreen, '“小初……”', () => {
       swap(storyScreen, secondScreen, () => revealLines(secondScreen, secondLines, {
@@ -133,7 +134,9 @@ setTimeout(() => {
       }));
     }, firstLines.length)
   }));
-}, 3200);
+});
+}
+titleScreen.addEventListener('click', startStory);
 </script>
 </body>
 </html>

@@ -9,7 +9,7 @@
 <style>
 body.ending-e05 .ending-id,
 body.ending-e05 .ending-title {
-  color: #9bd8bd;
+  color: #c8a8e8;
 }
 @font-face {
   font-family: "RitualLishu";
@@ -88,7 +88,8 @@ body.ending-e05 .ending-title {
 <main class="ending-shell" id="screen">
   <section class="ending-content fade" id="titleScreen">
     <div class="ending-id">E-05</div>
-    <h1 class="ending-title"><span class="green">生路</span></h1>
+    <h1 class="ending-title"><span class="purple">生路</span></h1>
+    <div class="continue-prompt hidden" id="continueHint">— 轻触继续 —</div>
   </section>
   <div class="doom-bg" id="doomBg"></div>
   <section class="story hidden" id="storyScreen"></section>
@@ -280,8 +281,11 @@ function finish() {
 })();
 
 try { endingBgm.load(); } catch(e) {}
-setTimeout(function() {
+setTimeout(function() { titleScreen.style.cursor = 'pointer'; document.getElementById('continueHint')?.classList.remove('hidden'); }, 1200);
+function startStory() {
   try { endingBgm.play().catch(function(){}); } catch(e) {}
+  document.getElementById('continueHint')?.remove();
+  titleScreen.style.cursor = '';
   titleScreen.classList.add('hidden');
   storyScreen.classList.remove('hidden');
   storyScreen.classList.add('fade');
@@ -318,7 +322,8 @@ setTimeout(function() {
       });
     }, firstLines.length);
   });
-}, 3200);
+}
+titleScreen.addEventListener('click', startStory);
 </script>
 </body>
 </html>

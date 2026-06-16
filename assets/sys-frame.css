@@ -120,6 +120,31 @@ body.ending-e04 .ending-id,
 body.ending-e04 .ending-title {
   color: #d6b35a;
 }
+body.ending-e05 .ending-id,
+body.ending-e05 .ending-title {
+  color: #c8a8e8;
+}
+.ending-title .purple,
+.purple {
+  color: #c8a8e8;
+}
+.continue-prompt {
+  position: fixed;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #666;
+  font-size: 13px;
+  letter-spacing: 3px;
+  animation: promptBlink 2s ease-in-out infinite;
+  cursor: pointer;
+  z-index: 10;
+}
+@keyframes promptBlink {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.9; }
+}
+.continue-prompt:hover { color: #999; }
 .ending-back,
 .story-btn {
   margin-top: 26px;
