@@ -652,10 +652,6 @@
     flex-direction: column;
     overflow-y: auto;
   }
-  @keyframes fadePulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-  }
   .signal-viewport::-webkit-scrollbar { width: 6px; }
   .signal-viewport::-webkit-scrollbar-track { background: #171d21; }
   .signal-viewport::-webkit-scrollbar-thumb { background: #465660; border-radius: 6px; }
@@ -3110,11 +3106,9 @@ function showSignal(nodeId, startIdx) {
   signalScreen.classList.remove('collapsing', 'appearing');
   signalOverlay.classList.add('active');
   startSignalMorse();
-  signalViewport.innerHTML = '<div class="fragment active" style="justify-content:center;align-items:center;text-align:center;color:#6a7a72;font-size:12px;letter-spacing:2px;animation:fadePulse 1.2s ease-in-out infinite;"><div style="margin-bottom:10px;font-size:18px;">◌</div>接入信号中...</div>';
   signalIndex = startIdx || 0;
   signalDataRef = data;
-  // 延迟一帧渲染，让加载提示先显示
-  requestAnimationFrame(() => { renderFragment(data); });
+  renderFragment(data);
 
   // 导航
   if (data.fragments.length <= 1) {
