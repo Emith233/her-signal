@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>她的信号</title>
+<link rel="preload" as="image" href="assets/kerosene-lamp.png">
+<link rel="preload" as="image" href="assets/kerosene-lamp-chroma.png">
+<link rel="preload" as="image" href="assets/hand-grip.png">
+<link rel="preload" as="image" href="assets/hand-cut.png">
+<link rel="preload" as="image" href="assets/hand.png">
+<link rel="preload" as="image" href="assets/qiu-jin-portrait.jpg">
 <style>
   /* ===== 全局重置 ===== */
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1350,6 +1356,40 @@
 const intro = document.getElementById('terminal-intro');
 const introMainPanel = document.getElementById('intro-main-panel');
 const introHelpPanel = document.getElementById('intro-help-panel');
+
+// 后台预加载核心图片
+(function preloadAssets() {
+  const list = [
+    'assets/kerosene-lamp.png',
+    'assets/kerosene-lamp-chroma.png',
+    'assets/hand-grip.png',
+    'assets/hand-cut.png',
+    'assets/hand.png',
+    'assets/qiu-jin-portrait.jpg',
+    'assets/yuanyichumeeting.png',
+    'assets/yuanyichu.png',
+    'assets/yaunyichu_b.png',
+    'assets/yaunyichu_c.png',
+    'assets/sujianwei2.png',
+    'assets/sujianwei.png',
+    'assets/yanshi.png',
+    'assets/小初头像.png',
+    'assets/archive-scan-0315.png',
+    'assets/CAESAR3vhdufkSN.png',
+    'assets/spring-festival-procession-2007.jpg',
+    'assets/spring-festival-procession-banner.png',
+    'assets/苏苏朋友圈01.png',
+    'assets/苏苏朋友圈02.png',
+  ];
+  let i = 0;
+  function next() {
+    if (i >= list.length) return;
+    const img = new Image();
+    img.onload = img.onerror = function() { i++; setTimeout(next, 30); };
+    img.src = list[i];
+  }
+  setTimeout(next, 100);
+})();
 
 function transitionToMain() {
   intro.classList.add('fade-out');
