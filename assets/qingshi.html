@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>请式</title>
+<style>
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #08090a;
+}
+body {
+  color: #cdb8a4;
+  font: 18px/2.05 "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+  letter-spacing: 0.04em;
+}
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: clamp(28px, 6vw, 72px) 22px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(93, 22, 18, 0.3), transparent 28%),
+    radial-gradient(circle at 50% 50%, rgba(214, 150, 91, 0.08), transparent 46%),
+    linear-gradient(180deg, rgba(255,255,255,0.025), transparent 28%),
+    #08090a;
+}
+.content {
+  width: min(680px, 100%);
+  position: relative;
+  padding: clamp(34px, 6vw, 64px) clamp(24px, 6vw, 58px);
+  border: 1px solid rgba(155, 91, 75, 0.32);
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.02), transparent 16%, transparent 84%, rgba(255,255,255,0.018)),
+    rgba(10, 11, 11, 0.74);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.42),
+    inset 0 0 80px rgba(111, 38, 27, 0.12);
+}
+.content::before,
+.content::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 112px;
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(198, 95, 78, 0.72), transparent);
+}
+.content::before { top: 22px; }
+.content::after { bottom: 22px; }
+.chapter-mark {
+  margin: 0 0 24px;
+  color: rgba(207, 88, 73, 0.68);
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.32em;
+}
+p {
+  margin: 0 0 12px;
+}
+.gap {
+  margin-top: 30px;
+  color: #e1d2c4;
+  font-size: 20px;
+  letter-spacing: 0.12em;
+}
+strong {
+  color: #d76657;
+  font-weight: 600;
+  text-shadow: 0 0 18px rgba(215, 55, 40, 0.22);
+}
+a {
+  color: rgba(215, 102, 87, .72);
+  text-decoration: none;
+}
+a:hover { color: #f2d7d0; }
+@media (max-width: 560px) {
+  body { font-size: 16px; line-height: 1.95; letter-spacing: 0.02em; }
+  .content { padding: 34px 20px; }
+  .gap { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <section class="content">
+    <div class="chapter-mark">请式</div>
+    <p>在诸牌仪式之后，需要请式。</p>
+    <p>请式分为两种。</p>
+
+    <p class="gap">一是请神之式。</p>
+    <p>需新的愚者在诸牌见证下完成最后的献祭，使诸牌归位。</p>
+    <p>其上宿主之魂，亦得安息。</p>
+
+    <p class="gap">二是请愿之式。</p>
+    <p>需毁灭诸牌，使其所附之魂得以安息。</p>
+    <p>献祭之物，亦可失而复还。</p>
+    <p>以<strong>大阿卡那</strong>向恶魔交换<strong>一切重归安宁</strong>。</p>
+    <p>此乃愿望之实现。</p>
+  </section>
+</main>
+</body>
+</html>

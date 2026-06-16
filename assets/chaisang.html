@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>江边小记 · 一个本地人的流水账</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #e8e8e8 url('data:image/svg+xml,<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" fill="%23e8e8e8"/><circle cx="2" cy="2" r="0.6" fill="%23d0d0d0"/><circle cx="14" cy="6" r="0.4" fill="%23d0d0d0"/><circle cx="8" cy="18" r="0.5" fill="%23d0d0d0"/><circle cx="20" cy="14" r="0.4" fill="%23d0d0d0"/></svg>');
+  font-family: "SimSun", "PMingLiU", "MingLiU", "新宋体", serif;
+  font-size: 14px;
+  color: #222;
+  line-height: 1.9;
+  padding: 28px 16px;
+}
+
+.wrapper {
+  max-width: 760px;
+  margin: 0 auto;
+  background: #f5f5f5;
+  border: 2px solid #999;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.15);
+}
+
+.banner {
+  background: linear-gradient(180deg, #666 0%, #444 100%);
+  border-bottom: 3px solid #333;
+  padding: 22px 28px 18px;
+  text-align: center;
+  color: #fff;
+}
+.banner h1 {
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 6px;
+  font-family: "SimSun", "PMingLiU", serif;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+.banner .sub {
+  font-size: 12px;
+  color: #ccc;
+  letter-spacing: 3px;
+  margin-top: 4px;
+  font-family: -apple-system, "PingFang SC", sans-serif;
+}
+.banner .nav {
+  margin-top: 12px;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.banner .nav a {
+  color: #ddd;
+  text-decoration: none;
+  margin: 0 8px;
+}
+.banner .nav a:hover { color: #000; text-decoration: underline; }
+.banner .nav .sep { color: #888; margin: 0 2px; }
+
+.main-table {
+  display: flex;
+  gap: 0;
+  width: 100%;
+}
+
+.sidebar {
+  width: 180px;
+  flex-shrink: 0;
+  background: #e5e5e5;
+  border-right: 1px solid #bbb;
+  padding: 16px 14px;
+  font-size: 12px;
+  color: #444;
+}
+
+.sidebar-section {
+  margin-bottom: 18px;
+  border: 1px solid #ccc;
+  background: #eee;
+}
+.sidebar-section .s-title {
+  background: #ccc;
+  font-size: 11px;
+  padding: 3px 8px;
+  letter-spacing: 2px;
+  color: #333;
+  border-bottom: 1px solid #bbb;
+  font-family: -apple-system, "PingFang SC", sans-serif;
+}
+.sidebar-section .s-body {
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.counter {
+  text-align: center;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  color: #555;
+  padding: 6px 0;
+  letter-spacing: 2px;
+}
+.counter span {
+  background: #444;
+  color: #ccc;
+  padding: 2px 6px;
+  margin: 0 1px;
+  font-size: 16px;
+}
+
+.calendar {
+  width: 100%;
+  font-size: 11px;
+  text-align: center;
+  border-collapse: collapse;
+}
+.calendar td {
+  padding: 2px 0;
+  color: #555;
+  width: 14%;
+}
+.calendar td.fade { color: #999; }
+.calendar td.today {
+  background: #666;
+  color: #fff;
+  border-radius: 2px;
+}
+.calendar th {
+  font-weight: 400;
+  color: #333;
+  padding: 2px 0;
+  font-size: 11px;
+}
+
+.friend-link {
+  display: block;
+  font-size: 12px;
+  color: #555;
+  text-decoration: none;
+  padding: 2px 0;
+  border-bottom: 1px dashed #ccc;
+}
+.friend-link:hover { color: #555; background: #e0e0e0; }
+.friend-link:before { content: "\00bb "; color: #666; }
+
+.notice {
+  font-size: 11px;
+  color: #555;
+  line-height: 1.7;
+}
+
+.icon-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.icon-box {
+  width: 24px; height: 24px;
+  border: 1px solid #bbb;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #666;
+}
+
+.content {
+  flex: 1;
+  padding: 20px 24px 20px 24px;
+  min-width: 0;
+}
+
+.post-title {
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: #222;
+  margin-bottom: 4px;
+  font-family: "SimSun", "PMingLiU", serif;
+}
+.post-meta {
+  font-size: 11px;
+  color: #777;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #bbb;
+  margin-bottom: 16px;
+  font-family: -apple-system, "PingFang SC", sans-serif;
+}
+.post-meta a { color: #555; text-decoration: underline; }
+
+.post-body {
+  text-align: justify;
+  font-size: 16px;
+}
+.post-body p {
+  text-indent: 2em;
+  margin-bottom: 0.5em;
+}
+
+.footer {
+  border-top: 2px solid #999;
+  background: #ddd;
+  padding: 12px 20px;
+  text-align: center;
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 1px;
+  font-family: -apple-system, "PingFang SC", sans-serif;
+}
+.footer a { color: #555; }
+
+@media (max-width: 640px) {
+  .main-table { flex-direction: column; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #bbb; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <div class="banner">
+    <h1>江边小记</h1>
+    <div class="sub">一个本地人的流水账</div>
+    <div class="nav">
+      <a href="#">首页</a><span class="sep">|</span>
+      <a href="#">日志</a><span class="sep">|</span>
+      <a href="#">相册</a><span class="sep">|</span>
+      <a href="#">关于</a><span class="sep">|</span>
+      <a href="#">留言板</a>
+    </div>
+  </div>
+
+  <div class="main-table">
+
+    <div class="sidebar">
+
+      <div class="sidebar-section">
+        <div class="s-title">公告</div>
+        <div class="s-body">
+          <div class="notice">
+            博客换了新模板，大家看着还行不？有意见欢迎留言。<br><br>
+            最近总是下雨，衣服晾不干，烦躁。
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="s-title">日历</div>
+        <div class="s-body" style="padding:6px 8px;">
+          <table class="calendar">
+            <tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr>
+            <tr><td class="fade">26</td><td class="fade">27</td><td class="fade">28</td><td class="fade">29</td><td class="fade">30</td><td class="fade">31</td><td>1</td></tr>
+            <tr><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr>
+            <tr><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td></tr>
+            <tr><td class="today">16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td></tr>
+            <tr><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td class="fade">1</td></tr>
+          </table>
+          <div style="text-align:right; font-size:10px; color:#9a8a7a; margin-top:2px;">2026年2月</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="s-title">访客统计</div>
+        <div class="s-body" style="text-align:center;">
+          <div class="counter">
+            <span>0</span><span>0</span><span>4</span><span>1</span><span>7</span>
+          </div>
+          <div style="font-size:10px; color:#9a8a7a;">您是第 00417 位访客</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="s-title">友情链接</div>
+        <div class="s-body" style="padding:6px 10px;">
+          <a href="#" class="friend-link">九江生活论坛</a>
+          <a href="#" class="friend-link">庐山脚下的日子</a>
+          <a href="#" class="friend-link">寻阳文史资料站</a>
+          <a href="#" class="friend-link">江西老乡会</a>
+          <a href="#" class="friend-link">老徐的博客</a>
+          <a href="#" class="friend-link">江南小镇集锦</a>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="s-title">小玩意</div>
+        <div class="s-body" style="text-align:center;">
+          <div class="icon-row">
+            <div class="icon-box">&#9998;</div>
+            <div class="icon-box">&#9733;</div>
+            <div class="icon-box">&#9830;</div>
+            <div class="icon-box">&#9786;</div>
+            <div class="icon-box">&#9832;</div>
+            <div class="icon-box">&#9829;</div>
+            <div class="icon-box">&#9730;</div>
+            <div class="icon-box">&#9861;</div>
+          </div>
+          <div style="font-size:9px; color:#aaa090; margin-top:4px; letter-spacing:1px;">★ 本站建于 2024.08</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="content">
+
+      <div class="post-title">今天没什么特别的</div>
+      <div class="post-meta">
+        2026.02.16 星期一 天气：阴 &nbsp;|&nbsp;
+        分类：<a href="#">日常</a>
+      </div>
+
+      <div class="post-body">
+        <p>今天有些奇怪。不过没什么特别的。</p>
+        <p>早上，我像往常一样去家附近的菜市场买菜，回来路上绕道去了河边的公园。</p>
+        <p>公园里有很多晨练的大爷大妈，我坐在长椅上休息了一会。</p>
+        <p>离我不远的地方有个人盯着我看。没什么特别的。</p>
+        <p>我不知道他到底要干什么。不过我想没什么特别的。</p>
+        <p>于是待了一会我就回家了。</p>
+        <p>在家里我又想起来站在我附近的那个人，因为我有些近视，所以看不清他的脸，不过穿搭我倒是记住了。是平时到处都能买到的很普通的衣服。</p>
+        <p>我记得我也有一件一样的羽绒服，一样的裤子。所以说真的很常见嘛。</p>
+        <p>中午吃完饭我跟朋友们约好去商超逛逛。</p>
+        <p>总感觉有人在跟踪我。不过我觉得没有什么奇怪的。</p>
+        <p>商场里很热闹，人多了我就放心了很多。不过我最喜欢的还是待在人少的、清静的地方，这样我会内心舒畅。</p>
+        <p>和朋友们相聚，大家一起咋咋呼呼的，我也就没多想了。不过我真的很不喜欢人多，如果能选择我绝对要去人少的田野里去。</p>
+        <p>回家的路上一样有种诡异的感觉。不过我觉得没什么特别的，自己吓自己罢了。</p>
+        <p>等我在家洗漱完之后，发现房门居然打开了。一定是我没有关好门。</p>
+        <p>几分钟前我跟朋友打电话，让他来陪我一下。离我远点，离我远点，离我远点。</p>
+        <p>现在写这篇日志分散一下注意力。离我远点，快走，快走。</p>
+        <p>希望都是错觉。今天没什么特别的。</p>
+        <p>这里是柴桑，快去下一个节点。</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    &copy; 2024-2026 江边小记 · 一个本地人的流水账 &nbsp;|&nbsp;
+    Powered by <a href="#">BLOG v2.1</a> &nbsp;|&nbsp;
+    最佳浏览：IE 5.0+ &nbsp; 800×600
+  </div>
+
+</div>
+
+</body>
+</html>

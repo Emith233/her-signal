@@ -1,0 +1,410 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>恋爱观倾向测试：你会怎样爱一个人？</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #e8e4dc;
+  font-family: "宋体","SimSun","Microsoft YaHei",sans-serif;
+  font-size: 14px;
+  color: #333;
+  display: flex; justify-content: center; padding: 30px 16px;
+}
+
+.wrap {
+  width: 640px;
+  background: #f7f5f0;
+  border: 2px solid #c8c4bc;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.1);
+}
+
+/* 顶栏 */
+.header {
+  background: linear-gradient(180deg, #2d5ca0, #1a3f78);
+  color: #fff; padding: 14px 20px 10px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.header .title {
+  font-size: 18px; font-weight: bold; letter-spacing: 1px;
+  font-family: "黑体","SimHei",sans-serif;
+}
+.header .sub {
+  font-size: 11px; color: #b0cce0;
+}
+.header.fusion-active {
+  background: linear-gradient(180deg, #4b0d16, #1d0509);
+  color: #ffd7d7;
+  border-bottom: 1px solid #7a1620;
+}
+.header.fusion-active .title {
+  color: #ff4b5c;
+  text-shadow: 1px 0 0 #2b0000, 0 0 10px rgba(255, 40, 60, .35);
+}
+.header.fusion-active .sub,
+.header.fusion-active div[style] {
+  color: #d58b91 !important;
+}
+
+/* 进度 */
+.progress-bar {
+  background: #e8e4dc; border-bottom: 1px solid #d0ccc4;
+  padding: 8px 20px; font-size: 12px; color: #888;
+  display: flex; justify-content: space-between;
+}
+.progress-bar .q-num { color: #2a5ca8; font-weight: bold; }
+
+/* 内容区 */
+.content {
+  padding: 24px 28px 20px;
+  min-height: 340px;
+}
+
+/* 问题 */
+.question {
+  font-size: 17px; font-weight: bold; color: #222;
+  margin-bottom: 20px; line-height: 1.6;
+  font-family: "黑体","SimHei",sans-serif;
+}
+
+/* 选项 */
+.options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.option {
+  background: #fff; border: 1px solid #d0ccc4;
+  padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+  transition: background 0.15s, border-color 0.15s;
+  border-radius: 3px;
+}
+.option:hover { background: #f0f4f8; border-color: #8ab0d8; }
+.option.selected {
+  background: #e0edf8; border-color: #2a5ca8;
+}
+.option .letter {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #e8e4dc; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: bold; color: #666; flex-shrink: 0;
+  border: 1px solid #ccc;
+}
+.option.selected .letter {
+  background: #2a5ca8; color: #fff; border-color: #2a5ca8;
+}
+.option .text { font-size: 14px; color: #333; line-height: 1.6; }
+
+/* 按钮 */
+.btn-row { text-align: center; margin-top: 16px; }
+.btn {
+  background: #d8d4cc; border: 1px solid #b0aca4;
+  padding: 8px 32px; font-size: 14px; font-family: "宋体",sans-serif;
+  cursor: default; color: #666; border-radius: 2px;
+  letter-spacing: 1px;
+}
+.btn.active {
+  background: #2a5ca8; border-color: #1a3f78; color: #fff;
+  cursor: pointer;
+}
+.btn.active:hover { background: #1a4a90; }
+
+/* 结果页 */
+.result-box { text-align: center; padding: 10px 0; }
+.result-box .result-type {
+  font-size: 22px; font-weight: bold; color: #2a5ca8; margin-bottom: 8px;
+  font-family: "黑体","SimHei",sans-serif;
+}
+.result-box .result-type.fusion {
+  color: #9b111e;
+  font-family: "STKaiti","KaiTi","Songti SC","SimSun",serif;
+  letter-spacing: 5px;
+  text-shadow: 1px 0 0 #2b0000, -1px 0 0 rgba(155,17,30,.45), 0 0 9px rgba(155,17,30,.32);
+  transform: skewX(-4deg);
+}
+.result-box .result-icon { font-size: 48px; margin-bottom: 10px; }
+.result-box .result-desc {
+  font-size: 14px; line-height: 2; color: #444; text-align: left;
+  margin-top: 14px; padding: 14px 18px;
+  background: #f0f4f8; border: 1px solid #d0dce8;
+  border-radius: 4px;
+}
+.result-box .result-desc p { margin-bottom: 0.6em; }
+.result-box .result-desc p:last-child { margin-bottom: 0; }
+.result-box .result-hint {
+  margin-top: 14px; font-size: 12px; color: #aaa; line-height: 1.8;
+}
+.result-box .restart-btn {
+  margin-top: 16px; display: inline-block;
+  background: #d8d4cc; border: 1px solid #b0aca4;
+  padding: 6px 24px; font-size: 13px; font-family: "宋体",sans-serif;
+  cursor: pointer; color: #666; border-radius: 2px;
+}
+
+/* 底部 */
+.footer {
+  border-top: 1px solid #d0ccc4; background: #e8e4dc;
+  padding: 8px 20px; font-size: 11px; color: #999; text-align: center;
+}
+.footer a { color: #2a5ca8; text-decoration: none; }
+
+/* 免责声明 */
+.disclaimer {
+  margin-top: 14px; font-size: 11px; color: #bbb; text-align: center;
+  line-height: 1.7;
+}
+body.fusion-active {
+  background: #050506;
+  color: #c9b6b8;
+}
+body.fusion-active .wrap {
+  background: #09090b;
+  border-color: #3f0c13;
+  box-shadow: 0 0 28px rgba(112, 8, 20, .24), 3px 3px 8px rgba(0,0,0,.45);
+}
+body.fusion-active .progress-bar,
+body.fusion-active .footer {
+  background: #0d0d10;
+  border-color: #2b070d;
+  color: #8b6b70;
+}
+body.fusion-active .progress-bar .q-num,
+body.fusion-active .footer a {
+  color: #b51f2d;
+}
+body.fusion-active .content {
+  background: #070708;
+}
+body.fusion-active .result-box .result-desc {
+  background: #0d0d10;
+  border-color: #3f0c13;
+  color: #c9b6b8;
+}
+body.fusion-active .result-hint {
+  color: #6f4d52;
+}
+body.fusion-active .restart-btn {
+  background: #16080b;
+  border-color: #4a1119;
+  color: #b86b72;
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- 顶栏 -->
+  <div class="header" id="pageHeader">
+    <div>
+      <div class="title">恋爱观倾向测试</div>
+      <div class="sub">—— 你会怎样爱一个人？</div>
+    </div>
+    <div style="font-size:12px;color:#c0d0e0;">心理测试 · 情感夜话论坛</div>
+  </div>
+
+  <!-- 进度 -->
+  <div class="progress-bar">
+    <span class="q-num" id="qNum">第 1 / 5 题</span>
+    <span id="qProgress">请选择最符合你的选项</span>
+  </div>
+
+  <!-- 内容 -->
+  <div class="content" id="contentArea">
+    <!-- 初始欢迎页 -->
+    <div style="text-align:center;padding:30px 0 20px;">
+      <div style="font-size:40px;margin-bottom:12px;">&#x2665;</div>
+      <div style="font-size:16px;font-weight:bold;color:#2a5ca8;margin-bottom:14px;">恋爱观倾向测试</div>
+      <div style="font-size:13px;color:#666;line-height:2;margin-bottom:18px;">
+        每个人爱人的方式都不一样。<br>
+        有的人倾尽所有，有的人小心翼翼。<br>
+        本测试将帮助你了解自己的恋爱倾向。
+      </div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:20px;">共 5 题 · 预计 3 分钟</div>
+      <button class="btn active" onclick="startTest()" style="cursor:pointer;">开始测试</button>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    <a href="#">情感夜话论坛</a> ｜ 心理测试频道 ｜ 仅供娱乐参考
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    q: '你和恋人约好周末见面，但TA临时说有事来不了。你的第一反应是？',
+    options: [
+      '有点失落，但会想象TA此刻在做什么，仿佛自己也在那里。',
+      '会问清楚是什么事，如果经常这样会很不安。',
+      '没关系，我一个人也能安排得很好。'
+    ]
+  },
+  {
+    q: '你觉得一段感情里，什么是最不能缺少的？',
+    options: [
+      '每天都有话说，最好连沉默时脑子里想的事也能互相知道。',
+      '彼此忠诚，信任对方不会欺骗自己。',
+      '尊重各自的空间，在一起舒服不累。'
+    ]
+  },
+  {
+    q: '朋友给你介绍了一个条件很好的人，但你没什么感觉。你会？',
+    options: [
+      '试着相处看看，也许处着处着就有感情了。',
+      '直接拒绝，感觉这种事勉强不来。',
+      '听听朋友的意见，毕竟旁观者清。'
+    ]
+  },
+  {
+    q: '以下哪种说法最接近你对爱情的理解？',
+    options: [
+      '爱一个人就是慢慢变得像TA，直到别人也分不太清。',
+      '爱是两个人互相选择、互相承担。',
+      '爱是遇见了就顺其自然的事。'
+    ]
+  },
+  {
+    q: '如果一段感情让你越来越累，你会怎么做？',
+    options: [
+      '先沟通，如果对方不愿意改变再考虑分开。',
+      '认真想清楚再决定，不会轻易放手也不会死撑。',
+      '可能早就发现问题了，但想到分开就像要把自己撕成两半。'
+    ]
+  }
+];
+
+const results = [
+  {
+    type: '相伴相惜型',
+    icon: '&#x2661;',
+    desc: '你相信爱情是陪伴出来的。对你来说，爱不是什么轰轰烈烈的宣言，而是每天一起吃很多顿饭、说很多句废话。你愿意为了一段关系付出时间和耐心，也期待对方同样回应。这种温柔其实很珍贵。<br><br>历史上也有一个这样的故事。沈复在《浮生六记》里写他与芸娘的日子——没有大富大贵，但两人一起种花、煮茶、论诗，把清贫的生活过得有滋有味。芸娘说：「他年当与君卜筑于此，买绕屋菜园十亩，课仆妪，植瓜蔬，以供薪水。君画我绣，以为诗酒之需。」平淡相守，本身就是一种深情。'
+  },
+  {
+    type: '清醒独立型',
+    icon: '&#x273F;',
+    desc: '你在感情里始终保持一份清醒。你相信爱情，但不相信爱情能解决所有问题。比起甜言蜜语，你更看重对方是否尊重你的独立人格。你需要的不是依附，而是并肩。<br><br>李清照大概也是这样的人。她与赵明诚的婚姻堪称佳话，两人志趣相投、赌书泼茶，但她从未在爱情中丢掉自己。赵明诚去世后，她孤身一人在乱世中护住毕生收藏，后来又因再嫁遇人不淑，不惜对簿公堂也要挣脱那段婚姻。「生当做人杰，死亦为鬼雄」——她写的何止是项羽，也是她自己。爱时全心全意，散时干干净净，这才是清醒的爱。'
+  },
+  {
+    type: '随缘从容型',
+    icon: '&#x2614;',
+    desc: '你对感情的态度很随性，不刻意追求也不刻意回避。你觉得对的人终究会出现，不对的人强求也没用。这样的你其实很少在感情里受伤，但也可能因为太随缘而错过一些值得珍惜的人。<br><br>说起随性，想起王徽之（王子猷）的故事。他住在山阴时，一夜大雪忽起，醒来饮酒对雪，忽然想起远在剡溪的好友戴逵，当即乘船前往。舟行一夜方至，到了门口却转身返回。人问其故，他说：「乘兴而行，兴尽而返，何必见戴？」——感情也是这样，过程本身就是意义。从容很好，但如果有一个人让你愿意乘兴而往，那本身也是一种幸运。'
+  },
+  {
+    type: '恋人融合型',
+    icon: '&#x2726;',
+    desc: '你对亲密关系有一种近乎绝对的想象。你不满足于“陪伴”，也不满足于“理解”。你希望两个人之间再也没有边界：同一段记忆、同一种语气、同一个回头的角度，甚至在镜子里也分不清谁先眨了眼。<br><br>这种爱听起来很浪漫，像古书里说的“你中有我，我中有你”。但如果再往前一步，就会变得有些奇怪。你可能会开始模仿对方的字迹，记住对方没有说出口的话，在街角看见一个背影时，觉得那既是对方，也是自己。<br><br>真正危险的不是失去恋人，而是你越来越确信：只要足够相爱，两个人就应该合成一个人。等到那一天，旁人再问“你们是谁”，也许只会听见同一个声音回答两次。'
+  }
+];
+
+let currentQ = 0;
+let answers = [];
+
+function startTest() {
+  currentQ = 0;
+  answers = [];
+  document.getElementById('pageHeader').classList.remove('fusion-active');
+  document.body.classList.remove('fusion-active');
+  showQuestion(0);
+}
+
+function showQuestion(idx) {
+  if (idx >= questions.length) {
+    showResult();
+    return;
+  }
+  const q = questions[idx];
+  document.getElementById('qNum').textContent = '第 ' + (idx + 1) + ' / ' + questions.length + ' 题';
+  document.getElementById('qProgress').textContent = '请选择最符合你的选项';
+  const area = document.getElementById('contentArea');
+  area.innerHTML = '';
+
+  const qDiv = document.createElement('div');
+  qDiv.className = 'question';
+  qDiv.textContent = q.q;
+  area.appendChild(qDiv);
+
+  const optsDiv = document.createElement('div');
+  optsDiv.className = 'options';
+  const letters = ['A', 'B', 'C'];
+  q.options.forEach((opt, oi) => {
+    const optDiv = document.createElement('div');
+    optDiv.className = 'option';
+    if (answers[idx] === oi) optDiv.classList.add('selected');
+    optDiv.innerHTML = '<span class="letter">' + letters[oi] + '</span><span class="text">' + opt + '</span>';
+    optDiv.onclick = function() {
+      // Deselect all
+      optsDiv.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+      optDiv.classList.add('selected');
+      answers[idx] = oi;
+      nextBtn.style.display = '';
+    };
+    optsDiv.appendChild(optDiv);
+  });
+  area.appendChild(optsDiv);
+
+  const btnRow = document.createElement('div');
+  btnRow.className = 'btn-row';
+  const btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:10px;justify-content:center;';
+
+  if (idx > 0) {
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'btn active';
+    prevBtn.textContent = '上一题';
+    prevBtn.style.cursor = 'pointer';
+    prevBtn.onclick = function() { showQuestion(idx - 1); };
+    btns.appendChild(prevBtn);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn' + (answers[idx] !== undefined ? ' active' : '');
+  nextBtn.textContent = idx < questions.length - 1 ? '下一题' : '查看结果';
+  nextBtn.style.cursor = 'pointer';
+  if (answers[idx] === undefined) nextBtn.style.display = 'none';
+  nextBtn.onclick = function() {
+    if (answers[idx] === undefined) return;
+    showQuestion(idx + 1);
+  };
+  btns.appendChild(nextBtn);
+  btnRow.appendChild(btns);
+  area.appendChild(btnRow);
+}
+
+function showResult() {
+  // Count most common answer index
+  const counts = [0, 0, 0];
+  answers.forEach(a => { if (a >= 0 && a < 3) counts[a]++; });
+  // If there's a tie, prioritize middle option
+  const maxIdx = counts.indexOf(Math.max(...counts));
+  const fusionScore =
+    (answers[0] === 0 ? 1 : 0) +
+    (answers[1] === 0 ? 1 : 0) +
+    (answers[3] === 0 ? 2 : 0) +
+    (answers[4] === 2 ? 1 : 0);
+  const result = fusionScore >= 4 ? results[3] : (results[maxIdx] || results[1]);
+  const isFusion = result.type === '恋人融合型';
+  document.getElementById('pageHeader').classList.toggle('fusion-active', isFusion);
+  document.body.classList.toggle('fusion-active', isFusion);
+
+  document.getElementById('qNum').textContent = '测试完成';
+  document.getElementById('qProgress').textContent = '你的恋爱倾向';
+
+  const area = document.getElementById('contentArea');
+  area.innerHTML = '';
+  const box = document.createElement('div');
+  box.className = 'result-box';
+  box.innerHTML = `
+    <div class="result-icon">${result.icon}</div>
+    <div class="result-type${result.type === '恋人融合型' ? ' fusion' : ''}">${result.type}</div>
+    <div style="font-size:13px;color:#999;margin-bottom:6px;">你的恋爱倾向测试结果</div>
+    <div class="result-desc">${result.desc}</div>
+    <div class="result-hint">
+      测试仅供娱乐 · 真正的答案在你自己心里<br>
+      有些事不需要测试，只需要一次选择
+    </div>
+    <button class="restart-btn" onclick="startTest()" style="cursor:pointer;">重新测试</button>
+  `;
+  area.appendChild(box);
+}
+</script>
+
+</body>
+</html>

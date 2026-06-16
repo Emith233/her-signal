@@ -1,0 +1,665 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>情感夜话论坛｜你相信哪一种爱情？</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #e5e0d8;
+  font-family: "宋体","SimSun","Microsoft YaHei","微软雅黑",sans-serif;
+  font-size: 13px;
+  color: #333;
+}
+
+.wrap {
+  width: 960px;
+  margin: 0 auto;
+  background: #f7f5f0;
+  border-left: 2px solid #c8c4bc;
+  border-right: 2px solid #c8c4bc;
+  min-height: 100vh;
+}
+
+/* ===== 顶栏 ===== */
+.topbar {
+  background: linear-gradient(180deg, #2d5ca0, #1a3f78);
+  color: #fff;
+  padding: 14px 20px 10px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.topbar .logo {
+  font-size: 22px; font-weight: bold; letter-spacing: 2px;
+  font-family: "黑体","SimHei",sans-serif;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+.topbar .logo .sub {
+  font-size: 11px; font-weight: normal; color: #b0cce0;
+  margin-left: 10px; letter-spacing: 1px;
+}
+.topbar .user-info { font-size: 12px; color: #c0d0e0; }
+.topbar .user-info a { color: #e0eef8; text-decoration: none; }
+.topbar .user-info a:hover { text-decoration: underline; }
+
+/* ===== 导航 ===== */
+.nav {
+  background: #e8e4dc;
+  border-bottom: 2px solid #c0bcb4;
+  padding: 6px 16px;
+  font-size: 12px;
+}
+.nav a {
+  color: #2a5ca8; text-decoration: none; margin-right: 14px;
+}
+.nav a:hover { text-decoration: underline; color: #d45; }
+.nav .sep { color: #bbb; margin-right: 14px; }
+
+/* ===== 面包屑 ===== */
+.breadcrumb {
+  background: #f0ece4;
+  border-bottom: 1px solid #d8d4cc;
+  padding: 6px 16px; font-size: 12px; color: #888;
+}
+.breadcrumb a { color: #2a5ca8; text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* ===== 主体 ===== */
+.main {
+  display: flex; gap: 0;
+}
+.main-left { flex: 1; min-width: 0; }
+.main-right {
+  width: 240px; flex-shrink: 0;
+  border-left: 1px solid #d8d4cc;
+  background: #f0ece4;
+  padding: 14px 14px 20px;
+}
+
+/* ===== 帖子头部 ===== */
+.post-header {
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid #e0dcd4;
+}
+.post-header .post-title {
+  font-size: 18px; font-weight: bold; color: #222;
+  margin-bottom: 6px; font-family: "黑体","SimHei",sans-serif;
+}
+.post-header .post-meta {
+  font-size: 11px; color: #999;
+  display: flex; gap: 16px; align-items: center;
+}
+.post-header .post-meta .tag {
+  background: #e0eaf4; color: #2a5ca8; padding: 0 6px; border-radius: 2px;
+}
+.post-header .post-meta .nums { color: #bbb; }
+
+/* ===== 楼主 ===== */
+.post-main {
+  border-bottom: 1px solid #e0dcd4;
+}
+.post-floor {
+  display: flex; border-bottom: 1px solid #f0ece4;
+}
+.floor-side {
+  width: 140px; flex-shrink: 0;
+  background: #f7f5f0;
+  padding: 16px 12px; text-align: center;
+  border-right: 1px solid #e0dcd4;
+}
+.floor-side .avatar {
+  width: 48px; height: 48px; margin: 0 auto 6px;
+  background: #c8d4d0;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #9aa8a4;
+}
+.floor-side .uname {
+  font-size: 12px; font-weight: bold; color: #2a5ca8; margin-bottom: 2px;
+}
+.floor-side .ulevel {
+  font-size: 10px; color: #aaa; margin-bottom: 2px;
+}
+.floor-side .ucredit {
+  font-size: 10px; color: #bbb;
+}
+.floor-body {
+  flex: 1; padding: 16px 18px; min-width: 0;
+}
+.floor-body .floor-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.floor-body .floor-header .floor-num {
+  font-size: 11px; color: #aaa;
+}
+.floor-body .floor-header .floor-time {
+  font-size: 11px; color: #bbb;
+}
+.floor-body .floor-content {
+  font-size: 14px; line-height: 1.9; color: #333;
+}
+.floor-body .floor-content p { margin-bottom: 0.6em; }
+.floor-body .floor-content p:last-child { margin-bottom: 0; }
+.floor-body .floor-edit {
+  font-size: 11px; color: #bbb; margin-top: 8px; padding-top: 6px;
+  border-top: 1px dotted #e0dcd4;
+}
+.floor-body .floor-signature {
+  margin-top: 12px; padding-top: 6px;
+  border-top: 1px dotted #e0dcd4;
+  font-size: 11px; color: #b0b0b0; line-height: 1.5;
+}
+
+/* ===== 回复楼 ===== */
+.floor-side .floor-avatar-sm {
+  width: 36px; height: 36px; margin: 0 auto 4px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.floor-link-box {
+  margin-top: 10px; padding: 10px 12px;
+  background: #f0f4f0; border: 1px solid #d0dcd0;
+  border-radius: 4px; display: flex; align-items: center; gap: 10px;
+}
+.floor-link-box .link-icon {
+  font-size: 18px; color: #7a9a7a; flex-shrink: 0;
+}
+.floor-link-box .link-text { flex: 1; }
+.floor-link-box .link-text a {
+  color: #2a6a8a; text-decoration: underline;
+  font-size: 13px;
+}
+.floor-link-box .link-text a:hover { color: #d45; }
+.floor-link-box .link-badge {
+  font-size: 10px; color: #8a9a8a; background: #e8ece4;
+  padding: 1px 6px; border-radius: 2px;
+}
+
+/* ===== 底部操作栏 ===== */
+.post-actions {
+  padding: 10px 16px; border-bottom: 1px solid #e0dcd4;
+  display: flex; gap: 12px; font-size: 12px;
+}
+.post-actions a {
+  color: #2a5ca8; text-decoration: none;
+}
+.post-actions a:hover { text-decoration: underline; }
+.post-actions .sep { color: #ccc; }
+
+/* ===== 快速回复 ===== */
+.quick-reply {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e0dcd4;
+}
+.quick-reply .qr-title { font-size: 12px; color: #888; margin-bottom: 6px; }
+.quick-reply .qr-box {
+  width: 100%; border: 1px solid #d0ccc4;
+  padding: 8px 10px; font-size: 13px;
+  font-family: "宋体",sans-serif; background: #fff;
+  min-height: 50px; color: #999;
+  border-radius: 2px;
+}
+.quick-reply .qr-actions {
+  margin-top: 6px; display: flex; gap: 8px; align-items: center;
+}
+.quick-reply .qr-btn {
+  background: #d8d4cc; border: 1px solid #b0aca4;
+  padding: 3px 14px; font-size: 12px; font-family: "宋体",sans-serif;
+  cursor: default; color: #666; border-radius: 2px;
+}
+.quick-reply .qr-hint { font-size: 11px; color: #bbb; }
+
+/* ===== 侧栏 ===== */
+.sidebar-title {
+  font-size: 13px; font-weight: bold; color: #444;
+  border-bottom: 2px solid #c0bcb4; padding-bottom: 4px; margin-bottom: 10px;
+}
+.sidebar-list { list-style: none; padding: 0; }
+.sidebar-list li {
+  font-size: 12px; color: #555; line-height: 2.2;
+  padding-left: 12px; position: relative;
+}
+.sidebar-list li::before {
+  content: '·'; position: absolute; left: 2px; color: #aaa;
+}
+.sidebar-list li a {
+  color: #2a5ca8; text-decoration: none;
+}
+.sidebar-list li a:hover { text-decoration: underline; }
+
+.sidebar-section { margin-bottom: 20px; }
+
+/* ===== 底部 ===== */
+.footer-bar {
+  border-top: 1px solid #d8d4cc; background: #e8e4dc;
+  padding: 10px 16px; font-size: 11px; color: #999; text-align: center;
+}
+.footer-bar a { color: #2a5ca8; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- 顶栏 -->
+  <div class="topbar">
+    <div class="logo">
+      情感夜话论坛
+      <span class="sub">—— 听见你的心事</span>
+    </div>
+    <div class="user-info">
+      <a href="#">登录</a>｜<a href="#">注册</a>｜<a href="#">消息</a>
+    </div>
+  </div>
+
+  <!-- 导航 -->
+  <div class="nav">
+    <a href="#">情感交流</a><span class="sep">|</span>
+    <a href="#">恋爱困惑</a><span class="sep">|</span>
+    <a href="#">心理测试</a><span class="sep">|</span>
+    <a href="#">树洞倾诉</a><span class="sep">|</span>
+    <a href="#">今日热帖</a><span class="sep">|</span>
+    <a href="#">我的消息</a>
+  </div>
+
+  <!-- 面包屑 -->
+  <div class="breadcrumb">
+    <a href="#">情感夜话论坛</a> &gt; <a href="#">情感交流</a> &gt; <a href="#">恋爱困惑</a> &gt; 你相信哪一种爱情？
+  </div>
+
+  <!-- 主体 -->
+  <div class="main">
+    <div class="main-left">
+
+      <!-- 帖子头部 -->
+      <div class="post-header">
+        <div class="post-title">你们觉得，爱情里最重要的是陪伴、忠诚，还是自由？</div>
+        <div class="post-meta">
+          <span class="tag">恋爱困惑</span>
+          <span>来自：情感交流区</span>
+          <span class="nums">查看：3241 ｜ 回复：48</span>
+        </div>
+      </div>
+
+      <!-- 楼主 -->
+      <div class="post-main">
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar">&#x263A;</div>
+            <div class="uname">半杯温水</div>
+            <div class="ulevel">Lv.4 常客</div>
+            <div class="ucredit">积分 1243</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num"><b>楼主</b></span>
+              <span class="floor-time">2011-06-14 22:38</span>
+            </div>
+            <div class="floor-content">
+              <p>不知道大家有没有遇到过这种情况。</p>
+              <p>我和对象前段时间因为一件小事闹得不愉快。起因是我觉得TA最近回消息越来越慢，分享日常也越来越少。我提了一嘴，TA说最近有点忙，而且觉得谈恋爱不需要每时每刻都黏在一起，也需要各自的空间。</p>
+              <p>我也能理解……但我又会想，如果连分享都不愿意了，那还谈什么呢？</p>
+              <p>后来跟朋友聊，朋友说每个人对爱的理解不一样。有的人觉得爱就是陪伴，有的人觉得爱是忠诚，有的人觉得爱是自由。我突然就迷茫了——如果两个人理解的不一样，那是不是就永远走不到一起？</p>
+              <p>所以想问问大家，你们觉得爱情到底是什么？是陪伴，是忠诚，是自由，还是某种必须做出的选择？</p>
+            </div>
+            <div class="floor-edit">本帖最后由 半杯温水 于 2011-06-14 23:17 编辑</div>
+            <div class="floor-signature">有些人遇见就够了，余生就算了。</div>
+          </div>
+        </div>
+
+        <!-- 2楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#d4c8b8;">&#x2665;</div>
+            <div class="uname">城南旧事</div>
+            <div class="ulevel">Lv.3 老友</div>
+            <div class="ucredit">积分 867</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">2楼</span>
+              <span class="floor-time">2011-06-14 22:52</span>
+            </div>
+            <div class="floor-content">
+              <p>我觉得陪伴是最基本的吧，连陪伴都没有那叫什么恋爱。</p>
+              <p>当然每个人表达的方式不一样，有的人话多有的人话少，但心里有没有你，你是能感觉到的。</p>
+            </div>
+            <div class="floor-signature">世间所有相遇，都是久别重逢。</div>
+          </div>
+        </div>
+
+        <!-- 3楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#d0d8e0;">&#x2601;</div>
+            <div class="uname">风居住的街道</div>
+            <div class="ulevel">Lv.5 资深</div>
+            <div class="ucredit">积分 2156</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">3楼</span>
+              <span class="floor-time">2011-06-14 23:05</span>
+            </div>
+            <div class="floor-content">
+              <p>爱不是把两个人变成一个人，这个道理我也是分过手才明白的。</p>
+              <p>以前总觉得谈恋爱就应该什么都一起，后来发现那样两个人都累。现在觉得，真正合适的两个人是各自独立但又互相选择的。</p>
+            </div>
+            <div class="floor-signature">让我看看你的城市有没有下雨。</div>
+          </div>
+        </div>
+
+        <!-- 4楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#e0d0c0;">&#x270E;</div>
+            <div class="uname">写信给秋天</div>
+            <div class="ulevel">Lv.3 老友</div>
+            <div class="ucredit">积分 632</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">4楼</span>
+              <span class="floor-time">2011-06-14 23:18</span>
+            </div>
+            <div class="floor-content">
+              <p>两个人的关系不是变成一个人，我觉得这个说得很对。最难的不是遇见谁，是你到底选谁。选择了就好好处，不选择就趁早说清楚。</p>
+            </div>
+            <div class="floor-signature">人山人海，边走边爱。</div>
+          </div>
+        </div>
+
+        <!-- 5楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#d8d0c8;">&#x2706;</div>
+            <div class="uname">深夜食堂</div>
+            <div class="ulevel">Lv.4 常客</div>
+            <div class="ucredit">积分 1102</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">5楼</span>
+              <span class="floor-time">2011-06-14 23:34</span>
+            </div>
+            <div class="floor-content">
+              <p>说句不好听的，楼主你这是闲的。忙起来谁有空天天琢磨回消息快不快。各忙各的，有空了说句话，不也挺好的吗？</p>
+            </div>
+            <div class="floor-signature">吃饱了就不难过了。</div>
+          </div>
+        </div>
+
+        <!-- 6楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#c8d8d0;">&#x273F;</div>
+            <div class="uname">旧时光的影子</div>
+            <div class="ulevel">Lv.4 常客</div>
+            <div class="ucredit">积分 987</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">6楼</span>
+              <span class="floor-time">2011-06-15 00:12</span>
+            </div>
+            <div class="floor-content">
+              <p>以前我也觉得爱情就是陪伴，前任就是那种特别需要空间的人，后来分了。现在想想其实没什么对错，就是两个人要的节奏不一样。</p>
+              <p>爱有时候不是答案，是选择。你选择忍还是选择走，都是爱的一部分。</p>
+            </div>
+            <div class="floor-signature">有些人，光是遇见就已经赚到了。</div>
+          </div>
+        </div>
+
+        <!-- 7楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#d0c8d0;">&#x2606;</div>
+            <div class="uname">不晚安小姐</div>
+            <div class="ulevel">Lv.2 新友</div>
+            <div class="ucredit">积分 324</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">7楼</span>
+              <span class="floor-time">2011-06-15 08:45</span>
+            </div>
+            <div class="floor-content">
+              <p>我觉得爱情最重要的就是忠诚吧。陪伴可以少一点，忙可以理解，但如果心不在你这了那就什么都没意义了。</p>
+              <p>真正的爱是明知道可以离开，还是选择留下。对吧。</p>
+            </div>
+            <div class="floor-signature">愿你熬过黑夜，依然有勇气。</div>
+          </div>
+        </div>
+
+        <!-- 8楼 关键用户 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#d0d8d0;">&#x263D;</div>
+            <div class="uname">月亮背面的人</div>
+            <div class="ulevel">Lv.3 老友</div>
+            <div class="ucredit">积分 768</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">8楼</span>
+              <span class="floor-time">2011-06-15 09:23</span>
+            </div>
+            <div class="floor-content">
+              <p>我之前也以为爱情应该有标准答案，后来做了一个测试，才发现自己根本不是在谈恋爱，而是在等一个人替我做选择。你们可以试试。</p>
+              <div class="floor-link-box">
+                <span class="link-icon">&#x2697;</span>
+                <div class="link-text">
+                  <a href="love-test.html" target="_blank">「恋爱观倾向测试：你会怎样爱一个人？」</a>
+                </div>
+                <span class="link-badge">心理测试</span>
+              </div>
+            </div>
+            <div class="floor-signature">有些人看着月亮，有些人就是月亮本身。</div>
+          </div>
+        </div>
+
+        <!-- 9楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#d8d0b8;">&#x2615;</div>
+            <div class="uname">茶泡饭</div>
+            <div class="ulevel">Lv.2 新友</div>
+            <div class="ucredit">积分 445</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">9楼</span>
+              <span class="floor-time">2011-06-15 10:10</span>
+            </div>
+            <div class="floor-content">
+              <p>相什么爱啊，我谈三次崩三次，现在已经看透了。有时候觉得不是对方的问题，是自己根本不会爱。</p>
+              <p>这么说吧，每次我都觉得我是付出型，结果对方说压力大。后来朋友点醒我——你给的到底是对方要的，还是你自己想给的？</p>
+            </div>
+            <div class="floor-signature">不谈恋爱，屁事没有。</div>
+          </div>
+        </div>
+
+        <!-- 10楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#c8d0d8;">&#x2734;</div>
+            <div class="uname">渡口等风</div>
+            <div class="ulevel">Lv.1 新手</div>
+            <div class="ucredit">积分 126</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">10楼</span>
+              <span class="floor-time">2011-06-15 11:37</span>
+            </div>
+            <div class="floor-content">
+              <p>有些人注定是过客，有些关系看起来像爱情，其实只是害怕一个人。我觉得楼主不妨先想清楚，你是真的在意TA，还是只是害怕一个人面对空白？</p>
+            </div>
+            <div class="floor-signature">等风来，不如追风去。</div>
+          </div>
+        </div>
+
+        <!-- 11楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#d8ccc0;">&#x2668;</div>
+            <div class="uname">云图</div>
+            <div class="ulevel">Lv.3 老友</div>
+            <div class="ucredit">积分 891</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">11楼</span>
+              <span class="floor-time">2011-06-15 13:02</span>
+            </div>
+            <div class="floor-content">
+              <p>我觉得爱情里最重要的几样东西：尊重、信任、沟通。你说的陪伴也好忠诚也好自由也好，都是这些基础之上才有的。如果两个人连话都不想好好说了，那谈什么都没用。</p>
+            </div>
+            <div class="floor-signature">云是天空的信。</div>
+          </div>
+        </div>
+
+        <!-- 12楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#d4d0c4;">&#x2614;</div>
+            <div class="uname">雨季不再来</div>
+            <div class="ulevel">Lv.4 常客</div>
+            <div class="ucredit">积分 1340</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">12楼</span>
+              <span class="floor-time">2011-06-15 14:28</span>
+            </div>
+            <div class="floor-content">
+              <p>如果必须有人替你决定，那可能就不是爱了。爱一个人是自己选的，不是别人告诉你的。我上一段就是这样，家里人说合适，对方人也挺好，但在一起就是没感觉。后来分了，反而轻松了。</p>
+            </div>
+            <div class="floor-signature">有些人错过了就是错过了。</div>
+          </div>
+        </div>
+
+        <!-- 13楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#ddd4c8;">&#x2637;</div>
+            <div class="uname">机械心脏</div>
+            <div class="ulevel">Lv.2 新友</div>
+            <div class="ucredit">积分 567</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">13楼</span>
+              <span class="floor-time">2011-06-15 16:00</span>
+            </div>
+            <div class="floor-content">
+              <p>作为一个理工男，我觉得爱情就是互相满足需求的契约关系。说得直接一点就是：你提供陪伴，我提供安全感；你提供自由，我提供信任。没那么多玄乎的，能平衡就是合适。</p>
+            </div>
+            <div class="floor-signature">世界是数据的集合。</div>
+          </div>
+        </div>
+
+        <!-- 14楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#d0d4d0;">&#x2601;</div>
+            <div class="uname">雾散</div>
+            <div class="ulevel">Lv.3 老友</div>
+            <div class="ucredit">积分 756</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">14楼</span>
+              <span class="floor-time">2011-06-15 17:45</span>
+            </div>
+            <div class="floor-content">
+              <p>爱情更像是命运的安排吧。人和人之间有一种说不清的东西，有些人第一眼就知道是他，有些人相处再久也不行。我觉得不用想太复杂，感觉对了就对了。</p>
+            </div>
+            <div class="floor-signature">雾散了，你还在这里。</div>
+          </div>
+        </div>
+
+        <!-- 15楼 -->
+        <div class="post-floor">
+          <div class="floor-side">
+            <div class="avatar floor-avatar-sm" style="background:#dcd0c0;">&#x2702;</div>
+            <div class="uname">纸飞机</div>
+            <div class="ulevel">Lv.1 新手</div>
+            <div class="ucredit">积分 203</div>
+          </div>
+          <div class="floor-body">
+            <div class="floor-header">
+              <span class="floor-num">15楼</span>
+              <span class="floor-time">2011-06-15 19:12</span>
+            </div>
+            <div class="floor-content">
+              <p>你们都说了那么多大道理，我就想问一句——楼主你对象到底是不是天秤座？天秤座就是这样的，需要空间又需要陪伴，纠结到死。别问我怎么知道的。🙃</p>
+            </div>
+            <div class="floor-signature">纸飞机飞不过沧海。</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 操作栏 -->
+      <div class="post-actions">
+        <a href="#">只看楼主</a><span class="sep">|</span>
+        <a href="#">收藏本帖</a><span class="sep">|</span>
+        <a href="#">倒序浏览</a><span class="sep">|</span>
+        <a href="#">回复</a><span class="sep">|</span>
+        <a href="#">返回列表</a>
+      </div>
+
+      <!-- 快速回复 -->
+      <div class="quick-reply">
+        <div class="qr-title">快速回复</div>
+        <div class="qr-box" contenteditable="false">在此处输入内容……</div>
+        <div class="qr-actions">
+          <span class="qr-btn">发表回复</span>
+          <span class="qr-hint">[可按 Ctrl+Enter 快速发表]</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 侧栏 -->
+    <div class="main-right">
+      <div class="sidebar-section">
+        <div class="sidebar-title">今日热帖</div>
+        <ul class="sidebar-list">
+          <li><a href="#">你会因为一个人改变自己的城市吗？</a></li>
+          <li><a href="#">恋人之间到底该不该看手机？</a></li>
+          <li><a href="#">异地恋最难熬的是第几个月？</a></li>
+          <li><a href="#">喜欢和合适，哪个更重要？</a></li>
+          <li><a href="#">测试：你在感情里最害怕失去什么？</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">相关推荐</div>
+        <ul class="sidebar-list">
+          <li><a href="#">爱情是不是一种长期选择？</a></li>
+          <li><a href="#">为什么越喜欢一个人越容易沉默？</a></li>
+          <li><a href="#">你会选择爱你的人，还是你爱的人？</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section" style="margin-top:24px;">
+        <div style="font-size:11px;color:#bbb;text-align:center;line-height:1.8;">
+          本版块内容由用户自行发布<br>
+          不代表本论坛立场
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer-bar">
+    &copy; 情感夜话论坛 ｜ <a href="#">关于我们</a> ｜ <a href="#">联系方式</a> ｜ <a href="#">免责声明</a>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金陵旧籍藏本库</title>
+<style>
+* { box-sizing: border-box; }
+html, body { width: 100%; height: 100%; margin: 0; }
+body {
+  overflow: hidden;
+  background: #d8ccb2;
+  color: #312a21;
+  font-family: "Songti SC", "SimSun", serif;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.38;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 5px, rgba(79,61,38,0.035) 6px),
+    radial-gradient(circle at 18% 28%, rgba(113,80,44,0.11), transparent 28%),
+    radial-gradient(circle at 78% 72%, rgba(113,80,44,0.08), transparent 32%);
+}
+.login-gate,
+.archive {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+.login-gate {
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(226,216,194,0.72);
+}
+body.logged-in .login-gate { display: none; }
+.login-panel {
+  width: min(430px, 100%);
+  padding: 34px 32px 30px;
+  background: rgba(242,234,214,0.96);
+  border: 1px solid #8f7958;
+  outline: 4px double rgba(99,77,47,0.55);
+  outline-offset: -10px;
+  box-shadow: 0 18px 42px rgba(58,43,27,0.2);
+}
+.login-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.login-title {
+  color: #3b2f21;
+  font-size: 21px;
+  letter-spacing: 6px;
+}
+.login-sub {
+  margin-top: 7px;
+  color: #8b7656;
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+.seal {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 2px solid #a84635;
+  color: #a84635;
+  font-size: 15px;
+  line-height: 1.1;
+  text-align: center;
+  transform: rotate(-4deg);
+}
+.field { margin-top: 14px; }
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  color: #796444;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+.field input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #b8a583;
+  border-radius: 0;
+  outline: none;
+  background: rgba(255,252,242,0.76);
+  color: #4a3b2c;
+  font: 14px/1 "Songti SC", "SimSun", serif;
+  letter-spacing: 2px;
+}
+.field input:focus { border-color: #9c493b; box-shadow: 0 0 0 2px rgba(156,73,59,0.09); }
+.login-btn {
+  width: 100%;
+  height: 42px;
+  margin-top: 22px;
+  border: 1px solid #74372e;
+  border-radius: 0;
+  background: #934538;
+  color: #f8efdc;
+  cursor: pointer;
+  font: 15px/1 "Songti SC", "SimSun", serif;
+  letter-spacing: 8px;
+}
+.login-btn:hover { background: #7f3c32; }
+.login-note {
+  min-height: 18px;
+  margin-top: 12px;
+  color: #927d5e;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+.login-note.err { color: #9a4136; }
+.archive {
+  display: none;
+  grid-template-columns: 72px minmax(0, 1fr) minmax(250px, 31%);
+  background: #d9ceb8;
+}
+body.logged-in .archive { display: grid; }
+.side-title {
+  padding: 22px 19px;
+  border-right: 1px solid #9d8967;
+  background: #c7b797;
+  color: #493927;
+  font-size: 19px;
+  line-height: 1.35;
+  letter-spacing: 5px;
+  writing-mode: vertical-rl;
+}
+.scan-area {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-right: 1px solid #a48f6d;
+  background:
+    linear-gradient(rgba(255,255,255,0.12), rgba(113,86,49,0.05)),
+    #e7ddc7;
+}
+.page {
+  position: relative;
+  height: min(100%, 948px);
+  aspect-ratio: 602 / 948;
+  flex: 0 0 auto;
+  background: #f7f4ea;
+  box-shadow: 0 12px 28px rgba(72,53,29,0.24);
+}
+.page img { display: block; width: 100%; height: 100%; }
+.mark {
+  position: absolute;
+  background: rgba(180, 52, 36, 0.13);
+  border: 2px solid rgba(166, 52, 38, 0.74);
+  box-shadow: 0 0 0 2px rgba(255,248,224,0.42);
+  mix-blend-mode: multiply;
+}
+.mark.one { left: 18.6%; top: 6.2%; width: 9.2%; height: 88.2%; }
+.mark.two { left: 9.1%; top: 2.1%; width: 9.2%; height: 64.5%; }
+.mark::after {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #a34637;
+  color: #fff3df;
+  font: 700 11px/1 sans-serif;
+  mix-blend-mode: normal;
+}
+.mark.one::after { content: "一"; }
+.mark.two::after { content: "二"; }
+.notes {
+  min-width: 0;
+  overflow-y: auto;
+  padding: 28px 24px;
+  background: rgba(239,230,210,0.78);
+}
+.notes-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.label { color: #765f40; font-size: 13px; letter-spacing: 4px; }
+.mini-seal {
+  padding: 4px;
+  border: 1px solid #a84635;
+  color: #a84635;
+  font-size: 11px;
+  letter-spacing: 1px;
+  transform: rotate(3deg);
+}
+.rule { width: 48px; height: 2px; margin: 16px 0 18px; background: #9f493b; }
+.quote {
+  margin: 0;
+  color: #33291f;
+  font-size: 19px;
+  line-height: 2.05;
+}
+.foot {
+  margin-top: 24px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(137,110,72,0.42);
+  color: #897354;
+  font-size: 12px;
+  line-height: 1.9;
+}
+.translation {
+  margin-top: 20px;
+  padding: 14px 15px;
+  border-left: 3px solid rgba(159,73,59,0.72);
+  background: rgba(255,250,235,0.42);
+}
+.translation-label {
+  margin-bottom: 8px;
+  color: #9f493b;
+  font-size: 12px;
+  letter-spacing: 3px;
+}
+.translation-text {
+  margin: 0;
+  color: #67543a;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.index {
+  margin-top: 18px;
+  color: #a18a68;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+@media (max-width: 760px) {
+  .archive { grid-template-columns: 52px 1fr; grid-template-rows: minmax(360px, 66%) auto; }
+  .side-title { padding: 16px 13px; font-size: 16px; }
+  .scan-area { padding: 12px; border-right: none; }
+  .notes { grid-column: 1 / -1; padding: 18px; border-top: 1px solid #a48f6d; }
+  .quote { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+<section class="login-gate">
+  <div class="login-panel">
+    <div class="login-head">
+      <div>
+        <div class="login-title">金陵旧籍藏本库</div>
+        <div class="login-sub">内府抄本 · 阅览登记</div>
+      </div>
+      <div class="seal">藏本<br>登录</div>
+    </div>
+    <div class="field">
+      <label for="reader">阅览凭证</label>
+      <input id="reader" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="pass">验讫密押</label>
+      <input id="pass" type="password" autocomplete="off">
+    </div>
+    <button class="login-btn" id="loginBtn">登记入库</button>
+    <div class="login-note" id="loginNote">请输入阅览凭证与验讫密押</div>
+  </div>
+</section>
+
+<main class="archive">
+  <div class="side-title">金陵旧籍藏本库</div>
+  <div class="scan-area">
+    <div class="page">
+      <img src="wechat_2026-05-30_150801_865.png" alt="竖排旧籍扫描页">
+      <div class="mark one" aria-label="圈阅第一段"></div>
+      <div class="mark two" aria-label="圈阅第二段"></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div class="notes-head">
+      <div class="label">朱批摘录</div>
+      <div class="mini-seal">校讫</div>
+    </div>
+    <div class="rule"></div>
+    <p class="quote">夫同是人也，则同是心性，六经诸书，皆教人以正性明善、修身齐家之学，而岂徒为男子辈设哉？</p>
+    <div class="translation">
+      <div class="translation-label">今译</div>
+      <p class="translation-text">既然同样是人，那么就有相同的心性，六经等书籍，都是教导人端正心性、彰显善德、修养自身、治理家庭的学问，难道只是为男子们设立的吗？</p>
+    </div>
+    <div class="foot">原文为竖排，自右向左连续阅读。扫描页边缘与个别字迹存在残损。</div>
+    <div class="index">卷次未详 · 残页一纸 · 朱批二处</div>
+  </aside>
+</main>
+<script>
+(function() {
+  var params = new URLSearchParams(location.search);
+  var btn = document.getElementById('loginBtn');
+  var note = document.getElementById('loginNote');
+  var reader = document.getElementById('reader');
+  var pass = document.getElementById('pass');
+
+  function enterArchive(notifyParent) {
+    document.body.classList.add('logged-in');
+    if (notifyParent) {
+      window.parent.postMessage({ type: 'archive-login-complete' }, '*');
+    }
+  }
+
+  if (params.get('loggedIn') === '1') enterArchive(false);
+
+  btn.addEventListener('click', function() {
+    var r = reader.value.trim();
+    var p = pass.value.trim();
+    if (!r || !p) {
+      note.textContent = '凭证或密押尚未填写';
+      note.className = 'login-note err';
+      return;
+    }
+    if (r !== 'GZ-1002' || p !== '6487') {
+      note.textContent = '凭证或密押错误，请重新确认';
+      note.className = 'login-note err';
+      return;
+    }
+    note.textContent = '验讫，正在调取藏本……';
+    note.className = 'login-note';
+    setTimeout(function() { enterArchive(true); }, 260);
+  });
+
+  pass.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') btn.click();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>驴友驿站 - 自驾旅行版 - 洛阳洛河沿岸古代城址遗址两日记录</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: Tahoma, Verdana, 'Microsoft YaHei', sans-serif;
+  background: #e8e4d8;
+  color: #333;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-y: auto;
+}
+
+/* ===== 顶部广告 ===== */
+.top-ad {
+  background: linear-gradient(135deg, #2d4a1e, #3d6a2e);
+  text-align: center;
+  padding: 10px 0;
+  color: #888;
+  font-size: 11px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #4a7a3a;
+}
+.top-ad span {
+  color: #f0d060;
+}
+
+/* ===== 顶栏 ===== */
+.topbar {
+  background: #4a6a3a;
+  color: #ccc;
+  font-size: 12px;
+  padding: 5px 20px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #3a5a2a;
+}
+.topbar a { color: #c0d8a0; text-decoration: none; margin-left: 12px; }
+.topbar a:hover { color: #fff; }
+
+/* ===== 头部 ===== */
+.header {
+  background: #5a8a4a;
+  padding: 18px 20px 14px;
+  border-bottom: 3px solid #4a7a3a;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+}
+.header .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+.header .logo small {
+  font-size: 11px;
+  font-weight: normal;
+  color: #c0e0a0;
+  margin-left: 8px;
+}
+.header .search-box {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+.header .search-box input {
+  padding: 4px 8px;
+  border: 1px solid #4a7a3a;
+  background: #f0ede4;
+  font-size: 12px;
+  width: 180px;
+}
+.header .search-box button {
+  padding: 4px 12px;
+  background: #4a7a3a;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+.header .search-box button:hover { background: #3a5a2a; }
+.search-result {
+  display: none;
+  position: absolute;
+  z-index: 20;
+  top: 58px;
+  right: 20px;
+  width: 420px;
+  background: #fffdf8;
+  border: 1px solid #b8b09e;
+  box-shadow: 0 4px 12px rgba(60,50,35,0.24);
+  color: #555;
+}
+.search-result.show { display: block; }
+.search-result .sr-head {
+  background: #f0ece0;
+  border-bottom: 1px solid #d4cec0;
+  padding: 7px 10px;
+  color: #888;
+  font-size: 11px;
+}
+.search-result .sr-item {
+  display: block;
+  padding: 10px 12px;
+  color: #4a6a3a;
+  text-decoration: none;
+  line-height: 1.65;
+}
+.search-result .sr-item:hover { background: #f5f2e8; color: #c00; }
+.search-result .sr-item small { display: block; color: #999; font-size: 11px; }
+.search-result .sr-empty { padding: 12px; color: #999; font-size: 12px; }
+
+/* ===== 导航 ===== */
+.navbar {
+  background: #f5f2e8;
+  border-bottom: 1px solid #d4cec0;
+  padding: 6px 20px;
+  font-size: 12px;
+}
+.navbar a {
+  color: #4a6a3a;
+  text-decoration: none;
+  padding: 2px 10px;
+  border-right: 1px solid #d4cec0;
+}
+.navbar a:last-child { border-right: none; }
+.navbar a:hover { color: #c00; }
+.navbar .current { font-weight: bold; color: #c00; }
+
+/* ===== 面包屑 ===== */
+.breadcrumb {
+  padding: 8px 20px;
+  font-size: 12px;
+  color: #888;
+  background: #f0ece0;
+  border-bottom: 1px solid #d4cec0;
+}
+.breadcrumb a { color: #4a6a3a; text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* ===== 版块信息 ===== */
+.board-header {
+  background: #f0ece0;
+  padding: 14px 20px;
+  border-bottom: 1px solid #d4cec0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.board-header .board-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #4a6a3a;
+}
+.board-header .board-desc {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+.board-header .page-info {
+  font-size: 12px;
+  color: #999;
+}
+
+/* ===== 主区域 ===== */
+.main {
+  display: flex;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 0;
+  gap: 14px;
+}
+
+/* ===== 左侧内容 ===== */
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ===== 帖子主题 ===== */
+.post-header {
+  background: #f5f2e8;
+  border: 1px solid #d4cec0;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.post-header h1 {
+  font-size: 18px;
+  color: #222;
+  margin-bottom: 6px;
+}
+.post-header .post-meta {
+  font-size: 12px;
+  color: #999;
+}
+.post-header .post-meta a { color: #4a6a3a; text-decoration: none; }
+
+/* ===== 楼主帖 ===== */
+.post-main {
+  background: #faf8f2;
+  border: 1px solid #d4cec0;
+  margin-bottom: 10px;
+}
+.post-main .post-head {
+  background: #f0ece0;
+  padding: 8px 16px;
+  border-bottom: 1px solid #d4cec0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #888;
+}
+.post-main .post-head .floor { color: #c00; font-weight: bold; }
+.post-main .post-body {
+  display: flex;
+  padding: 14px 16px;
+  gap: 14px;
+}
+.post-main .user-info {
+  width: 120px;
+  flex-shrink: 0;
+  text-align: center;
+}
+.post-main .user-info .avatar {
+  width: 60px; height: 60px;
+  background: #d4cec0;
+  border-radius: 50%;
+  margin: 0 auto 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #888;
+}
+.post-main .user-info .uname {
+  font-weight: bold;
+  color: #4a6a3a;
+  font-size: 13px;
+}
+.post-main .user-info .utitle {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
+.post-main .user-info .uinfo {
+  font-size: 11px;
+  color: #999;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.post-main .post-content {
+  flex: 1;
+  font-size: 14px;
+  line-height: 2;
+  color: #333;
+  min-height: 200px;
+}
+.post-main .post-content p { margin-bottom: 12px; }
+.post-main .post-content .quote {
+  border-left: 3px solid #5a8a4a;
+  background: #f0ece0;
+  padding: 8px 12px;
+  margin: 10px 0;
+  font-size: 13px;
+  color: #666;
+}
+.post-main .post-foot {
+  background: #f0ece0;
+  border-top: 1px solid #d4cec0;
+  padding: 6px 16px;
+  font-size: 11px;
+  color: #999;
+  display: flex;
+  justify-content: space-between;
+}
+.post-main .post-foot a {
+  color: #4a6a3a;
+  text-decoration: none;
+  margin-left: 10px;
+}
+.post-main .post-foot a:hover { text-decoration: underline; }
+
+/* ===== 回复 ===== */
+.reply {
+  background: #faf8f2;
+  border: 1px solid #d4cec0;
+  margin-bottom: 8px;
+}
+.reply .reply-head {
+  background: #f5f2e8;
+  padding: 6px 16px;
+  border-bottom: 1px solid #d4cec0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #888;
+}
+.reply .reply-head .floor { color: #c00; font-weight: bold; }
+.reply .reply-body {
+  display: flex;
+  padding: 10px 16px;
+  gap: 12px;
+}
+.reply .user-info {
+  width: 90px;
+  flex-shrink: 0;
+  text-align: center;
+}
+.reply .user-info .avatar {
+  width: 40px; height: 40px;
+  background: #d4cec0;
+  border-radius: 50%;
+  margin: 0 auto 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #888;
+}
+.reply .user-info .uname { font-weight: bold; color: #4a6a3a; font-size: 12px; }
+.reply .reply-content { flex: 1; font-size: 13px; line-height: 1.8; color: #444; }
+.reply .reply-content p { margin-bottom: 6px; }
+.reply .reply-content .quote {
+  border-left: 2px solid #ccc;
+  background: #f5f2e8;
+  padding: 6px 10px;
+  margin: 6px 0;
+  font-size: 12px;
+  color: #888;
+}
+.reply .reply-foot {
+  background: #f5f2e8;
+  border-top: 1px solid #d4cec0;
+  padding: 4px 16px;
+  font-size: 11px;
+  color: #999;
+  display: flex;
+  justify-content: space-between;
+}
+.reply .reply-foot a { color: #4a6a3a; text-decoration: none; margin-left: 10px; }
+
+/* ===== 分页 ===== */
+.pagination {
+  text-align: center;
+  padding: 14px 0;
+  font-size: 12px;
+}
+.pagination a {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid #d4cec0;
+  background: #f5f2e8;
+  color: #4a6a3a;
+  text-decoration: none;
+  margin: 0 2px;
+}
+.pagination a:hover { background: #e8e4d8; }
+.pagination .current {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid #4a6a3a;
+  background: #4a6a3a;
+  color: #fff;
+  margin: 0 2px;
+}
+
+/* ===== 右侧边栏 ===== */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+}
+.sidebar .panel {
+  background: #faf8f2;
+  border: 1px solid #d4cec0;
+  margin-bottom: 10px;
+}
+.sidebar .panel h3 {
+  background: #4a6a3a;
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 12px;
+  letter-spacing: 1px;
+}
+.sidebar .panel .panel-body { padding: 10px 12px; font-size: 12px; line-height: 2; }
+.sidebar .panel .panel-body a {
+  color: #4a6a3a;
+  text-decoration: none;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar .panel .panel-body a:hover { color: #c00; }
+.sidebar .panel .panel-body .hot-tag {
+  display: inline-block;
+  background: #c00;
+  color: #fff;
+  font-size: 10px;
+  padding: 0 4px;
+  margin-right: 4px;
+}
+.sidebar .panel .stats { font-size: 12px; color: #888; }
+.sidebar .panel .stats span { color: #333; }
+
+/* ===== 底部广告 ===== */
+.bottom-ad {
+  text-align: center;
+  padding: 14px;
+  background: #f0ece0;
+  border-top: 1px solid #d4cec0;
+  border-bottom: 1px solid #d4cec0;
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 10px;
+}
+
+/* ===== 页脚 ===== */
+.footer {
+  background: #4a6a3a;
+  color: #888;
+  text-align: center;
+  padding: 16px;
+  font-size: 11px;
+  border-top: 3px solid #3a5a2a;
+  margin-top: 10px;
+}
+.footer a { color: #c0d8a0; text-decoration: none; }
+.footer a:hover { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- 顶部广告 -->
+<div class="top-ad">
+  <span>[广告]</span> 驴友驿站 · 爱旅行爱生活 | 注册送 50 元旅行优惠券
+</div>
+
+<!-- 顶栏 -->
+<div class="topbar">
+  <div>
+    欢迎您，<a href="#">游客</a>
+    <a href="#">登录</a>
+    <a href="#">注册</a>
+  </div>
+  <div>
+    <a href="#">收藏本页</a>
+    <a href="#">RSS</a>
+    <a href="#">帮助</a>
+  </div>
+</div>
+
+<!-- 头部 -->
+<div class="header">
+  <div class="logo">
+    驴友驿站 <small>Travelers' Inn</small>
+  </div>
+  <div class="search-box">
+    <input type="text" id="siteSearch" placeholder="搜索游记、攻略、目的地...">
+    <button type="button" onclick="searchSite()">搜索</button>
+  </div>
+  <div class="search-result" id="searchResult"></div>
+</div>
+
+<!-- 导航 -->
+<div class="navbar">
+  <a href="#">首页</a>
+  <a href="#">自驾旅行</a>
+  <a href="#">徒步穿越</a>
+  <a href="#">人文古迹</a>
+  <a href="#">自然风光</a>
+  <a href="#">摄影天地</a>
+  <a href="#">装备交流</a>
+  <a href="#">结伴同行</a>
+  <a href="#">论坛事务</a>
+</div>
+
+<!-- 面包屑 -->
+<div class="breadcrumb">
+  <a href="#">驴友驿站</a> &raquo; <a href="#">自驾旅行</a> &raquo; <a href="#">人文古迹</a> &raquo; 洛阳洛河沿岸古代城址遗址两日记录
+</div>
+
+<!-- 版块信息 -->
+<div class="board-header">
+  <div>
+    <div class="board-name">人文古迹</div>
+    <div class="board-desc">历史遗址 / 古建筑 / 博物馆 / 文化之旅</div>
+  </div>
+  <div class="page-info">
+    帖数: 4,621　主题: 538　今日: 24
+  </div>
+</div>
+
+<!-- 主体 -->
+<div class="main">
+
+  <!-- 左侧 -->
+  <div class="content">
+
+    <!-- 帖子标题 -->
+    <div class="post-header">
+      <h1>洛阳洛河沿岸古代城址遗址两日记录</h1>
+      <div class="post-meta">
+        发表在 <a href="#">人文古迹</a>　|
+        楼主 <a href="#">背包客阿星</a>　|
+        2026-04-12 09:30　|
+        回复 7　|　阅读 892
+      </div>
+    </div>
+
+    <!-- 楼主帖 -->
+    <div class="post-main" id="post1">
+      <div class="post-head">
+        <span><span class="floor">#1</span> 楼主</span>
+        <span>发表于 2026-04-12 09:30</span>
+      </div>
+      <div class="post-body">
+        <div class="user-info">
+          <div class="avatar">星</div>
+          <div class="uname">背包客阿星</div>
+          <div class="utitle">金牌驴友</div>
+          <div class="uinfo">
+            帖 1,247<br>
+            积分 5,820
+          </div>
+        </div>
+        <div class="post-content">
+          <p>上周末报了个两日一夜的深度游团，去了<strong>洛阳洛河沿线</strong>一处古代城址遗存。之前一直在网上刷到相关介绍，这次终于亲自走了一趟，简单跟大家分享一下体验。</p>
+
+          <p>先说总体感受：比想象中有意思。原本以为这种历史遗址类景点会比较枯燥，可能就是看看土台、夯土墙和几块说明牌，但实际走下来内容还挺丰富。尤其是把地形、古城、防御体系和周边交通联系起来看之后，会明显感觉到这里不是一个孤立的遗址，而是古代区域格局里很关键的一环。</p>
+
+          <p>第一天上午先去了附近的展示馆。馆不算特别大，但布置得比较清楚。有一幅地形沙盘给我印象很深：河道从峡谷中穿过，两侧是起伏的丘陵和塬地，几条古道在这里交汇。站在沙盘前能看出来，为什么古人会在这一带筑城设防——这里既能控制河谷通道，又能照应南北方向的山塬地带，放在当年的环境里，确实是个进可攻、退可守的位置。</p>
+
+          <p>下午跟着导游进遗址区转了一圈，主要看了古城址的夯土遗存和几处疑似手工业活动区。现在地表能看到的东西其实不算“壮观”，但细看还是很有内容的。有些夯土断面还保留着层层拍筑的痕迹，边缘已经被岁月磨得很圆润。导游说，真正重要的部分不一定都露在地表，很多信息都藏在土层关系和遗物分布里。</p>
+
+          <p>遗址周边还能看到不少陶片、瓦片一类的残碎物，颜色和质地各不相同。导游一直提醒大家不要捡拾，只能原地观察。同行里有位大哥是摄影爱好者，专门对着夯土台地和远处的山线拍了很久，说这种地方最适合傍晚来，斜光一打，土层和地势的起伏特别明显。</p>
+
+          <p>晚上住在附近村子里的民宿，条件比我预想中好，房间干净，热水也足。晚饭是当地家常菜，味道比较朴实，尤其是面食和炖菜很有豫西风味。晚上大家在院子里喝茶聊天，民宿老板讲了不少当地传说，有些听起来像民间故事，有些又能和遗址里的历史线索对上，挺有意思。</p>
+
+          <p>第二天一早去了遗址核心区。早上的光线特别好，山谷里还有一点薄雾，远处的塬坡和村庄若隐若现，那种苍凉感一下就出来了。遗址范围比我想象中大，慢慢走完大概要两个多小时。这里不像一些修得很“景区化”的地方，更多还是保留了原本的土台、坡地、沟壑和田野状态，反而更容易让人代入。</p>
+
+          <p>走在里面的时候会不自觉放轻脚步。脚下看似只是普通黄土路，但想到这里可能曾经有城墙、道路、居住区、作坊，甚至发生过很多普通人完全无从得知的生活和变故，就会觉得这种地方很特别。它不是那种一眼惊艳的景点，而是越听讲解、越看地形，越能慢慢品出味道的地方。</p>
+
+          <p>中午在镇上找了家小馆子，喝了一碗羊肉汤，汤很浓，配着饼吃特别舒服。下午又顺路去了附近一个老村子转了转，看看民居、老树和街巷，之后就返程了。</p>
+
+          <p>整体来说，这趟体验比预期好。它不是那种拍照打卡型景点，更适合对历史、古城遗址、地理形势感兴趣的人。导游讲得也比较专业，不是单纯背稿子，会把地形、交通、战争和日常生活放在一起讲，这点很加分。</p>
+
+          <p>费用方面：团费人均 398，包含一晚住宿、第一天晚餐和第二天午餐、全程导游和交通，不含第一天午餐和个人消费。我个人觉得性价比还可以，尤其适合想找一个不太商业化、又有点历史厚度的周末短途行程。</p>
+        </div>
+      </div>
+      <div class="post-foot">
+        <span>
+          <a href="#">引用</a>
+          <a href="#">回复</a>
+          <a href="#">报告</a>
+        </span>
+        <span><a href="#">顶部</a></span>
+      </div>
+    </div>
+
+    <!-- 回复 1 -->
+    <div class="reply" id="reply1">
+      <div class="reply-head">
+        <span><span class="floor">#2</span></span>
+        <span>发表于 2026-04-12 11:15</span>
+      </div>
+      <div class="reply-body">
+        <div class="user-info">
+          <div class="avatar">旅</div>
+          <div class="uname">旅行的蜗牛</div>
+        </div>
+        <div class="reply-content">
+          <p>沙发！这个地方我也去过，不过是前年自己开车去的。楼主说的那个夯土断面确实有感觉，我那时去正好是秋天，夕阳照在土台子上特别有味道。</p>
+          <p>想问下楼主的导游是景区官方的还是外面旅行社的？我之前去是自己逛的，感觉很多细节没了解到，看了楼主的帖子想再去一次请个导游。</p>
+        </div>
+      </div>
+      <div class="reply-foot">
+        <span><a href="#">引用</a> <a href="#">回复</a></span>
+        <span>点赞 9</span>
+      </div>
+    </div>
+
+    <!-- 回复 2 -->
+    <div class="reply" id="reply2">
+      <div class="reply-head">
+        <span><span class="floor">#3</span></span>
+        <span>发表于 2026-04-13 08:40</span>
+      </div>
+      <div class="reply-body">
+        <div class="user-info">
+          <div class="avatar">山</div>
+          <div class="uname">山野村夫</div>
+        </div>
+        <div class="reply-content">
+          <div class="quote">
+            引用 旅行的蜗牛 发表于 2026-04-12 11:15<br>
+            想问下楼主的导游是景区官方的还是外面旅行社的？
+          </div>
+          <p>我上月也去了，请的景区官方讲解员，讲得很好。建议上午早点去，人少的时候体验特别好。另外那个民俗村其实没啥意思，时间紧的话可以不去，多在遗址区待会儿。</p>
+          <p>还有就是——一定要穿舒服的鞋！遗址区地面不平，走起来挺费脚的。</p>
+        </div>
+      </div>
+      <div class="reply-foot">
+        <span><a href="#">引用</a> <a href="#">回复</a></span>
+        <span>点赞 15</span>
+      </div>
+    </div>
+
+    <!-- 回复 3 -->
+    <div class="reply" id="reply3">
+      <div class="reply-head">
+        <span><span class="floor">#4</span></span>
+        <span>发表于 2026-04-14 19:22</span>
+      </div>
+      <div class="reply-body">
+        <div class="user-info">
+          <div class="avatar">吃</div>
+          <div class="uname">到处吃的兔子</div>
+        </div>
+        <div class="reply-content">
+          <p>楼主说的农家菜具体有什么呀？我就关心吃的哈哈。</p>
+        </div>
+      </div>
+      <div class="reply-foot">
+        <span><a href="#">引用</a> <a href="#">回复</a></span>
+        <span>点赞 3</span>
+      </div>
+    </div>
+
+    <!-- 回复 4 -->
+    <div class="reply" id="reply4">
+      <div class="reply-head">
+        <span><span class="floor">#5</span></span>
+        <span>发表于 2026-04-15 21:05</span>
+      </div>
+      <div class="reply-body">
+        <div class="user-info">
+          <div class="avatar">星</div>
+          <div class="uname">背包客阿星</div>
+        </div>
+        <div class="reply-content">
+          <div class="quote">
+            引用 到处吃的兔子：楼主说的农家菜具体有什么呀？
+          </div>
+          <p>回兔子：晚饭是农家自己做的，有一道卤肉特别香，肥而不腻。还有当地特色的酸汤面，面条是手工擀的，汤底带一股独特的发酵酸味，很开胃。凉拌的山野菜也好吃，清爽解腻。早餐是小米粥配馒头咸菜，简单但舒服。</p>
+        </div>
+      </div>
+      <div class="reply-foot">
+        <span><a href="#">引用</a> <a href="#">回复</a></span>
+        <span>点赞 11</span>
+      </div>
+    </div>
+
+    <!-- 回复 5 -->
+    <div class="reply" id="reply5">
+      <div class="reply-head">
+        <span><span class="floor">#6</span></span>
+        <span>发表于 2026-04-18 10:30</span>
+      </div>
+      <div class="reply-body">
+        <div class="user-info">
+          <div class="avatar">行</div>
+          <div class="uname">行者无疆</div>
+        </div>
+        <div class="reply-content">
+          <p>这个地方我去过三次了，每次带不同的朋友去。说说我的建议：</p>
+          <p>最佳季节是春秋两季。夏天太晒，遗址区基本没有遮阴的地方；冬天风大，站在高处吹得头疼。春秋天温度合适，光线也好，拍照容易出片。</p>
+          <p>另外推荐大家去之前稍微了解一下那段历史背景，带着故事去看遗址，感受完全不一样。我就是第一次去之前啥也不知道，看了个热闹；第二次做了功课再去，站在那片土地上真的会有一种穿越时空的感觉。</p>
+        </div>
+      </div>
+      <div class="reply-foot">
+        <span><a href="#">引用</a> <a href="#">回复</a></span>
+        <span>点赞 18</span>
+      </div>
+    </div>
+
+    <!-- 回复 6 -->
+    <div class="reply" id="reply6">
+      <div class="reply-head">
+        <span><span class="floor">#7</span></span>
+        <span>发表于 2026-05-27 22:14</span>
+      </div>
+      <div class="reply-body">
+        <div class="user-info">
+          <div class="avatar">本</div>
+          <div class="uname">本初子午</div>
+        </div>
+        <div class="reply-content">
+          <p>楼主好呀，我今天刚到这里玩，请问你知道这里出过什么名人吗？</p>
+        </div>
+      </div>
+      <div class="reply-foot">
+        <span><a href="#">引用</a> <a href="#">回复</a></span>
+        <span>点赞 0</span>
+      </div>
+    </div>
+
+    <!-- 回复 7 -->
+    <div class="reply" id="reply7">
+      <div class="reply-head">
+        <span><span class="floor">#8</span></span>
+        <span>发表于 2026-06-02 09:15</span>
+      </div>
+      <div class="reply-body">
+        <div class="user-info">
+          <div class="avatar">苏</div>
+          <div class="uname">苏苏</div>
+        </div>
+        <div class="reply-content">
+          <p>请问楼主或当地的朋友们，最近这一带有没有出现过什么异常情况？前些天有个女孩失踪了，我查到线索指向她曾来过这个区域，似乎在寻找某样东西。如有人注意到相关情况，可通过微聊联系我（账号：su0404），感谢。</p>
+        </div>
+      </div>
+      <div class="reply-foot">
+        <span><a href="#">引用</a> <a href="#">回复</a></span>
+        <span>点赞 0</span>
+      </div>
+    </div>
+
+    <!-- 分页 -->
+    <div class="pagination">
+      <a href="#" class="current">1</a>
+    </div>
+
+  </div>
+
+  <!-- 右侧边栏 -->
+  <div class="sidebar">
+
+    <!-- 版块信息 -->
+    <div class="panel">
+      <h3>版块统计</h3>
+      <div class="panel-body">
+        <div class="stats">
+          主题: <span>538</span><br>
+          帖子: <span>4,621</span><br>
+          今日发帖: <span>24</span><br>
+          在线人数: <span>42</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 热门帖子 -->
+    <div class="panel">
+      <h3>热门帖子</h3>
+      <div class="panel-body">
+        <a href="#"><span class="hot-tag">热</span> 国庆自驾豫西小环线攻略分享</a>
+        <a href="#"><span class="hot-tag">热</span> 某古村落的保护现状令人担忧</a>
+        <a href="#">洛阳洛河沿岸古代城址遗址两日记录</a>
+        <a href="#">太行山徒步穿越实用装备清单</a>
+        <a href="#">探访黄河沿岸的千年古渡口</a>
+        <a href="#">一个人背包走了十五天</a>
+        <a href="#">谈谈各地面食的流派和特色</a>
+      </div>
+    </div>
+
+    <!-- 活跃用户 -->
+    <div class="panel">
+      <h3>本周活跃</h3>
+      <div class="panel-body">
+        <div class="stats">
+          1. 背包客阿星 (47帖)<br>
+          2. 城南旧事 (35帖)<br>
+          3. 拂晓晨曦 (29帖)<br>
+          4. 单车环游 (22帖)<br>
+          5. 月下独酌 (16帖)
+        </div>
+      </div>
+    </div>
+
+    <!-- 广告 -->
+    <div class="panel">
+      <h3 style="background:#c00;">赞助商</h3>
+      <div class="panel-body" style="text-align:center;color:#aaa;font-size:11px;line-height:1.6;">
+        驴友驿站 · 旅行者的精神家园<br>
+        本站由 途游网络 提供支持<br>
+        <span style="color:#ddd;">广告投放请联系 admin@lvyouinn.com</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- 底部广告 -->
+<div class="bottom-ad">
+  <span style="color:#c00;">[广告]</span> 洛阳洛河沿岸古城遗址深度游　|　两日一夜　368元起　|　每周六发团
+</div>
+
+<!-- 页脚 -->
+<div class="footer">
+  <p>
+    <a href="#">关于我们</a> | <a href="#">联系我们</a> | <a href="#">版权声明</a> | <a href="#">隐私条款</a>
+  </p>
+  <p style="margin-top:6px;">
+    Travelers' Inn &copy; 2026 驴友驿站  |  Powered by Emith
+  </p>
+</div>
+
+<script>
+function searchSite() {
+  var input = document.getElementById('siteSearch');
+  var result = document.getElementById('searchResult');
+  var query = input.value.trim();
+  if (query === '华山附近有什么值得逛的') {
+    result.innerHTML =
+      '<div class="sr-head">站内搜索：找到 1 条相关主题</div>' +
+      '<a class="sr-item" href="huashan-consult.html">' +
+      '华山附近有什么值得逛的？' +
+      '<small>古月爱古籍 · 2026-05-10 18:42 · 徒步穿越 / 旅行咨询</small>' +
+      '</a>';
+  } else if (query === '洛阳洛河沿岸古代城址遗址两日记录') {
+    result.innerHTML =
+      '<div class="sr-head">站内搜索：找到 1 条相关主题</div>' +
+      '<a class="sr-item" href="forum-warring-states.html">' +
+      '洛阳洛河沿岸古代城址遗址两日记录' +
+      '<small>背包客阿星 · 2026-04-12 09:30 · 自驾旅行 / 人文古迹</small>' +
+      '</a>';
+  } else {
+    result.innerHTML =
+      '<div class="sr-head">站内搜索</div>' +
+      '<div class="sr-empty">没有找到相关主题，请尝试更完整的关键词。</div>';
+  }
+  result.classList.add('show');
+}
+document.getElementById('siteSearch').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') searchSite();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新的愚者</title>
+<style>
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #000;
+}
+body {
+  color: #d60000;
+  font: 22px/1.8 "STKaiti", "KaiTi", "Kaiti SC", "Songti SC", "SimSun", serif;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 0, 0, .045) 1px, transparent 1px),
+    radial-gradient(circle at 50% 16%, rgba(160, 0, 0, .18), transparent 36%),
+    radial-gradient(circle at 50% 72%, rgba(90, 0, 0, .18), transparent 42%);
+  background-size: 100% 5px, auto, auto;
+}
+a {
+  color: #ff2a2a;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 42, 42, .65);
+}
+a:hover { color: #fff1f1; border-bottom-color: #fff1f1; }
+.page {
+  position: relative;
+  width: min(900px, calc(100% - 28px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 28px 0 72px;
+}
+.return-link {
+  position: fixed;
+  left: 18px;
+  top: 18px;
+  z-index: 2;
+  color: rgba(200, 0, 0, .58);
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+.portrait {
+  width: min(390px, 82vw);
+  margin: 8px auto 52px;
+  background: #050000;
+  box-shadow: 0 0 52px rgba(190, 0, 0, .28);
+}
+.portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+body.failed .portrait {
+  box-shadow: 0 0 70px rgba(255, 0, 0, .42);
+}
+.text {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+h1 {
+  margin: 0 0 30px;
+  color: #f00000;
+  font-family: "Songti SC", "STSong", "SimSun", serif;
+  font-size: clamp(38px, 8vw, 78px);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: 8px;
+  text-shadow: 0 0 14px rgba(230, 0, 0, .58), 2px 0 0 rgba(80, 0, 0, .9);
+}
+p {
+  margin: 0 0 18px;
+  color: #cf0000;
+  text-shadow: 0 0 10px rgba(190, 0, 0, .28);
+}
+.glitch {
+  position: relative;
+  margin: 44px auto 48px;
+  color: #ff1a1a;
+  font-size: clamp(25px, 4.5vw, 42px);
+  line-height: 1.35;
+  letter-spacing: 2px;
+  text-shadow:
+    2px 0 0 rgba(0, 255, 255, .28),
+    -2px 0 0 rgba(255, 0, 80, .42),
+    0 0 18px rgba(255, 0, 0, .46);
+  animation: fault 1.7s steps(2, end) infinite;
+}
+.loop {
+  margin-top: 32px;
+  color: #e30000;
+  font-size: clamp(24px, 4vw, 40px);
+  line-height: 1.55;
+  letter-spacing: 3px;
+}
+.loop span {
+  display: block;
+  opacity: .92;
+}
+.loop span:nth-child(2) { opacity: .8; transform: translateX(-2px); }
+.loop span:nth-child(3) { opacity: .72; transform: translateX(3px); }
+.loop span:nth-child(4) { opacity: .62; transform: translateX(-1px); }
+.loop span:nth-child(5) { opacity: .5; transform: translateX(2px); }
+.loop span:nth-child(6) { opacity: .38; }
+.qingshi {
+  display: none;
+  margin-top: 44px;
+  padding-bottom: 18vh;
+  text-align: center;
+}
+.qingshi a {
+  color: #ff1d1d;
+  font-size: clamp(38px, 8vw, 74px);
+  letter-spacing: 10px;
+  text-shadow: 0 0 18px rgba(255, 0, 0, .5), 3px 0 0 rgba(95, 0, 0, .95);
+}
+body.failed .qingshi {
+  display: block;
+}
+@keyframes fault {
+  0%, 100% { transform: translate(0, 0); filter: none; }
+  18% { transform: translate(1px, -1px); filter: contrast(1.2); }
+  19% { transform: translate(-3px, 1px); }
+  20% { transform: translate(0, 0); }
+  62% { transform: translate(2px, 0); }
+  64% { transform: translate(-1px, 2px); }
+  66% { transform: translate(0, 0); }
+}
+@media (max-width: 680px) {
+  body { font-size: 19px; }
+  .page { width: min(100% - 22px, 900px); padding-top: 20px; }
+  .return-link { position: static; display: inline-block; margin-bottom: 18px; }
+  .portrait { width: min(320px, 86vw); margin-bottom: 42px; }
+  h1 { letter-spacing: 4px; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <a class="return-link" href="profile-sjw-74.html">返回</a>
+
+  <figure class="portrait">
+    <img id="foolPortrait" src="yaunyichu_b.png?v=20260614-2327" alt="袁以初">
+  </figure>
+
+  <section class="text">
+    <h1>新的愚者</h1>
+    <p>此次愚者，已获诸牌认可。</p>
+    <p>二十一者已定。</p>
+    <p>接下来，是愚者的仪式。</p>
+
+    <p class="glitch">需献祭追寻真相者之自由，方能成功。</p>
+
+    <div class="loop" aria-label="献祭完成，实现新生。">
+      <span>献祭完成，实现新生。</span>
+      <span>献祭完成，实现新生。</span>
+      <span>献祭完成，实现新生。</span>
+      <span>献祭完成，实现新生。</span>
+      <span>献祭完成，实现新生。</span>
+      <span>献祭完成，实现新生。</span>
+    </div>
+    <div id="qingshiEntry" class="qingshi"><a href="qingshi.html">请式。</a></div>
+  </section>
+</main>
+
+<script>
+(function() {
+  var failedImage = 'yaunyichu_c.png?v=20260615-0146';
+  var portrait = document.getElementById('foolPortrait');
+  var imageReady = false;
+  var failedImageReady = false;
+  var scrollReady = false;
+  var promptShown = false;
+  var pageReadyAt = Date.now() + 12000;
+
+  function markImageReady(img) {
+    return img && img.complete && img.naturalWidth > 0;
+  }
+
+  function preload(src, done) {
+    var img = new Image();
+    img.onload = function() { done(true); };
+    img.onerror = function() { done(false); };
+    img.src = src;
+  }
+
+  function maybeOpenPrompt() {
+    if (promptShown || !imageReady || !failedImageReady || !scrollReady) return;
+    if (Date.now() < pageReadyAt) {
+      window.setTimeout(maybeOpenPrompt, pageReadyAt - Date.now());
+      return;
+    }
+    promptShown = true;
+    forceTop();
+    window.requestAnimationFrame(function() {
+      forceTop();
+      window.setTimeout(function() {
+        forceTop();
+        openPrompt();
+      }, 260);
+    });
+  }
+
+  function forceTop() {
+    window.scrollTo(0, 0);
+    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }
+
+  function openPrompt() {
+      if (window.confirm('跟我一起走吧？')) {
+        location.href = 'cache-c08e.html';
+      } else {
+        failRitual();
+      }
+  }
+
+  function failRitual() {
+    forceTop();
+    document.body.classList.add('failed');
+    portrait.src = failedImage;
+    document.querySelectorAll('.loop span').forEach(function(item) {
+      item.textContent = '献祭失败了';
+    });
+  }
+
+  if (markImageReady(portrait)) {
+    imageReady = true;
+  } else {
+    portrait.addEventListener('load', function() {
+      imageReady = true;
+      maybeOpenPrompt();
+    }, { once: true });
+    portrait.addEventListener('error', function() {
+      imageReady = true;
+      maybeOpenPrompt();
+    }, { once: true });
+  }
+
+  preload(failedImage, function() {
+    failedImageReady = true;
+    maybeOpenPrompt();
+  });
+
+  function updateScrollProgress() {
+    if (scrollReady) return;
+    var scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    var progress = Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop || 0) / scrollable;
+    if (progress < 0.72) return;
+    scrollReady = true;
+    maybeOpenPrompt();
+  }
+
+  window.addEventListener('scroll', updateScrollProgress, { passive: true });
+  window.addEventListener('resize', updateScrollProgress);
+  window.addEventListener('pageshow', function(event) {
+    if (document.body.classList.contains('failed')) return;
+    var navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    var isBackForward = event.persisted || (navEntry && navEntry.type === 'back_forward');
+    if (!isBackForward) return;
+    promptShown = false;
+    scrollReady = false;
+    pageReadyAt = Date.now() + 12000;
+    forceTop();
+  });
+  updateScrollProgress();
+})();
+</script>
+</body>
+</html>

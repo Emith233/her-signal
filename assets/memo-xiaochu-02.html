@@ -1,0 +1,142 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>备忘录</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { min-height: 100vh; }
+body {
+  background: #e8e4dc;
+  font-family: "Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 28px 12px;
+  color: #1a1a1a;
+}
+
+.notepad {
+  width: min(620px, 100%);
+  background: #fffdf7;
+  border: 1px solid #d0ccc4;
+  box-shadow: 2px 3px 12px rgba(0,0,0,0.10);
+  position: relative;
+}
+
+.notepad .topbar {
+  background: #f5f0e8;
+  border-bottom: 1px solid #d8d4cc;
+  padding: 8px 14px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.notepad .topbar .title {
+  font-size: 13px; font-weight: 600; color: #444; letter-spacing: 0.5px;
+}
+.notepad .topbar .time {
+  font-size: 11px; color: #999;
+}
+
+.notepad .toolbar {
+  background: #faf8f4;
+  border-bottom: 1px solid #e0dcd4;
+  padding: 6px 14px;
+  display: flex; gap: 16px; align-items: center;
+  font-size: 11px; color: #888;
+}
+.notepad .toolbar .icon {
+  display: inline-block; width: 14px; text-align: center; color: #aaa;
+}
+
+.notepad .body {
+  padding: 24px 30px 30px;
+  font-size: 16px;
+  line-height: 1.82;
+  color: #2a2a2a;
+  min-height: 380px;
+}
+.notepad .body .date-line {
+  font-size: 12px; color: #999; margin-bottom: 14px;
+  border-bottom: 1px dashed #e0dcd4; padding-bottom: 8px;
+}
+.notepad .body p {
+  margin-bottom: 0;
+  text-indent: 0;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+.notepad .body .empty-line {
+  height: 1em;
+}
+.notepad .body strong {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.notepad .statusbar {
+  background: #f5f0e8;
+  border-top: 1px solid #d8d4cc;
+  padding: 6px 14px;
+  font-size: 10px; color: #aaa;
+  display: flex; justify-content: space-between;
+}
+</style>
+</head>
+<body>
+
+<div class="notepad">
+
+  <div class="topbar">
+    <span class="title">&#x270E; 备忘录</span>
+    <span class="time">最后编辑：2026年6月18日 22:14</span>
+  </div>
+
+  <div class="toolbar">
+    <span><span class="icon">&#x270E;</span> 编辑</span>
+    <span><span class="icon">&#x2B06;</span> 分享</span>
+    <span><span class="icon">&#x1F4C2;</span> 整理</span>
+    <span style="margin-left:auto; color:#b0a898;">自建备忘录</span>
+  </div>
+
+  <div class="body">
+
+    <div class="date-line">2026年6月18日 22:14 &nbsp;|&nbsp; 来自 iPhone</div>
+
+    <p>又结束了一场仪式，正如偃所说的，越来越难了，这一次几乎要送去性命。</p>
+
+    <p>祂说，离开这里<strong>需要忍受</strong>，<strong>需要克制</strong>，这跟余姚的那位说的很像，但是又不太一样，在这里我好像必须要牺牲点什么。</p>
+
+    <p>告别时，我觉得祂在怜悯地看着我，好像在说，我的人生真的可悲。</p>
+
+    <div class="empty-line"></div>
+
+    <p>我又想起来，我离开家的那一天。</p>
+
+    <p>枯燥的晨读，枯燥的跑操，枯燥的英语课，枯燥的家庭争吵。</p>
+
+    <p>打开窗户，离开家不过一个床单的事。</p>
+
+    <p>偃给我打电话，他说他知道我的痛苦，我说他根本不懂，我一点也不痛苦。</p>
+
+    <p>偃是什么时候出现的？</p>
+
+    <p>我只记得那时候我一如既往地跟网友在动漫社区里吐槽着乏味的人生。</p>
+
+    <p>我说，我想要自由啊，我不想做提线人偶。</p>
+
+    <p>偃好像就是那时候出现的，他说他会拯救我。</p>
+
+    <div class="empty-line"></div>
+
+    <p>其实我并不需要任何人拯救，但是自由地在这世间奔走，确实是我想要的。</p>
+
+    <p>如果因此可以达成偃的目的，我的行动也是有意义的，这份自由也就没有愧疚。</p>
+
+  </div>
+
+  <div class="statusbar">
+    <span>字数：355</span>
+    <span>未同步到 iCloud</span>
+  </div>
+
+</div>
+
+</body>
+</html>

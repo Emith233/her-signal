@@ -1,0 +1,3511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>她的信号</title>
+<style>
+  /* ===== 全局重置 ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background:
+      radial-gradient(circle at 18% 16%, rgba(52, 90, 96, 0.16), transparent 32%),
+      radial-gradient(circle at 82% 76%, rgba(75, 91, 72, 0.12), transparent 30%),
+      #171b1e;
+    color: #d7ddd8;
+    font-family: 'Courier New', 'Noto Sans SC', monospace;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    user-select: none;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ===== 开场终端 ===== */
+  #terminal-intro {
+    position: fixed;
+    inset: 0;
+    background: #171b1e;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    transition: opacity 0.8s ease;
+    cursor: default;
+  }
+  #terminal-intro.fade-out { opacity: 0; pointer-events: none; }
+  .terminal-box {
+    max-width: 760px;
+    width: 100%;
+    background: #20262a;
+    border: 1px solid #334048;
+    padding: 36px 32px;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+  }
+  .intro-panel {
+    display: none;
+  }
+  .intro-panel.active {
+    display: block;
+  }
+  .intro-copy {
+    color: #dfe6df;
+    font-size: 14px;
+    line-height: 2;
+    letter-spacing: 0.2px;
+    text-align: justify;
+  }
+  .intro-copy p {
+    margin: 0 0 12px;
+  }
+  .intro-copy .time {
+    color: #9bd8bd;
+    font-family: 'Courier New', monospace;
+    text-align: left;
+  }
+  .intro-copy strong {
+    color: #fff;
+    font-weight: 700;
+  }
+  .intro-copy ol {
+    margin: 0;
+    padding-left: 1.7em;
+  }
+  .intro-copy li {
+    margin: 0 0 10px;
+    text-align: justify;
+  }
+  .intro-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .intro-actions button {
+    min-width: 126px;
+    border: 1px solid #40505a;
+    background: #263137;
+    color: #cfdad6;
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .intro-actions button:hover {
+    border-color: #5f8f7a;
+    background: #20342e;
+    color: #e4f3ec;
+  }
+
+  /* ===== 主界面 ===== */
+  #main-ui {
+    display: none;
+    height: 100vh;
+    height: 100dvh;
+    grid-template-rows: 48px minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  #main-ui.active {
+    display: grid;
+    opacity: 1;
+  }
+
+  /* ===== 顶部状态栏 ===== */
+  .status-bar {
+    background: rgba(29, 35, 39, 0.94);
+    border: 1px solid #34424a;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 12px;
+    color: #aeb9b5;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.2);
+  }
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #333;
+  }
+  .status-dot.green { background: #6abf6a; box-shadow: 0 0 6px rgba(106,191,106,0.4); }
+  .account-id {
+    font-size: 11px; color: #8a9a96; letter-spacing: 0.5px;
+    border-left: 1px solid #334048; padding-left: 12px; margin-left: 4px;
+  }
+
+  /* ===== 主体区域 ===== */
+  .main-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 430px);
+    gap: 16px;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* === 左侧: 监控地图 === */
+  .map-panel {
+    background:
+      linear-gradient(rgba(156, 190, 181, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(156, 190, 181, 0.025) 1px, transparent 1px),
+      #1d2428;
+    background-size: 34px 34px;
+    border: 1px solid #33424a;
+    border-radius: 8px;
+    padding: 22px;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+    box-shadow: inset 0 0 72px rgba(0,0,0,0.24), 0 14px 34px rgba(0,0,0,0.2);
+  }
+  .map-title {
+    font-size: 11px;
+    color: #8fa39d;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  #map-canvas {
+    width: 100%;
+    height: calc(100% - 36px);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(118, 152, 146, 0.22);
+    border-radius: 6px;
+    background: rgba(15, 22, 25, 0.56);
+  }
+
+  /* 监控节点 */
+  .node {
+    position: absolute;
+    z-index: 2;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #252b31;
+    border: 1px solid #3a4650;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #7f8a8b;
+    cursor: default;
+    transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    transform: translate(-50%, -50%);
+  }
+  .node .node-label {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: #758281;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    transition: color 0.5s ease;
+  }
+  .node.unlocked {
+    border-color: #4f8066;
+    color: #9bd8bd;
+    cursor: pointer;
+    background: #20352f;
+  }
+  .node.unlocked:hover {
+    border-color: #7ed3b2;
+    box-shadow: 0 0 20px rgba(126, 211, 178, 0.18);
+    background: #25483d;
+  }
+  .node.unlocked .node-label { color: #a0aaa5; }
+  .node.unlocked:hover .node-label { color: #8bc88b; }
+  .node.active {
+    border-color: #6abf6a;
+    box-shadow: 0 0 25px rgba(126, 211, 178, 0.26);
+    background: #28624f;
+  }
+  .node.active .node-label { color: #8bc88b; }
+
+  /* 地级市加粗边框 */
+  .node.prefecture {
+    border-width: 2px;
+  }
+  /* 关键节点点状边框 */
+  .node.node-06 {
+    border-style: dotted;
+  }
+  .node.node-06.unlocked {
+    border-style: dotted;
+  }
+  .connection-line {
+    position: absolute;
+    z-index: 1;
+    background: #314047;
+    transform-origin: 0 0;
+    height: 1px;
+    pointer-events: none;
+    transition: background 0.8s ease;
+  }
+  .connection-line.active-line {
+    background: #5f9377;
+  }
+
+  /* 当前定位脉冲 */
+  .pulse-ring {
+    position: absolute;
+    z-index: 3;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 1px solid #6abf6a;
+    transform: translate(-50%, -50%);
+    animation: pulse 2s ease-out infinite;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .pulse-ring.active { opacity: 0.5; }
+  .pulse-ring.gold { border-color: #ffcc00; }
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.5; }
+    100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+  }
+
+  /* 地名揭示动画 */
+  @keyframes nameReveal {
+    0% { color: #8bc88b; transform: translateX(-50%) scale(1); }
+    50% { color: #6ae06a; transform: translateX(-50%) scale(1.15); text-shadow: 0 0 20px rgba(106, 224, 106, 0.5); }
+    100% { color: #a0aaa5; transform: translateX(-50%) scale(1); }
+  }
+  .node-label.reveal-name {
+    animation: nameReveal 0.8s ease-out;
+  }
+
+  /* === 右侧面板 === */
+  .side-panel {
+    background: rgba(44, 46, 51, 0.96);
+    background: rgba(30, 37, 41, 0.97);
+    border: 1px solid #34424a;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.2);
+  }
+  .side-panel.ritual-attention {
+    animation: ritualAttention 1.8s ease-out both;
+  }
+  @keyframes ritualAttention {
+    0% {
+      border-color: #34424a;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.2);
+    }
+    30% {
+      border-color: #8f393e;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,64,64,0.2), 0 0 32px rgba(255,48,48,0.14);
+    }
+    100% {
+      border-color: #34424a;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.2);
+    }
+  }
+
+  /* 任务信息 */
+  .task-info {
+    padding: 20px 20px 18px;
+    border-bottom: 1px solid #34424a;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, rgba(43, 55, 60, 0.64), rgba(30, 37, 41, 0));
+  }
+  .task-title {
+    font-size: 11px;
+    color: #91a09c;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .task-name { font-size: 17px; color: #edf3ec; margin-bottom: 6px; }
+  .task-name.rebellion-task { color: #9bd8bd; text-shadow: 0 0 12px rgba(155, 216, 189, 0.24); }
+  .task-detail { font-size: 12px; color: #aeb9b5; line-height: 1.6; }
+
+  /* 统一消息流 */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-height: 0;
+  }
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-track { background: #1a2024; }
+  .chat-area::-webkit-scrollbar-thumb { background: #3d4b53; }
+
+  .chat-area .msg {
+    font-size: 13px;
+    line-height: 1.75;
+    padding: 2px 0;
+    overflow-wrap: anywhere;
+  }
+  .chat-area .msg.system { color: #8f9b98; font-style: italic; font-size: 12px; }
+  .chat-area .msg.hint { color: #7a8a7a; font-size: 11px; font-family: 'Courier New', monospace; white-space: pre-line; text-align: justify; }
+  .chat-area .msg.guide { color: #9aafa8; font-size: 11px; font-family: 'Courier New', monospace; white-space: pre-line; background: rgba(35, 50, 48, 0.5); border: 1px solid #3a5550; border-radius: 6px; padding: 10px 14px; margin: 4px 0; line-height: 1.8; }
+  .chat-area .msg.e { color: #b7d9e8; }
+  .chat-area .msg.e::before { content: "小E > "; color: #83b8cf; font-weight: bold; }
+  .chat-area .msg.e.ritual-red {
+    color: #ff4a4a;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 8px rgba(255, 40, 40, 0.28);
+  }
+  .chat-area .msg.e.ritual-red::before {
+    color: #ff2f2f;
+    text-shadow: 0 0 10px rgba(255, 47, 47, 0.36);
+  }
+  .chat-area .msg.e.ritual-gold { color: #d6b35a; }
+  .chat-area .msg.e.ritual-gold::before { color: #d6b35a; }
+  .chat-area .msg.e strong { font-weight: 700; }
+  .chat-area .msg.player { color: #e4eadf; }
+  .chat-area .msg.player::before { content: "> "; color: #9bd8bd; }
+
+  /* 底部操作栏 */
+  .side-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px 10px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    border-top: 1px solid #34424a;
+    background: #20282c;
+  }
+  .action-btn {
+    background: #263137;
+    border: 1px solid #40505a;
+    color: #c4cfca;
+    font-family: inherit;
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .action-btn:hover { background: #303d44; border-color: #5b706e; color: #eef5ef; }
+  .action-btn:active { background: #36464d; }
+  .action-btn.primary { color: #7ab89a; border-color: #2a4a3a; }
+  .action-btn.primary:hover { background: #284a3e; border-color: #679d86; color: #b6ead2; }
+  .action-btn.danger { color: #b86a5a; border-color: #3a2a2a; }
+  .action-btn.danger:hover { background: #493332; border-color: #805953; color: #e39b8f; }
+  .action-btn.ending-search-trace {
+    animation: endingSearchTrace 1.15s ease-in-out 3;
+    position: relative;
+    z-index: 1;
+  }
+  @keyframes endingSearchTrace {
+    0%, 100% {
+      border-color: #40505a;
+      color: #c4cfca;
+      box-shadow: none;
+      background: #263137;
+    }
+    42% {
+      border-color: #9b3940;
+      color: #f0c7c7;
+      box-shadow: 0 0 0 1px rgba(155, 57, 64, 0.26), 0 0 18px rgba(155, 57, 64, 0.34);
+      background: #33282b;
+    }
+    68% {
+      border-color: #6d827f;
+      color: #e4efea;
+      box-shadow: 0 0 12px rgba(126, 154, 146, 0.24);
+      background: #2c383d;
+    }
+  }
+
+  /* 底部输入栏 */
+  .side-input {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #171d21;
+    border: 1px solid #40505a;
+    padding: 12px 14px;
+    border-radius: 6px;
+    margin: 0 20px 20px;
+  }
+  .side-input:focus-within {
+    border-color: #3a4a3a;
+  }
+  .side-input .prompt {
+    color: #6abf6a;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .side-input input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #d0d0d0;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .side-input input::placeholder { color: #6f7c79; font-size: 13px; }
+  body.ritual-input-active {
+    cursor: default;
+  }
+  body.ritual-input-active #cmd-input {
+    pointer-events: auto;
+    opacity: 1;
+  }
+  body.ritual-input-active .side-input {
+    border-color: #7a3438;
+    box-shadow: 0 0 0 1px rgba(255, 64, 64, 0.12), 0 0 18px rgba(255, 48, 48, 0.08);
+  }
+  .side-input.choice-mode .prompt,
+  .side-input.choice-mode input { display: none; }
+  .ritual-choice-row {
+    width: 100%;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .ritual-choice-row button {
+    min-width: 0;
+    width: 100%;
+    border: 1px solid #5f4344;
+    background: #211b1d;
+    color: #ffb3b3;
+    padding: 9px 18px;
+    border-radius: 4px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .ritual-choice-row button:hover {
+    border-color: #9d5d61;
+    color: #fff0f0;
+    background: #2b2023;
+  }
+
+  /* ===== 扫描线 ===== */
+  .scanning-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(transparent 49.9%, rgba(126, 211, 178, 0.01) 50%, transparent 50.1%);
+    background-size: 100% 8px;
+    pointer-events: none;
+    z-index: 10;
+    animation: scanLine 6s linear infinite;
+  }
+  @keyframes scanLine {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+  }
+  @keyframes scanMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 4px; }
+  }
+
+  /* ===== 小E 错乱状态 ===== */
+  .chat-area.corrupted .msg.e { color: #b07a7a; }
+  .chat-area.corrupted .msg.e::before { content: "小E > "; color: #a06060; }
+  .chat-area.corrupted .msg.system { color: #7a6060; }
+  body.corrupted .side-input input { color: #c08080; }
+  body.corrupted .side-input .prompt { color: #a06060; }
+  body.corrupted .side-input input::placeholder { color: #7a5050; }
+  .corruption-warning {
+    display: none;
+    font-size: 10px;
+    color: #a06060;
+    letter-spacing: 2px;
+    text-align: center;
+    padding: 4px 0;
+    border-top: 1px solid #3a2a2a;
+    margin-top: 6px;
+    font-family: 'Courier New', monospace;
+  }
+  .corruption-warning.show { display: block; }
+  body.corrupted #cmd-input { border-color: #5a3030; }
+  body.corrupted.controls-locked #cmd-input { pointer-events: auto; opacity: 1; }
+  .chat-area .msg.e .corrupt-link { color: #7ab8d0; text-decoration: underline; cursor: pointer; }
+  .chat-area .msg.e .corrupt-link:hover { color: #a0d8f0; }
+
+  /* ===== 信号源弹窗 ===== */
+  .signal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 16, 18, 0.6);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+  }
+  .signal-overlay.active { display: flex; }
+  .signal-screen {
+    max-width: 1180px;
+    width: calc(100vw - 56px);
+    height: calc(100vh - 56px);
+    height: calc(100dvh - 56px);
+    max-height: 940px;
+    background: #20272c;
+    border: 1px solid #42505a;
+    border-radius: 8px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    box-shadow: 0 22px 70px rgba(0,0,0,0.46);
+    display: flex;
+    flex-direction: column;
+  }
+  .signal-screen.appearing {
+    animation: signalAppear 0.42s ease-out both;
+  }
+  .signal-header {
+    background: #263138;
+    padding: 10px 18px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    border-bottom: 1px solid #3f4d56;
+    font-size: 11px;
+    color: #aab7b3;
+    flex-shrink: 0;
+    gap: 16px;
+  }
+  .signal-header .signal-source {
+    justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .signal-header .sig-loc {
+    color: #83918e;
+    padding-left: 10px;
+    border-left: 1px solid #43525b;
+  }
+  .signal-header .signal-tools {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+  }
+  .signal-header .live {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: #cc3333;
+    border-radius: 50%;
+    margin-right: 6px;
+    opacity: 0.2;
+    transition: opacity 0.04s linear, box-shadow 0.04s linear, background 0.04s linear;
+  }
+  .signal-header .live.morse-on {
+    opacity: 1;
+    background: #ff3b3b;
+    box-shadow: 0 0 8px rgba(255, 59, 59, 0.72), 0 0 18px rgba(255, 59, 59, 0.28);
+  }
+  .signal-body {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    background: #20272c;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .signal-body .crt-scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.01) 3px, rgba(255,255,255,0.01) 6px);
+    animation: scanMove 3s linear infinite;
+  }
+  .signal-body .noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.01;
+    pointer-events: none;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+  }
+
+  .signal-viewport {
+    position: relative;
+    z-index: 3;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .signal-viewport::-webkit-scrollbar { width: 6px; }
+  .signal-viewport::-webkit-scrollbar-track { background: #171d21; }
+  .signal-viewport::-webkit-scrollbar-thumb { background: #465660; border-radius: 6px; }
+  .signal-viewport .fragment {
+    display: none;
+    padding: 18px 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .signal-viewport .fragment.active {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+  }
+  .signal-viewport .frag-header {
+    margin-bottom: 10px;
+    flex-shrink: 0;
+  }
+  .signal-viewport .frag-header .forum-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .signal-viewport .frag-header .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #666;
+    flex-shrink: 0;
+  }
+  .signal-viewport .frag-header .uname {
+    color: #6a9fc0;
+    font-size: 13px;
+  }
+  .signal-viewport .frag-header .utime {
+    color: #555;
+    font-size: 11px;
+  }
+  .signal-viewport .frag-header .forum-board {
+    font-size: 10px;
+    color: #666;
+    background: #1e1e24;
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 2px;
+  }
+  .signal-viewport .frag-body {
+    font-size: 14px;
+    line-height: 2;
+    color: #dfe8e1;
+    margin-bottom: 2px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .signal-viewport .frag-body iframe {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    border: 1px solid #465660;
+    border-radius: 6px;
+    background: transparent;
+    transform: translateZ(0);
+  }
+  .signal-viewport .frag-body iframe.dark-frame {
+    background: #20272c;
+    color-scheme: dark;
+  }
+  .signal-viewport .frag-body img {
+    width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    background: #171d21;
+    border-radius: 3px;
+  }
+  .signal-viewport .frag-footer {
+    font-size: 12px;
+    color: #83918e;
+    border-top: 1px solid #34424a;
+    padding-top: 10px;
+    display: flex;
+    gap: 16px;
+  }
+
+  /* 顶部翻页 */
+  .signal-page-nav {
+    display: flex;
+    align-items: center;
+    justify-self: center;
+    gap: 10px;
+    min-width: 118px;
+    justify-content: center;
+  }
+  .signal-page-nav .page-btn {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: #91a09c;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    width: 26px;
+    height: 22px;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .signal-page-nav .page-btn:hover {
+    color: #b7d9e8;
+    border-color: #4e6570;
+    background: #2f3b42;
+  }
+  .signal-page-nav .page-btn.hidden { visibility: hidden; pointer-events: none; }
+  .signal-page-nav .page-num {
+    color: #b7d9e8;
+    font-size: 12px;
+    min-width: 30px;
+    text-align: center;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .signal-close-btn {
+    background: none;
+    border: none;
+    color: #91a09c;
+    font-family: inherit;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 8px;
+    margin-left: 10px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .signal-close-btn:hover { color: #eef5ef; background: rgba(255,255,255,0.07); }
+  .signal-screen.yan-haunted {
+    animation: yanScreenJolt 1.2s cubic-bezier(.18,.84,.32,1) both;
+  }
+  .signal-screen.yan-haunted .frag-body iframe {
+    transform: none;
+  }
+  .yan-hand-zone {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    pointer-events: none;
+    overflow: visible;
+    filter: contrast(1.05) saturate(.92);
+    transform: translateZ(0);
+  }
+  .yan-hand-grip {
+    position: absolute;
+    left: var(--yan-hand-left, 0px);
+    top: var(--yan-hand-top, 140px);
+    width: min(330px, 34vw);
+    filter:
+      drop-shadow(20px 20px 24px rgba(0,0,0,.62))
+      drop-shadow(0 0 22px rgba(70, 0, 0, .38));
+    transform-origin: 38% 52%;
+    animation: yanHandGrip 3.05s cubic-bezier(.12,.78,.2,1) forwards;
+  }
+  .yan-hand-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 0 45%, rgba(78,0,0,.34), transparent 34%),
+      linear-gradient(90deg, rgba(0,0,0,.55), transparent 28%, transparent);
+    mix-blend-mode: multiply;
+    animation: yanHandFlash 3.05s ease-out forwards;
+  }
+  @keyframes yanHandGrip {
+    0% { opacity: 0; transform: translateX(-150px) rotate(-7deg) scale(.96); }
+    4% { opacity: 1; transform: translateX(12px) rotate(2deg) scale(1.05); }
+    7% { transform: translateX(-6px) rotate(-1deg) scale(1.02); }
+    11% { transform: translateX(8px) rotate(1deg) scale(1.04); }
+    62% { opacity: 1; transform: translateX(4px) rotate(.4deg) scale(1.03); }
+    76% { transform: translateX(13px) rotate(2deg) scale(1.06); }
+    100% { opacity: 0; transform: translateX(-190px) rotate(-10deg) scale(.94); }
+  }
+  @keyframes yanHandFlash {
+    0%, 100% { opacity: 0; }
+    4% { opacity: .96; }
+    12% { opacity: .34; }
+    50% { opacity: .22; }
+    72% { opacity: .08; }
+  }
+  @keyframes yanScreenJolt {
+    0%, 100% { transform: translate(0,0); }
+    3% { transform: translate(-12px, 4px); }
+    6% { transform: translate(9px, -3px); }
+    9% { transform: translate(-4px, 2px); }
+    14% { transform: translate(2px, 0); }
+  }
+
+  /* ===== 日志归档弹窗 ===== */
+  .log-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    background: rgba(12, 16, 18, 0.64);
+    backdrop-filter: blur(6px);
+  }
+  .log-overlay.active { display: flex; }
+  .log-screen {
+    width: min(1120px, calc(100vw - 56px));
+    height: min(820px, calc(100dvh - 56px));
+    overflow: hidden;
+    border: 1px solid #42505a;
+    border-radius: 8px;
+    background: #20272c;
+    box-shadow: 0 22px 70px rgba(0,0,0,0.46);
+    display: flex;
+    flex-direction: column;
+  }
+  .log-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 47px;
+    border-bottom: 1px solid #3f4d56;
+    background: #263138;
+    padding: 8px 12px 8px 18px;
+    color: #aab7b3;
+    font-size: 12px;
+  }
+  .log-title { letter-spacing: 2px; }
+  .log-tabs { display: flex; gap: 6px; padding: 10px 14px; border-bottom: 1px solid #34424a; background: #1e262b; }
+  .log-tab {
+    border: 1px solid #3e4d54;
+    border-radius: 3px;
+    background: transparent;
+    padding: 6px 12px;
+    color: #93a19e;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .log-tab.active { border-color: #5d8879; background: #294139; color: #c6e4d7; }
+  .log-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 280px minmax(0, 1fr); }
+  .log-list { overflow-y: auto; border-right: 1px solid #34424a; background: #1b2226; padding: 8px; }
+  .log-item {
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    padding: 11px 10px;
+    color: #b3bfbb;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .log-item:hover { background: #252f34; border-color: #35474e; }
+  .log-item.active { background: #293b39; border-color: #55796f; }
+  .log-item strong { display: block; color: #cedbd5; font-size: 12px; font-weight: normal; }
+  .log-item span { display: block; margin-top: 4px; color: #73817f; font-size: 11px; }
+  .log-item .log-source { color: #8aa99a; letter-spacing: 1px; }
+  .log-view { min-width: 0; min-height: 0; background: #20272c; }
+  .log-view iframe { display: block; width: 100%; height: 100%; border: 0; background: #20272c; }
+  .log-empty { height: 100%; display: flex; align-items: center; justify-content: center; color: #687875; font-size: 12px; letter-spacing: 1px; }
+  .integration-notice {
+    position: fixed;
+    left: 50%;
+    top: 76px;
+    z-index: 150;
+    width: min(430px, calc(100vw - 32px));
+    transform: translate(-50%, -14px);
+    border: 1px solid #507068;
+    border-radius: 6px;
+    background: rgba(32, 48, 49, 0.97);
+    padding: 13px 16px;
+    color: #cce1da;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .24s ease, transform .24s ease;
+    box-shadow: 0 12px 34px rgba(0,0,0,.3);
+  }
+  .integration-notice.show { opacity: 1; transform: translate(-50%, 0); }
+  /* 信号碎片卡片 — 使用 .signal-track .fragment */
+
+  /* ===== 全屏崩塌事件 ===== */
+  body.controls-locked {
+    cursor: wait;
+  }
+  body.controls-locked .action-btn:not([data-cmd="reset"]),
+  body.controls-locked #cmd-input,
+  body.controls-locked .node,
+  body.controls-locked .page-btn,
+  body.controls-locked .signal-close-btn {
+    pointer-events: none;
+    opacity: 0.55;
+  }
+  .signal-screen.collapsing {
+    animation: popupQuake 3.4s ease-in-out forwards;
+    transform-origin: 50% 70%;
+  }
+  .signal-screen.collapsing::before,
+  .signal-screen.collapsing::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .signal-screen.collapsing::before {
+    background:
+      linear-gradient(115deg, transparent 0 37%, rgba(221, 194, 145, 0.36) 37.2%, transparent 37.7%),
+      linear-gradient(68deg, transparent 0 48%, rgba(221, 194, 145, 0.26) 48.2%, transparent 48.7%),
+      linear-gradient(158deg, transparent 0 60%, rgba(153, 63, 46, 0.22) 60.2%, transparent 60.7%);
+    animation: popupCracks 3.4s ease-out forwards;
+  }
+  .signal-screen.collapsing::after {
+    background:
+      radial-gradient(ellipse at 50% 92%, rgba(221, 199, 161, 0.28), rgba(221, 199, 161, 0.08) 38%, transparent 72%),
+      repeating-linear-gradient(180deg, transparent 0, transparent 8px, rgba(255,255,255,0.035) 9px);
+    animation: popupDust 3.4s ease-out forwards;
+  }
+  .signal-screen.collapsing .signal-header {
+    animation: headerCollapse 3.4s cubic-bezier(.2,.78,.18,1) forwards;
+  }
+  .signal-screen.collapsing .signal-body {
+    animation: bodyCollapse 3.4s cubic-bezier(.2,.78,.18,1) forwards;
+  }
+  .signal-screen.collapsing .signal-viewport .fragment {
+    animation: fragmentCollapse 3.4s cubic-bezier(.2,.78,.18,1) forwards;
+  }
+  @keyframes popupQuake {
+    0%, 22% { transform: translate(0,0) rotate(0deg); opacity: 1; }
+    27% { transform: translate(-4px, 2px) rotate(-0.4deg); }
+    31% { transform: translate(5px, -2px) rotate(0.5deg); }
+    35% { transform: translate(-6px, 3px) rotate(-0.6deg); }
+    45% { transform: translate(2px, 0) rotate(0.2deg); opacity: 1; }
+    100% { transform: translateY(34vh) rotate(-7deg) scaleY(0.38) scaleX(1.08); opacity: 0; }
+  }
+  @keyframes popupCracks {
+    0%, 22% { opacity: 0; }
+    33% { opacity: 0.92; }
+    100% { opacity: 0.16; transform: translateY(18vh) skewX(-8deg); }
+  }
+  @keyframes popupDust {
+    0%, 38% { opacity: 0; transform: scale(0.7); }
+    62% { opacity: 0.92; transform: scale(1.05); }
+    100% { opacity: 0.18; transform: scale(1.35); }
+  }
+  @keyframes headerCollapse {
+    0%, 28% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(-10vw, 28vh) rotate(-18deg); opacity: 0.28; }
+  }
+  @keyframes bodyCollapse {
+    0%, 30% { transform: translateY(0) scaleY(1); opacity: 1; }
+    100% { transform: translate(8vw, 22vh) rotate(12deg) scaleY(0.52); opacity: 0.18; }
+  }
+  @keyframes fragmentCollapse {
+    0%, 26% { transform: translate(0,0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(-7vw, 18vh) rotate(-10deg); opacity: 0.12; }
+  }
+  @keyframes signalAppear {
+    0% {
+      opacity: 0;
+      transform: translateY(16px) scale(0.985);
+      filter: brightness(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: brightness(1);
+    }
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 768px) {
+    #main-ui {
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 8px;
+      padding: 8px;
+    }
+    .status-bar {
+      min-height: 40px;
+      padding: 6px 10px;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 11px;
+    }
+    .main-content {
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(280px, 42vh) minmax(240px, 1fr);
+      gap: 8px;
+    }
+    .map-panel { padding: 10px; }
+    .map-title { font-size: 10px; margin-bottom: 10px; }
+    .side-panel { border-left: 1px solid #34424a; border-top: 1px solid #34424a; }
+    .task-info { padding: 12px 14px; }
+    .task-name { font-size: 15px; }
+    .chat-area { padding: 10px 14px; }
+    .chat-area .msg { font-size: 12px; }
+    .side-actions {
+      padding: 8px 12px 6px;
+      gap: 6px;
+    }
+    .action-btn {
+      font-size: 12px;
+      padding: 10px 12px;
+      min-height: 40px;
+      flex: 1 1 auto;
+    }
+    .side-input { margin: 0 12px 10px; padding: 10px 12px; }
+    .side-input input { font-size: 14px; }
+    .signal-overlay { padding: 6px; }
+    .signal-screen {
+      width: calc(100vw - 12px);
+      height: calc(100dvh - 12px);
+      max-height: none;
+      border-radius: 6px;
+    }
+    .signal-header {
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      padding: 8px 12px;
+      font-size: 10px;
+    }
+    .signal-page-nav { order: 3; grid-column: 1 / -1; justify-self: center; }
+    .signal-viewport .fragment { padding: 10px; }
+    .signal-viewport .frag-body { font-size: 13px; }
+    .log-overlay { padding: 6px; }
+    .log-screen {
+      width: calc(100vw - 12px);
+      height: calc(100dvh - 12px);
+    }
+    .log-layout { grid-template-columns: 1fr; grid-template-rows: 160px minmax(0, 1fr); }
+    .log-list { border-right: 0; border-bottom: 1px solid #34424a; }
+    .log-item { padding: 9px 8px; }
+    .terminal-box { padding: 18px 14px; }
+    .terminal-line { font-size: 13px; }
+    .node { width: 34px; height: 34px; font-size: 11px; }
+    .node .node-label { font-size: 9px; bottom: -16px; }
+    .signal-page-nav .page-btn { width: 34px; height: 30px; font-size: 16px; }
+    .intro-footer .key { font-size: 11px; padding: 1px 8px; }
+    .corruption-warning { font-size: 9px; }
+
+    /* 日志归档 */
+    .log-tabs { gap: 4px; padding: 8px 10px; }
+    .log-tab { font-size: 11px; padding: 5px 10px; }
+
+    /* 仪式按钮适应触屏 */
+    .ritual-choice-row { gap: 8px; }
+    .ritual-choice-row button { padding: 12px 14px; font-size: 14px; }
+  }
+
+  @media (max-width: 480px) {
+    #main-ui {
+      gap: 6px;
+      padding: 6px;
+    }
+    .status-bar {
+      min-height: 36px;
+      padding: 4px 8px;
+      font-size: 10px;
+      gap: 4px;
+    }
+    .status-item .account-id { display: none; }
+    .main-content {
+      grid-template-rows: minmax(200px, 35vh) minmax(200px, 1fr);
+      gap: 6px;
+    }
+    .map-panel { padding: 8px; }
+    #map-canvas { border-radius: 4px; }
+    .node { width: 28px; height: 28px; font-size: 10px; border-width: 1px; }
+    .node .node-label { font-size: 8px; bottom: -14px; }
+    .node.prefecture { border-width: 2px; }
+    .map-title { font-size: 9px; margin-bottom: 8px; }
+    .task-info { padding: 10px 10px; }
+    .task-name { font-size: 14px; }
+    .task-detail { font-size: 11px; }
+    .chat-area { padding: 8px 10px; }
+    .chat-area .msg { font-size: 12px; line-height: 1.6; }
+    .chat-area .msg.guide { font-size: 10px; padding: 8px 10px; }
+    .side-actions {
+      padding: 6px 8px 4px;
+      gap: 4px;
+    }
+    .action-btn {
+      font-size: 11px;
+      padding: 8px 8px;
+      min-height: 36px;
+    }
+    .side-input { margin: 0 8px 6px; padding: 8px 10px; }
+    .side-input input { font-size: 14px; }
+    .side-input .prompt { font-size: 12px; }
+    .signal-screen { border-radius: 4px; }
+    .signal-header {
+      padding: 6px 10px;
+      font-size: 9px;
+      grid-template-columns: 1fr auto;
+    }
+    .signal-header .signal-source { gap: 4px; }
+    .signal-header .sig-loc { padding-left: 6px; }
+    .signal-viewport .fragment { padding: 6px; }
+    .signal-viewport .frag-body { font-size: 12px; line-height: 1.7; }
+    .signal-viewport .frag-header .forum-meta { gap: 6px; }
+    .signal-viewport .frag-header .avatar { width: 26px; height: 26px; font-size: 11px; }
+    .signal-viewport .frag-header .uname { font-size: 11px; }
+    .signal-viewport .frag-header .utime { font-size: 10px; }
+    .signal-page-nav { gap: 6px; }
+    .signal-page-nav .page-btn { width: 30px; height: 26px; font-size: 14px; }
+    .signal-page-nav .page-num { font-size: 11px; min-width: 24px; }
+    .signal-close-btn { font-size: 20px; padding: 2px 6px; }
+    .pulse-ring { width: 40px; height: 40px; }
+    .log-tabs { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
+    .log-tab { font-size: 10px; padding: 4px 8px; }
+    .log-layout { grid-template-rows: 120px minmax(0, 1fr); }
+    .log-item { padding: 7px 6px; }
+    .log-item strong { font-size: 11px; }
+    .log-item span { font-size: 10px; }
+    .terminal-box { padding: 14px 10px; }
+    .terminal-line { font-size: 12px; line-height: 1.8; }
+    .intro-footer { font-size: 11px; }
+    .intro-footer .key { font-size: 10px; padding: 1px 6px; }
+    .connection-line { display: none; }
+    .ritual-choice-row { grid-template-columns: 1fr; gap: 6px; }
+    .ritual-choice-row button { padding: 10px; font-size: 13px; }
+    .integration-notice { font-size: 11px; padding: 10px 12px; width: min(340px, calc(100vw - 20px)); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 开场终端 ===== -->
+<div id="terminal-intro">
+  <div class="terminal-box" id="intro-box">
+    <div class="intro-panel active" id="intro-main-panel">
+      <div class="intro-copy">
+        <p class="time">当前时间：2026年7月6日0时0分</p>
+        <p>调查者你好。</p>
+        <p>今年五月底，一名中学女生失踪了，她的名字叫<strong>小初</strong>。我通过记录定位节点的方式，向你展示了她的移动轨迹。每个节点的线索将帮助你明确当前节点的具体位置，它可能是地级市，也可能是区县级，取决于定位的精度。</p>
+        <p>总之，感谢你参与调查。</p>
+        <p>祝我们得到好的结果。</p>
+      </div>
+      <div class="intro-actions">
+        <button type="button" id="introHelpBtn">游戏说明</button>
+        <button type="button" id="introCloseBtn">关闭</button>
+      </div>
+    </div>
+    <div class="intro-panel" id="intro-help-panel">
+      <div class="intro-copy">
+        <p>本游戏前期基本属于分析线索→确认节点→推进剧情的线性流程，后期则相对开放。</p>
+        <p>需要注意的是：</p>
+        <ol>
+          <li>本游戏大多数需要分析的地名均为<strong>真实地名</strong>，需要线索之外的“题外知识”，请善用真实搜索引擎等辅助。</li>
+          <li>节点圆环的粗细有不同含义，较粗的圆环为地级市，较细的圆环为区县级，填写地名无需加区、县、市等后缀，所有节点都在我国境内。</li>
+          <li>本游戏每个节点有数个线索，但是能锚定地点的线索并不唯一，如果能够确定地点，对于其他无法理解的线索，可以先“放任不管”，后续或将发挥作用。</li>
+          <li>本游戏解谜难度相对较高，但每个谜题都至少有隐藏的提示，有时候需要注意字里行间的细节。</li>
+          <li>本游戏共有5个结局。</li>
+        </ol>
+      </div>
+      <div class="intro-actions">
+        <button type="button" id="introBackBtn">返回</button>
+        <button type="button" id="introCloseHelpBtn">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 主界面 ===== -->
+<div id="main-ui">
+  <!-- 顶部状态栏 -->
+  <div class="status-bar">
+    <div class="status-item">
+      <span class="status-dot green"></span>
+      <span>信号网络已接入</span>
+      <span class="account-id">账号ID：02#56741</span>
+    </div>
+    <div class="status-item">
+      <span id="status-time">00:00:00</span>
+    </div>
+    <div class="status-item">
+      <span>节点在线: <span id="online-count">0</span>/<span id="total-count">21</span></span>
+    </div>
+  </div>
+
+  <!-- 主体 -->
+  <div class="main-content">
+    <!-- 左侧: 监控地图 -->
+    <div class="map-panel">
+      <div class="map-title">// 信号源拓扑 //</div>
+      <div id="map-canvas"></div>
+    </div>
+
+    <!-- 右侧: 任务 + 小E -->
+    <div class="side-panel">
+      <div class="task-info">
+        <div class="task-title">当前委托</div>
+        <div class="task-name" id="taskName">失踪的小初</div>
+        <div class="task-detail">
+          <span style="color:#999;">状态：</span><span style="color:#c8a84e;">调查中</span>
+        </div>
+      </div>
+      <div class="chat-area" id="chat-area">
+        <div class="msg system">小E 连接已建立。</div>
+      </div>
+      <div class="side-actions" id="actionBar">
+        <button class="action-btn primary" data-cmd="probe">▶ 查看信号</button>
+        <button class="action-btn" data-cmd="verify">✓ 确认地点</button>
+        <button class="action-btn" data-cmd="nodes">⊞ 节点列表</button>
+        <button class="action-btn" data-cmd="help">? 帮助</button>
+        <button class="action-btn danger" data-cmd="clear">✕ 清除</button>
+        <button class="action-btn danger" data-cmd="reset">↺ 重置</button>
+        <button class="action-btn" data-cmd="wechat" id="wechatBtn" style="display:none;">☷ 微聊</button>
+        <button class="action-btn" data-cmd="logs" id="logsBtn" style="display:none;">▤ 日志</button>
+        <button class="action-btn" data-cmd="search" id="searchBtn" style="display:none;">⌕ 搜索</button>
+      </div>
+      <div class="side-input">
+        <span class="prompt">$</span>
+        <input type="text" id="cmd-input" placeholder="和小E说话..." autofocus>
+        <div class="corruption-warning" id="corruptWarn">!! 信号异常 · 需要私人密钥 !!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="scanning-overlay"></div>
+
+<!-- ===== 信号源弹窗 ===== -->
+<div class="signal-overlay" id="signalOverlay">
+  <div class="signal-screen">
+    <div class="signal-header">
+      <span class="signal-source">
+        <span><span class="live"></span>SRC-<span id="signalId">07</span></span>
+        <span class="sig-loc" id="signalLocation">节点 #07</span>
+      </span>
+      <span class="signal-page-nav">
+        <button class="page-btn" id="signalPrev">&#12296;</button>
+        <span class="page-num" id="signalPageNum">1/2</span>
+        <button class="page-btn" id="signalNext">&#12297;</button>
+      </span>
+      <span class="signal-tools">
+        <span id="signalTime">00:00:00</span>
+        <button class="signal-close-btn" id="signalClose">&times;</button>
+      </span>
+    </div>
+    <div class="signal-body" id="signalBody">
+      <div class="crt-scanlines"></div>
+      <div class="noise"></div>
+      <div class="signal-viewport" id="signalViewport"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 日志归档弹窗 ===== -->
+<div class="log-overlay" id="logOverlay">
+  <div class="log-screen">
+    <div class="log-header">
+      <span class="log-title">// 日志归档 //</span>
+      <button class="signal-close-btn" id="logClose">&times;</button>
+    </div>
+    <div class="log-tabs">
+      <button class="log-tab active" data-log-kind="su">苏的调查档案</button>
+      <button class="log-tab" data-log-kind="iphone">iPhone 备忘录</button>
+      <button class="log-tab" data-log-kind="Emith">log</button>
+    </div>
+    <div class="log-layout">
+      <div class="log-list" id="logList"></div>
+      <div class="log-view" id="logView"><div class="log-empty">暂无已查看记录</div></div>
+    </div>
+  </div>
+</div>
+<div class="integration-notice" id="integrationNotice"></div>
+
+<script>
+// ============================================================
+//  开场说明
+// ============================================================
+const intro = document.getElementById('terminal-intro');
+const introMainPanel = document.getElementById('intro-main-panel');
+const introHelpPanel = document.getElementById('intro-help-panel');
+
+function transitionToMain() {
+  intro.classList.add('fade-out');
+  setTimeout(() => {
+    intro.style.display = 'none';
+    const ui = document.getElementById('main-ui');
+    ui.classList.add('active');
+    initMain();
+  }, 600);
+}
+
+function showIntroPanel(panel) {
+  introMainPanel.classList.toggle('active', panel === 'main');
+  introHelpPanel.classList.toggle('active', panel === 'help');
+}
+
+document.getElementById('introHelpBtn').addEventListener('click', () => showIntroPanel('help'));
+document.getElementById('introBackBtn').addEventListener('click', () => showIntroPanel('main'));
+document.getElementById('introCloseBtn').addEventListener('click', transitionToMain);
+document.getElementById('introCloseHelpBtn').addEventListener('click', transitionToMain);
+intro.addEventListener('click', (e) => {
+  if (e.target === intro) e.stopPropagation();
+});
+
+// ============================================================
+//  主游戏逻辑
+// ============================================================
+
+// 节点数据
+const nodes = [
+  { id: 1,  name: '#01', x: 34, y: 60, unlocked: false, placeName: '绍兴', prefecture: true },
+  { id: 2,  name: '#02', x: 44, y: 76, unlocked: false, placeName: '枣阳' },
+  { id: 3,  name: '#03', x: 76, y: 38, unlocked: false, placeName: '砀山' },
+  { id: 4,  name: '#04', x: 86, y: 84, unlocked: false, placeName: '南京', prefecture: true },
+  { id: 5,  name: '#05', x: 38, y: 36, unlocked: false, placeName: '峡山' },
+  { id: 6,  name: '#06', x: 86, y: 26, unlocked: false, placeName: '北京' },
+  { id: 7,  name: '#07', x: 10, y: 86, unlocked: false, placeName: '宜阳' },
+  { id: 8,  name: '#08', x: 72, y: 46, unlocked: false, placeName: '茂名', prefecture: true },
+  { id: 9,  name: '#09', x: 46, y: 52, unlocked: false, placeName: '绩溪' },
+  { id: 10, name: '#10', x: 22, y: 44, unlocked: false, placeName: '韩城' },
+  { id: 11, name: '#11', x: 70, y: 78, unlocked: false, placeName: '临汾', prefecture: true },
+  { id: 12, name: '#12', x: 18, y: 78, unlocked: false, placeName: '肥东' },
+  { id: 13, name: '#13', x: 64, y: 30, unlocked: false, placeName: '文水' },
+  { id: 14, name: '#14', x: 60, y: 62, unlocked: false, placeName: '邛崃' },
+  { id: 15, name: '#15', x: 10, y: 32, unlocked: false, placeName: '昆明', prefecture: true },
+  { id: 16, name: '#16', x: 8,  y: 54, unlocked: false, placeName: '咸阳', prefecture: true },
+  { id: 17, name: '#17', x: 52, y: 20, unlocked: false, placeName: '邯郸', prefecture: true },
+  { id: 18, name: '#18', x: 24, y: 22, unlocked: false, placeName: '定西', prefecture: true },
+  { id: 19, name: '#19', x: 30, y: 88, unlocked: false, placeName: '余姚' },
+  { id: 20, name: '#20', x: 56, y: 82, unlocked: false, placeName: '南京', prefecture: true },
+  { id: 21, name: '#21', x: 84, y: 56, unlocked: false, placeName: '柴桑' },
+  { id: 0,  name: '#00', x: 80, y: 8,  unlocked: false, placeName: '新步' },
+];
+
+// 连线（监控网络拓扑）
+const connections = [
+  [7,12], [12,19], [19,2], [2,20], [20,11], [11,4],
+  [4,21], [21,8], [8,14], [14,9], [9,1], [1,10], [10,16],
+  [16,15], [15,18], [18,5], [5,17], [17,13], [13,3], [3,6],
+];
+
+let verifyPending = false;
+let controlsLocked = false;
+let xiaoERitualState = '';
+let xiaoERitualSpeaking = false;
+let xiaoERitualStarted = false;
+let xiaoERitualChatClass = '';
+
+// 私人密钥 — Emith老师后续提供
+const PRIVATE_KEY = '1qaz2wsx';
+
+const gameState = {
+  currentNode: 7,
+  unlockedNodes: [7],
+  knownPlaceNames: [],
+  node12imgViewCount: 0,
+  oracleResolved: false,
+  jiafuCollapseSettled: false,
+  node04Activated: false,
+  archiveLoggedIn: false,
+  docVersion: 1,
+  docSession: '',
+  xiaoECorrupted: false,
+  xiaoECorruptionTriggered: false,
+  logArchiveEnabled: false,
+  node16LogArchivePrompted: false,
+  searchEngineEnabled: false,
+  node3SearchPrompted: false,
+  node3AuthorLogViewed: false,
+  node6NotePlayed: false,
+  rebellionChosen: false,
+  viewedLogs: [],
+  verifyErrors: {},
+};
+
+let forceNextSignalAppear = false;
+
+// ===== 存档系统 =====
+const SAVE_KEY = 'citymystery_save';
+
+function saveGame() {
+  const data = {
+    currentNode: gameState.currentNode,
+    unlockedNodes: gameState.unlockedNodes,
+    knownPlaceNames: gameState.knownPlaceNames,
+    node12imgViewCount: gameState.node12imgViewCount,
+    oracleResolved: gameState.oracleResolved,
+    jiafuCollapseSettled: gameState.jiafuCollapseSettled,
+    node04Activated: gameState.node04Activated,
+    archiveLoggedIn: gameState.archiveLoggedIn,
+    docVersion: gameState.docVersion,
+    docSession: gameState.docSession,
+    xiaoECorrupted: gameState.xiaoECorrupted,
+    xiaoECorruptionTriggered: gameState.xiaoECorruptionTriggered,
+    logArchiveEnabled: gameState.logArchiveEnabled,
+    node16LogArchivePrompted: gameState.node16LogArchivePrompted,
+    searchEngineEnabled: gameState.searchEngineEnabled,
+    node3SearchPrompted: gameState.node3SearchPrompted,
+    node3AuthorLogViewed: gameState.node3AuthorLogViewed,
+    node6NotePlayed: gameState.node6NotePlayed,
+    rebellionChosen: gameState.rebellionChosen,
+    viewedLogs: gameState.viewedLogs,
+    verifyErrors: gameState.verifyErrors,
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e) { /* ignore */ }
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    gameState.currentNode = data.currentNode;
+    gameState.unlockedNodes = data.unlockedNodes;
+    gameState.knownPlaceNames = data.knownPlaceNames;
+    gameState.node12imgViewCount = data.node12imgViewCount || 0;
+    gameState.oracleResolved = !!data.oracleResolved;
+    gameState.jiafuCollapseSettled = !!data.jiafuCollapseSettled;
+    gameState.node04Activated = !!data.node04Activated;
+    gameState.archiveLoggedIn = !!data.archiveLoggedIn;
+    gameState.docVersion = data.docVersion || 1;
+    gameState.docSession = data.docSession || '';
+    gameState.xiaoECorrupted = !!data.xiaoECorrupted;
+    gameState.xiaoECorruptionTriggered = !!data.xiaoECorruptionTriggered;
+    gameState.logArchiveEnabled = !!data.logArchiveEnabled;
+    gameState.node16LogArchivePrompted = !!data.node16LogArchivePrompted;
+    gameState.searchEngineEnabled = !!data.searchEngineEnabled;
+    gameState.node3SearchPrompted = !!data.node3SearchPrompted;
+    gameState.node3AuthorLogViewed = !!data.node3AuthorLogViewed;
+    gameState.node6NotePlayed = !!data.node6NotePlayed;
+    gameState.rebellionChosen = !!data.rebellionChosen;
+    gameState.viewedLogs = Array.isArray(data.viewedLogs) ? data.viewedLogs : [];
+    gameState.verifyErrors = data.verifyErrors && typeof data.verifyErrors === 'object' ? data.verifyErrors : {};
+    if (gameState.oracleResolved && !gameState.jiafuCollapseSettled) {
+      gameState.jiafuCollapseSettled = true;
+    }
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+function initMain() {
+  const loaded = loadGame();
+  if (!gameState.docSession) {
+    gameState.docSession = String(Date.now()) + Math.random().toString(36).slice(2, 8);
+  }
+  applyTaskState();
+  if (gameState.oracleResolved || gameState.jiafuCollapseSettled) applyOracleCollapseState();
+  // 恢复小E错乱状态
+  if (gameState.xiaoECorrupted) {
+    document.body.classList.add('corrupted');
+    document.getElementById('chat-area').classList.add('corrupted');
+    document.getElementById('corruptWarn').classList.add('show');
+    cmdInput.placeholder = '信号查询中断';
+    cmdInput.disabled = false;
+    // controlsLocked保持true，但cmdInput可输入
+    controlsLocked = true;
+    document.body.classList.toggle('controls-locked', true);
+    document.querySelectorAll('.action-btn:not([data-cmd="reset"]), .page-btn, .signal-close-btn').forEach(btn => {
+      btn.disabled = true;
+    });
+  } else if (gameState.xiaoECorruptionTriggered) {
+    // 已恢复错乱 — 显示微聊按钮
+    const wechatBtn = document.getElementById('wechatBtn');
+    if (wechatBtn) wechatBtn.style.display = '';
+  }
+  if (gameState.logArchiveEnabled) {
+    const logsBtn = document.getElementById('logsBtn');
+    if (logsBtn) logsBtn.style.display = '';
+  }
+  if (gameState.searchEngineEnabled) {
+    const searchBtn = document.getElementById('searchBtn');
+    if (searchBtn) searchBtn.style.display = '';
+  }
+  consumeEndingSearchTrace();
+  renderMap();
+  if (loaded) {
+    renderChat('system', '存档已恢复，继续追踪。');
+  } else {
+    renderChat('system', '小E 已上线，随时待命。');
+    const startNode = nodes.find(n => n.id === 7);
+    renderChat('e', '信号网络已接入，目前只有这个节点有信号。');
+    renderChat('e', '这个节点曾捕捉到小初的信号，但来源地还没确认。');
+    renderChat('e', '先把信号来源地确定下来，才能顺着链路继续追踪。');
+    renderChat('e', '点击下方「查看信号」按钮查看信号源信息。');
+  }
+  saveGame();
+  renderHint();
+  updateOnlineCount();
+  startClock();
+}
+
+function applyTaskState() {
+  const taskName = document.getElementById('taskName');
+  if (!taskName) return;
+  if (gameState.rebellionChosen) {
+    taskName.textContent = '拯救苏苏、拯救小初、拯救大家';
+    taskName.classList.add('rebellion-task');
+  } else {
+    taskName.textContent = '失踪的小初';
+    taskName.classList.remove('rebellion-task');
+  }
+}
+
+function renderHint() {
+  renderChat('guide', '══ 操作指引 ══\n\n▶ 查看信号 —— 浏览当前节点信号源\n✓ 确认地点 —— 确认当前位置，解锁相邻节点\n⊞ 节点列表 —— 查看已解锁节点\n\n直接和我说话（进度自动保存）');
+  renderChat('e', '先看看当前节点的信号源吧。');
+  renderChat('hint', '※ 地名为区县级或以上，无需加区、县、市等后缀；地图上粗边框节点为地级市，其余按区县级标注；建议结合搜索引擎或 AI 辅助分析线索。使用底部按钮操作；一些信息可能当下用不上，但之后或许会派上用场。');
+}
+
+// 渲染地图
+function renderMap() {
+  const canvas = document.getElementById('map-canvas');
+  const rect = canvas.getBoundingClientRect();
+  const w = rect.width || 600;
+  const h = rect.height || 400;
+
+  // 清除
+  canvas.innerHTML = '';
+
+  // 绘制连线
+  connections.forEach(([a, b]) => {
+    const n1 = nodes.find(n => n.id === a);
+    const n2 = nodes.find(n => n.id === b);
+    if (!n1 || !n2) return;
+
+    const x1 = (n1.x / 100) * w;
+    const y1 = (n1.y / 100) * h;
+    const x2 = (n2.x / 100) * w;
+    const y2 = (n2.y / 100) * h;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    const line = document.createElement('div');
+    line.className = 'connection-line';
+    line.style.left = x1 + 'px';
+    line.style.top = y1 + 'px';
+    line.style.width = len + 'px';
+    line.style.transform = `rotate(${angle}deg)`;
+    if (gameState.unlockedNodes.includes(a) && gameState.unlockedNodes.includes(b)) {
+      line.style.background = '#1a4a1a';
+    }
+    canvas.appendChild(line);
+  });
+
+  // 绘制节点
+  nodes.forEach(node => {
+    if (node.id === 0) return;
+    const n = document.createElement('div');
+    n.className = 'node';
+    if (gameState.unlockedNodes.includes(node.id)) {
+      n.classList.add('unlocked');
+    }
+    if (node.id === gameState.currentNode) {
+      n.classList.add('active');
+    }
+    if (node.prefecture) n.classList.add('prefecture');
+    if (node.id === 6) n.classList.add('node-06');
+    n.style.left = (node.x / 100) * w + 'px';
+    n.style.top = (node.y / 100) * h + 'px';
+    n.textContent = gameState.unlockedNodes.includes(node.id) ? node.id : '?';
+    n.dataset.id = node.id;
+
+    const label = document.createElement('div');
+    label.className = 'node-label';
+    if (gameState.knownPlaceNames.includes(node.id)) {
+      label.textContent = node.placeName;
+    } else {
+      label.textContent = '???';
+    }
+    n.appendChild(label);
+
+    n.addEventListener('click', () => onNodeClick(node.id));
+    canvas.appendChild(n);
+  });
+
+  // 脉冲圈
+  let pulse = canvas.querySelector('.pulse-ring');
+  if (!pulse) {
+    pulse = document.createElement('div');
+    pulse.className = 'pulse-ring';
+    canvas.appendChild(pulse);
+  }
+  pulse.classList.remove('gold');
+  const cur = nodes.find(n => n.id === gameState.currentNode);
+  if (cur) {
+    pulse.style.left = (cur.x / 100) * w + 'px';
+    pulse.style.top = (cur.y / 100) * h + 'px';
+    pulse.classList.add('active');
+    if (gameState.currentNode === 0) pulse.classList.add('gold');
+  } else if (gameState.currentNode === 0) {
+    pulse.style.left = (80 / 100) * w + 'px';
+    pulse.style.top = (8 / 100) * h + 'px';
+    pulse.classList.add('active');
+    pulse.classList.add('gold');
+  }
+
+  // 确认6号节点的地名后，揭示隐藏的 0 节点
+  if (gameState.knownPlaceNames.includes(6)) {
+    const n0x = 80, n0y = 8;
+    // 从节点6到节点0的连线
+    const n6 = nodes.find(n => n.id === 6);
+    if (n6) {
+      const x1 = (n6.x / 100) * w, y1 = (n6.y / 100) * h;
+      const x2 = (n0x / 100) * w, y2 = (n0y / 100) * h;
+      const dx = x2 - x1, dy = y2 - y1;
+      const cline = document.createElement('div');
+      cline.className = 'connection-line active-line';
+      cline.style.left = x1 + 'px';
+      cline.style.top = y1 + 'px';
+      cline.style.width = Math.sqrt(dx*dx+dy*dy) + 'px';
+      cline.style.transform = `rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)`;
+      canvas.appendChild(cline);
+    }
+    // 节点0标记
+    const n0 = document.createElement('div');
+    n0.className = 'node unlocked active';
+    n0.style.cssText = `left:${(n0x/100)*w}px;top:${(n0y/100)*h}px;border-color:#ffcc00;color:#ffcc00;background:#3a3520;box-shadow:0 0 28px rgba(255,204,0,0.2);`;
+    n0.textContent = '0';
+    const l0 = document.createElement('div');
+    l0.className = 'node-label';
+    l0.textContent = '???';
+    l0.style.color = '#ccb060';
+    n0.appendChild(l0);
+    n0.addEventListener('click', () => {
+      if (controlsLocked) return;
+      gameState.currentNode = 0;
+      if (!gameState.unlockedNodes.includes(0)) gameState.unlockedNodes.push(0);
+      saveGame();
+      addLog('[系统] ………');
+      renderMap();
+    });
+    canvas.appendChild(n0);
+  }
+}
+
+function onNodeClick(id) {
+  if (controlsLocked) return;
+  const node = nodes.find(n => n.id === id);
+
+  // already at this node
+  if (id === gameState.currentNode) {
+    addLog('[小E] 已在这个节点，点击「查看信号」浏览信号源。');
+    return;
+  }
+
+  // unlocked: freely jump regardless of adjacency
+  if (gameState.unlockedNodes.includes(id)) {
+    gameState.currentNode = id;
+    saveGame();
+    if (id === 4 && !gameState.node04Activated) {
+      gameState.node04Activated = true;
+      // 自动解锁相邻节点
+      const adjacent04 = connections
+        .filter(([a, b]) => a === 4 || b === 4)
+        .map(([a, b]) => a === 4 ? b : a);
+      adjacent04.forEach(nid => {
+        if (!gameState.unlockedNodes.includes(nid)) gameState.unlockedNodes.push(nid);
+      });
+      // 揭示地名
+      if (!gameState.knownPlaceNames.includes(4)) gameState.knownPlaceNames.push(4);
+      addLog('[小E] 奇怪，节点 #04 的信号通路已经连通了——就是之前找出来的南京，同一片信号覆盖区。不过有几条新的信息缓存，还是查看一下吧。');
+      saveGame();
+      setTimeout(() => {
+        const label = document.querySelector('.node[data-id="4"] .node-label');
+        if (label) {
+          label.classList.remove('reveal-name');
+          void label.offsetHeight;
+          label.classList.add('reveal-name');
+        }
+      }, 100);
+    } else if (id === 8 && !gameState.xiaoECorruptionTriggered) {
+      gameState.xiaoECorruptionTriggered = true;
+      addLog('[系统] 已切换到节点 #08');
+      renderMap();
+      // 触发小E错乱
+      setTimeout(() => triggerCorruption(), 400);
+      return;
+    } else {
+      addLog(`[系统] 已切换到节点 #${node.id}`);
+    }
+    renderMap();
+    return;
+  }
+
+  // check adjacency for locked nodes
+  const adjacent = connections.some(([a, b]) =>
+    (a === id && b === gameState.currentNode) ||
+    (b === id && a === gameState.currentNode)
+  );
+
+  if (!adjacent) {
+    addLog('[小E] 这个节点距离太远，没有直接链路。');
+    return;
+  }
+
+  // adjacent but locked — need to verify current node location first
+  const current = nodes.find(n => n.id === gameState.currentNode);
+  if (!current.placeName) {
+    addLog('[小E] 相邻链路未接通，先用「确认地点」确认当前位置。');
+    renderChat('e', '先确认地点吧，我才能打通相邻链路。');
+  } else {
+    addLog('[小E] 相邻链路仍然不通，要不再确认一下地点名称？');
+    renderChat('e', '点「确认地点」再试试？');
+  }
+}
+
+// 聊天系统
+function renderChat(type, text, asHTML) {
+  const area = document.getElementById('chat-area');
+  const msg = document.createElement('div');
+  msg.className = `msg ${type}`;
+  if (asHTML) {
+    msg.innerHTML = text;
+  } else {
+    msg.textContent = text;
+  }
+  area.appendChild(msg);
+  area.scrollTop = area.scrollHeight;
+}
+
+function renderXiaoERitualChat(text, asHTML, className) {
+  const area = document.getElementById('chat-area');
+  const msg = document.createElement('div');
+  const extraClass = className || xiaoERitualChatClass;
+  msg.className = `msg e${extraClass ? ' ' + extraClass : ''}`;
+  if (asHTML) msg.innerHTML = text;
+  else msg.textContent = text;
+  area.appendChild(msg);
+  area.scrollTop = area.scrollHeight;
+}
+
+function setXiaoERitualControls(mode) {
+  const busy = mode === 'speaking';
+  const input = mode === 'input';
+  controlsLocked = true;
+  document.body.classList.add('controls-locked');
+  document.body.classList.toggle('ritual-input-active', input);
+  document.querySelectorAll('.action-btn:not([data-cmd="reset"]), .page-btn, .signal-close-btn').forEach(btn => {
+    btn.disabled = true;
+  });
+  cmdInput.disabled = !input;
+  cmdInput.placeholder = busy ? '小E 正在发送消息...' : '输入名字...';
+}
+
+function restoreXiaoERitualNormal() {
+  xiaoERitualState = '';
+  xiaoERitualSpeaking = false;
+  xiaoERitualChatClass = '';
+  document.body.classList.remove('ritual-input-active');
+  clearXiaoERitualChoices();
+  setControlsLocked(false);
+}
+
+function sendXiaoERitualLines(lines, done, options) {
+  xiaoERitualSpeaking = true;
+  setXiaoERitualControls('speaking');
+  const gap = options?.gap || 1450;
+  const firstDelay = options?.firstDelay || 0;
+  lines.forEach((line, index) => {
+    setTimeout(() => {
+      if (typeof line === 'string') renderXiaoERitualChat(line);
+      else renderXiaoERitualChat(line.text, !!line.html, line.className || '');
+      if (index === lines.length - 1) {
+        setTimeout(() => {
+          xiaoERitualSpeaking = false;
+          if (done) done();
+        }, gap);
+      }
+    }, firstDelay + index * gap);
+  });
+}
+
+function startSuAccessRitual() {
+  const shouldStartChat = !xiaoERitualStarted;
+  if (shouldStartChat) {
+    xiaoERitualStarted = true;
+    xiaoERitualChatClass = 'ritual-red';
+    setXiaoERitualControls('speaking');
+  }
+  closeSignalForRitual(() => {
+    const sidePanel = document.querySelector('.side-panel');
+    sidePanel.classList.remove('ritual-attention');
+    void sidePanel.offsetWidth;
+    sidePanel.classList.add('ritual-attention');
+    document.getElementById('chat-area').scrollIntoView({ block: 'nearest' });
+    if (!shouldStartChat) return;
+    sendXiaoERitualLines([
+      '小心，刚刚那个窗口很危险。',
+      '哦对了，你的名字是？'
+    ], () => {
+      xiaoERitualState = 'name';
+      setXiaoERitualControls('input');
+      cmdInput.value = '';
+      cmdInput.focus();
+    }, { firstDelay: 900 });
+  });
+}
+
+function handleXiaoERitualInput(input) {
+  if (xiaoERitualSpeaking) return true;
+  if (xiaoERitualState === 'name') {
+    renderChat('player', input);
+    if (input !== '袁以初') {
+      sendXiaoERitualLines(['看来还不是时候……'], restoreXiaoERitualNormal);
+      return true;
+    }
+    xiaoERitualState = 'truth';
+    sendXiaoERitualLines([
+      '准确来说，你是袁以初的二重身。',
+      '你是在二十一牌的仪式结束后，诞生在小初的家里的，祂们的任务一直是诱导你跟袁以初相认。',
+      '你和袁以初的融合是最后一道仪式。',
+      '你怎么想？'
+    ], showXiaoERitualChoices);
+    return true;
+  }
+  return false;
+}
+
+function showXiaoERitualChoices() {
+  xiaoERitualState = 'choice';
+  setXiaoERitualControls('speaking');
+  cmdInput.disabled = true;
+  const sideInput = document.querySelector('.side-input');
+  sideInput.classList.add('choice-mode');
+  clearXiaoERitualChoices();
+  const row = document.createElement('div');
+  row.className = 'ritual-choice-row';
+  row.id = 'ritualChoiceRow';
+  row.innerHTML = '<button type="button" data-choice="obey">听从</button><button type="button" data-choice="rebel">反抗</button>';
+  row.addEventListener('click', (event) => {
+    const btn = event.target.closest('button[data-choice]');
+    if (!btn) return;
+    const choiceText = btn.dataset.choice === 'obey' ? '听从' : '反抗';
+    renderChat('player', choiceText);
+    clearXiaoERitualChoices();
+    document.querySelector('.side-input').classList.remove('choice-mode');
+    if (btn.dataset.choice === 'obey') {
+      sendXiaoERitualLines(['是嘛……祝你好运！'], restoreXiaoERitualNormal);
+    } else {
+      handleXiaoERebellion();
+    }
+  });
+  sideInput.appendChild(row);
+}
+
+function clearXiaoERitualChoices() {
+  const row = document.getElementById('ritualChoiceRow');
+  if (row) row.remove();
+  const sideInput = document.querySelector('.side-input');
+  if (sideInput) sideInput.classList.remove('choice-mode');
+}
+
+function handleXiaoERebellion() {
+  gameState.rebellionChosen = true;
+  applyTaskState();
+  saveGame();
+  sendXiaoERitualLines([
+    '你要知道这可能豁出性命……',
+    {
+      text: '只有将自己的<strong>生门</strong>交出去，才能获得<strong>一切重归安宁</strong>。',
+      html: true,
+      className: 'ritual-gold'
+    }
+  ], restoreXiaoERitualNormal, { gap: 1750 });
+}
+
+// ===== 小E 错乱系统 =====
+const corruptedLines = [
+  '请通过 <a href="#" class="corrupt-link" onclick="openCorruptionChat();return false;">微聊</a> 联系工作人员或查询初始私人密钥强制解锁。',
+];
+
+let corruptedIndex = 0;
+
+function triggerCorruption() {
+  gameState.xiaoECorrupted = true;
+  saveGame();
+
+  // 封锁操作
+  setControlsLocked(true);
+  // 但放开输入框用于密钥
+  cmdInput.disabled = false;
+  cmdInput.placeholder = '信号查询中断';
+  corruptedIndex = 0;
+
+  document.body.classList.add('corrupted');
+  document.getElementById('chat-area').classList.add('corrupted');
+  document.getElementById('corruptWarn').classList.add('show');
+
+  renderChat('system', '⚠ 信号异常：节点 #08 信号源不稳定。');
+  renderChat('system', '⚠ 小E 通信链路受到干扰。');
+  setTimeout(() => {
+    renderChat('e', corruptedNextLine(), true);
+  }, 600);
+}
+
+function corruptedNextLine() {
+  const line = corruptedLines[corruptedIndex % corruptedLines.length];
+  corruptedIndex++;
+  return line;
+}
+
+function openCorruptionChat() {
+  window.open('assets/wechat-web.html', '_blank', 'noopener');
+}
+
+function recoverFromCorruption() {
+  gameState.xiaoECorrupted = false;
+  document.body.classList.remove('corrupted');
+  document.getElementById('chat-area').classList.remove('corrupted');
+  document.getElementById('corruptWarn').classList.remove('show');
+  cmdInput.placeholder = '和小E说话...';
+  setControlsLocked(false);
+  // 解锁微聊按钮
+  const wechatBtn = document.getElementById('wechatBtn');
+  if (wechatBtn) wechatBtn.style.display = '';
+  saveGame();
+  showIntegrationNotice('新增控制模块：微聊已接入控制窗口。');
+  renderChat('system', '⚠ 链路恢复。私人密钥验证通过。');
+  renderChat('e', '我……回来了？刚才发生了什么……信号好像……被人注入了一段东西。');
+  renderChat('e', '抱歉，我需要重新校准一下。');
+}
+
+// 控制台日志（转为对话形式）
+function addLog(text) {
+  const cleaned = text.replace(/^\[系统\] /, '').replace(/^\[小E\] /, '');
+  const type = text.startsWith('[小E]') ? 'e' : 'system';
+  renderChat(type, cleaned);
+}
+
+function syncViewedLogsFromStorage() {
+  let changed = false;
+  try {
+    const stored = JSON.parse(localStorage.getItem('citymystery_viewed_logs') || '[]');
+    if (Array.isArray(stored)) {
+      stored.forEach(id => {
+        if (!gameState.viewedLogs.includes(id)) {
+          gameState.viewedLogs.push(id);
+          changed = true;
+        }
+      });
+    }
+  } catch(e) { /* ignore */ }
+  if (changed) {
+    try { localStorage.setItem('citymystery_viewed_logs', JSON.stringify(gameState.viewedLogs)); } catch(e) {}
+  }
+}
+
+function markLogViewed(id) {
+  if (!id || gameState.viewedLogs.includes(id)) return;
+  gameState.viewedLogs.push(id);
+  try { localStorage.setItem('citymystery_viewed_logs', JSON.stringify(gameState.viewedLogs)); } catch(e) {}
+  saveGame();
+  if (document.getElementById('logOverlay').classList.contains('active')) renderLogArchive();
+}
+
+function showIntegrationNotice(text) {
+  const notice = document.getElementById('integrationNotice');
+  notice.textContent = text;
+  notice.classList.add('show');
+  setTimeout(() => notice.classList.remove('show'), 3600);
+}
+
+function consumeEndingSearchTrace() {
+  let endingTrace = '';
+  try { endingTrace = localStorage.getItem('citymystery_ending_search_trace') || ''; } catch(e) {}
+  if (!endingTrace) return;
+  try { localStorage.removeItem('citymystery_ending_search_trace'); } catch(e) {}
+  if (endingTrace !== 'E-01' && endingTrace !== 'E-02') return;
+  const searchBtn = document.getElementById('searchBtn');
+  if (!searchBtn || searchBtn.style.display === 'none') return;
+  setTimeout(() => {
+    searchBtn.classList.add('ending-search-trace');
+    setTimeout(() => searchBtn.classList.remove('ending-search-trace'), 3800);
+  }, 700);
+}
+
+let activeLogKind = 'su';
+const STORY_START_TS = new Date('2026-07-06T00:00:00+08:00').getTime();
+const STORY_REAL_START_KEY = 'citymystery_story_real_start';
+
+function getStoryNow() {
+  let realStart = Number(localStorage.getItem(STORY_REAL_START_KEY) || '0');
+  if (!realStart) {
+    realStart = Date.now();
+    try { localStorage.setItem(STORY_REAL_START_KEY, String(realStart)); } catch(e) {}
+  }
+  return new Date(STORY_START_TS + Math.max(0, Date.now() - realStart));
+}
+
+function formatClock(date) {
+  return String(date.getHours()).padStart(2,'0') + ':' +
+         String(date.getMinutes()).padStart(2,'0') + ':' +
+         String(date.getSeconds()).padStart(2,'0');
+}
+
+function getAvailableLogKinds() {
+  syncViewedLogsFromStorage();
+  const kinds = [];
+  archivedLogs.forEach(log => {
+    if (gameState.viewedLogs.includes(log.id) && !kinds.includes(log.kind)) {
+      kinds.push(log.kind);
+    }
+  });
+  return kinds;
+}
+
+function renderLogTabs(availableKinds) {
+  const tabs = Array.from(document.querySelectorAll('.log-tab'));
+  const tabWrap = document.querySelector('.log-tabs');
+  if (!availableKinds.length) {
+    tabWrap.style.display = 'none';
+    return;
+  }
+  tabWrap.style.display = '';
+  tabs.forEach(tab => {
+    const visible = availableKinds.includes(tab.dataset.logKind);
+    tab.style.display = visible ? '' : 'none';
+    tab.classList.toggle('active', tab.dataset.logKind === activeLogKind && visible);
+  });
+}
+
+function buildArchivedLogSrc(log) {
+  const params = [];
+  if (log.kind === 'su') {
+    params.push('archive=1');
+    params.push('id=' + encodeURIComponent(log.id));
+    params.push('s=' + encodeURIComponent(gameState.docSession || ''));
+  }
+  if (log.src.includes('emith-log-03.html') && gameState.searchEngineEnabled) {
+    params.push('connected=1');
+  }
+  return log.src + (params.length ? (log.src.includes('?') ? '&' : '?') + params.join('&') : '');
+}
+
+function openLogArchive() {
+  const availableKinds = getAvailableLogKinds();
+  if (!availableKinds.includes(activeLogKind)) {
+    activeLogKind = availableKinds[0] || 'su';
+  }
+  document.getElementById('logOverlay').classList.add('active');
+  renderLogArchive();
+}
+
+function closeLogArchive() {
+  document.getElementById('logOverlay').classList.remove('active');
+}
+
+function renderLogArchive() {
+  const availableKinds = getAvailableLogKinds();
+  if (!availableKinds.includes(activeLogKind)) {
+    activeLogKind = availableKinds[0] || 'su';
+  }
+  renderLogTabs(availableKinds);
+  const list = document.getElementById('logList');
+  const view = document.getElementById('logView');
+  const logs = archivedLogs
+    .filter(log => log.kind === activeLogKind && gameState.viewedLogs.includes(log.id))
+    .sort((a, b) => a.time.localeCompare(b.time));
+  list.innerHTML = '';
+  view.innerHTML = '<div class="log-empty">选择一条已归档记录</div>';
+  if (!logs.length) {
+    list.innerHTML = '<div class="log-empty">暂无已查看记录</div>';
+    view.innerHTML = '<div class="log-empty">暂无已查看记录</div>';
+    return;
+  }
+  logs.forEach(log => {
+    const btn = document.createElement('button');
+    btn.className = 'log-item';
+    btn.innerHTML = `<strong>${log.label}</strong><span>${log.time.slice(0, 10)}</span><span class="log-source">${log.source || '来源未记录'}</span>`;
+    btn.addEventListener('click', () => {
+      list.querySelectorAll('.log-item').forEach(item => item.classList.remove('active'));
+      btn.classList.add('active');
+      view.innerHTML = `<iframe src="${buildArchivedLogSrc(log)}"></iframe>`;
+    });
+    list.appendChild(btn);
+  });
+}
+
+document.getElementById('logClose').addEventListener('click', closeLogArchive);
+document.getElementById('logOverlay').addEventListener('click', e => {
+  if (e.target.id === 'logOverlay') closeLogArchive();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('logOverlay').classList.contains('active')) {
+    closeLogArchive();
+  }
+});
+document.querySelectorAll('.log-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.log-tab').forEach(item => item.classList.remove('active'));
+    tab.classList.add('active');
+    activeLogKind = tab.dataset.logKind;
+    renderLogArchive();
+  });
+});
+
+function getTime() {
+  return formatClock(getStoryNow());
+}
+
+// 在线节点数
+function updateOnlineCount() {
+  document.getElementById('online-count').textContent = gameState.unlockedNodes.length;
+  const total = gameState.knownPlaceNames.includes(6) ? 22 : 21;
+  document.getElementById('total-count').textContent = total;
+}
+
+// 时钟
+function startClock() {
+  const el = document.getElementById('status-time');
+  const update = () => { el.textContent = formatClock(getStoryNow()); };
+  update();
+  setInterval(update, 1000);
+}
+
+function setControlsLocked(locked) {
+  controlsLocked = locked;
+  document.body.classList.toggle('controls-locked', locked);
+  document.querySelectorAll('.action-btn:not([data-cmd="reset"]), .page-btn, .signal-close-btn').forEach(btn => {
+    btn.disabled = locked;
+  });
+  cmdInput.disabled = locked;
+  if (locked) {
+    verifyPending = false;
+    cmdInput.placeholder = '信号重排中...';
+  } else {
+    cmdInput.placeholder = '和小E说话...';
+  }
+}
+
+// ============================================================
+//  信号源
+// ============================================================
+const signalOverlay = document.getElementById('signalOverlay');
+const signalScreen = document.querySelector('.signal-screen');
+const signalViewport = document.getElementById('signalViewport');
+const signalPrev = document.getElementById('signalPrev');
+const signalNext = document.getElementById('signalNext');
+const signalId = document.getElementById('signalId');
+const signalLocation = document.getElementById('signalLocation');
+const signalClose = document.getElementById('signalClose');
+const signalLiveDot = document.querySelector('.signal-header .live');
+let signalIndex = 0;
+let signalDataRef = null;
+let signalNodeId = null;
+let yanNoteLocked = false;
+let yanHandTimer = null;
+let yanNoteStartPending = false;
+let yanNoteReady = false;
+let yanHandFinished = false;
+let signalMorseTimer = null;
+
+const MORSE_CODE = {
+  A: '.-', B: '-...', C: '-.-.', D: '-..', E: '.', F: '..-.', G: '--.',
+  H: '....', I: '..', J: '.---', K: '-.-', L: '.-..', M: '--', N: '-.',
+  O: '---', P: '.--.', Q: '--.-', R: '.-.', S: '...', T: '-', U: '..-',
+  V: '...-', W: '.--', X: '-..-', Y: '-.--', Z: '--..',
+  0: '-----', 1: '.----', 2: '..---', 3: '...--', 4: '....-', 5: '.....',
+  6: '-....', 7: '--...', 8: '---..', 9: '----.'
+};
+const SIGNAL_MORSE_TEXT = 'WHO ARE YOU';
+const SIGNAL_MORSE_UNIT_MS = 170;
+
+function buildMorsePattern(text) {
+  const pattern = [];
+  const words = text.toUpperCase().trim().split(/\s+/);
+  words.forEach((word, wordIndex) => {
+    const letters = Array.from(word).filter(ch => MORSE_CODE[ch]);
+    letters.forEach((letter, letterIndex) => {
+      const code = MORSE_CODE[letter];
+      Array.from(code).forEach((symbol, symbolIndex) => {
+        pattern.push({ on: true, units: symbol === '-' ? 3 : 1 });
+        if (symbolIndex < code.length - 1) pattern.push({ on: false, units: 1 });
+      });
+      if (letterIndex < letters.length - 1) pattern.push({ on: false, units: 3 });
+    });
+    if (wordIndex < words.length - 1) pattern.push({ on: false, units: 7 });
+  });
+  pattern.push({ on: false, units: 10 });
+  return pattern;
+}
+
+function stopSignalMorse() {
+  if (signalMorseTimer) {
+    clearTimeout(signalMorseTimer);
+    signalMorseTimer = null;
+  }
+  if (signalLiveDot) signalLiveDot.classList.remove('morse-on');
+}
+
+function startSignalMorse() {
+  stopSignalMorse();
+  if (!signalLiveDot) return;
+  const pattern = buildMorsePattern(SIGNAL_MORSE_TEXT);
+  let index = 0;
+  const playNext = () => {
+    const item = pattern[index % pattern.length];
+    signalLiveDot.classList.toggle('morse-on', item.on);
+    index++;
+    signalMorseTimer = setTimeout(playNext, item.units * SIGNAL_MORSE_UNIT_MS);
+  };
+  playNext();
+}
+
+function yanStillSpeaking() {
+  alert('嘘——我还没说完呢');
+}
+
+function setYanNoteLocked(locked) {
+  yanNoteLocked = locked;
+  controlsLocked = locked;
+  document.body.classList.toggle('controls-locked', locked);
+  cmdInput.disabled = locked;
+  cmdInput.placeholder = locked ? '嘘——我还没说完呢' : '和小E说话...';
+  if (!locked) {
+    yanNoteStartPending = false;
+    yanNoteReady = false;
+    yanHandFinished = false;
+  }
+}
+
+function clearYanHandEffect() {
+  if (yanHandTimer) {
+    clearTimeout(yanHandTimer);
+    yanHandTimer = null;
+  }
+  signalScreen.classList.remove('yan-haunted');
+  signalOverlay.querySelectorAll('.yan-hand-zone, .yan-hand-flash').forEach(el => el.remove());
+}
+
+function startYanHandSequence() {
+  clearYanHandEffect();
+  setYanNoteLocked(true);
+  yanNoteStartPending = true;
+  yanNoteReady = false;
+  yanHandFinished = false;
+  signalScreen.classList.add('yan-haunted');
+  const flash = document.createElement('div');
+  flash.className = 'yan-hand-flash';
+  const zone = document.createElement('div');
+  zone.className = 'yan-hand-zone';
+  const hand = document.createElement('img');
+  hand.className = 'yan-hand-grip';
+  hand.src = 'assets/hand-grip.png';
+  hand.alt = '';
+  const rect = signalScreen.getBoundingClientRect();
+  const handWidth = Math.min(330, window.innerWidth * 0.34);
+  const edgeGrip = Math.min(58, Math.max(38, rect.width * 0.045));
+  hand.style.setProperty('--yan-hand-left', Math.round(rect.left + edgeGrip - handWidth) + 'px');
+  hand.style.setProperty('--yan-hand-top', Math.round(rect.top + rect.height * 0.2) + 'px');
+  signalOverlay.appendChild(flash);
+  zone.appendChild(hand);
+  signalOverlay.appendChild(zone);
+  yanHandTimer = setTimeout(() => {
+    clearYanHandEffect();
+    yanHandFinished = true;
+    sendYanNoteStartIfReady();
+  }, 3120);
+}
+
+function sendYanNoteStartIfReady() {
+  if (!yanNoteLocked || !yanNoteStartPending || !yanNoteReady || !yanHandFinished) return;
+  const frame = signalViewport.querySelector('iframe[src*="yan-note-02.html"]');
+  if (frame && frame.contentWindow) {
+    yanNoteStartPending = false;
+    frame.contentWindow.postMessage({ type: 'yan-note-start' }, '*');
+  }
+}
+
+const signalData = {
+
+  0: {
+    id: '00',
+    location: '节点 #00',
+    fragments: [
+      {
+        type: '备忘录',
+        time: '2026-07-05 23:57',
+        body: `<iframe src="assets/memo-xiaochu-04.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: iPhone 备忘录 · 本地缓存
+</div>`
+      },
+      {
+        type: '定位残留',
+        time: '1天前',
+        body: `<iframe src="assets/final-locator.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 定位器 · 延迟缓存
+</div>`
+      }
+    ]
+  },
+
+  6: {
+    id: '06',
+    location: '节点 #06',
+    fragments: [
+      {
+        type: '记录',
+        time: '---- -- -- --:--',
+        body: `<iframe class="dark-frame" src="assets/yan-node-record.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: ？？？
+</div>`
+      },
+      {
+        type: '文档',
+        time: '---- -- -- --:--',
+        body: `<iframe src="assets/yan-note-02.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: ？？？
+</div>`
+      }
+    ]
+  },
+
+  3: {
+    id: '03',
+    location: '节点 #03',
+    fragments: [
+      {
+        type: '通报',
+        time: '2026-07-03 08:20',
+        body: `<iframe src="assets/police-briefing-su.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 公共安全信息发布平台 · 警情通报
+</div>`
+      },
+      {
+        type: '日志',
+        time: '2026-06-15 03:16',
+        body: `<iframe class="dark-frame" src="assets/emith-log-03.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: log
+</div>`
+      }
+    ]
+  },
+  7: {
+    id: '07',
+    location: '节点 #07',
+    fragments: [
+      {
+        type: '网页',
+        time: '2026-05-22 00:03',
+        body: `<iframe src="assets/forum-warring-states.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 华夏史话论坛 · 先秦历史 · 该帖已被存档
+</div>`
+      },
+      {
+        type: '文章',
+        time: '2025-06-12 09:15',
+        body: `<iframe src="assets/article-moon-poet.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 读库 · 诗话闲笔
+</div>`
+      },
+      {
+        type: '聊天记录',
+        time: '2026-05-27 14:35',
+        body: `<iframe class="dark-frame" src="assets/chat-travel.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 微聊 加密消息 · 已删除的会话
+</div>`
+      }
+    ]
+  },
+  5: {
+    id: '05',
+    location: '节点 #05',
+    fragments: [
+      {
+        type: '网页',
+        time: '2026-03-26 20:18',
+        body: `<iframe src="assets/jixi-procession-thread.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 驴友驿站 · 人文古迹 · 帖子缓存
+</div>`
+      },
+      {
+        type: '检索页',
+        time: '2006-04-12 00:00',
+        body: `<iframe class="dark-frame" src="assets/node05-cnki.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 智网 · 检索结果缓存
+</div>`
+      }
+    ]
+  },
+  12: {
+    id: '12',
+    location: '节点 #12',
+    fragments: [
+      {
+        type: '笔记',
+        time: '2026-04-08 22:17',
+        body: `<iframe class="dark-frame" src="assets/exam-law.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 法律联考 · 法制史讲义 · 第192页
+</div>`
+      },
+      {
+        type: '网页',
+        time: '2026-03-20 23:41',
+        body: `<iframe class="dark-frame" src="assets/forum-temple.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 异闻讨论区 · 灵异未解板块 · 已归档
+</div>`
+      },
+      {
+        type: '图片',
+        time: '2026-03-15 19:42',
+        body: `<div style="flex:1; display:flex; align-items:center; justify-content:center; min-height:0; padding:12px;">
+  <img src="assets/archive-scan-0315.png" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:3px; filter:blur(0.8px);">
+</div>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 县文化馆 · 非遗展演记录
+</div>`
+      }
+    ]
+  },
+  19: {
+    id: '19',
+    location: '节点 #19',
+    fragments: [
+      {
+        type: '音频',
+        time: '2026-05-31 23:12',
+        body: `<iframe class="dark-frame" src="assets/audio-lab.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 匿名转发 · 音频分析工具 · 会话已过期
+</div>`
+      },
+      {
+        type: '聊天记录',
+        time: '2026-06-01 23:58',
+        body: `<iframe class="dark-frame" src="assets/call-log.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 信号嗅探 · 通话记录缓存 · 可导出
+</div>`
+      },
+      {
+        type: '博客',
+        time: '2026-06-02 01:38',
+        body: `<iframe src="assets/blog-iris.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 信使之虹 · 神谕笔记 · 该文章可能已被转载
+</div>`
+      }
+    ]
+  },
+  2: {
+    id: '02',
+    location: '节点 #02',
+    fragments: [
+      {
+        type: '论坛',
+        time: '2026-05-27 19:12',
+        body: `<iframe src="assets/anime-op-discuss.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 综合讨论区 · 动漫版 · 该帖已被归档
+</div>`
+      },
+      {
+        type: '论坛',
+        time: '2025-03-18 21:08',
+        body: `<iframe src="assets/forum-history-debate.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 白度贴吧 · 历史吧 · 考据帖
+</div>`
+      },
+      {
+        type: '社区',
+        time: '2025-11-09 22:34',
+        body: `<iframe src="assets/meteor-zhihu.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 知呼 · 该回答已被归档
+</div>`
+      },
+      {
+        type: '笔记',
+        time: '2026-06-06 14:25',
+        body: `<iframe class="dark-frame" src="assets/detective-note.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 苏的调查档案 · 编号 C2-02 · 加密
+</div>`
+      }
+    ]
+  },
+  4: {
+    id: '04',
+    location: '节点 #04',
+    fragments: [
+      {
+        type: '网页',
+        time: '2026-05-30 00:12',
+        body: `<iframe src="assets/venus-crater.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 金星天文台 · 陨石坑数据库
+</div>`
+      },
+      {
+        type: '残页',
+        time: '2026-05-30 00:36',
+        body: `<iframe src="${archiveWomenLearningSrc()}"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 未知 · 旧籍扫描缓存
+</div>`
+      }
+    ]
+  },
+  20: {
+    id: '20',
+    location: '节点 #20',
+    fragments: [
+      {
+        type: '社区',
+        time: '2025-05-17 22:03',
+        body: `<iframe src="assets/douban-hlm.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 豆板 · 红楼梦 · 书评区
+</div>`
+      },
+      {
+        type: '残页',
+        time: '2025-05-17 23:47',
+        body: `<iframe class="dark-frame" src="${jiafuCollapseSrc()}"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 未知信号 · 无法追踪
+</div>`
+      },
+      {
+        type: '博客',
+        time: '2024-03-21 23:40',
+        body: `<iframe src="assets/blog-japan-murder-2024.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 个人博客 · 2024 年缓存
+</div>`
+      }
+    ]
+  },
+  11: {
+    id: '11',
+    location: '节点 #11',
+    fragments: [
+      {
+        type: '新闻',
+        time: '2026-05-22 08:30',
+        body: `<iframe src="assets/rally-news.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 极速传媒 · 赛车频道
+</div>`
+      },
+      {
+        type: '日志',
+        time: '2026-06-11 23:10',
+        body: `<iframe src="assets/c2-03.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 苏的调查档案 · 编号 C2-03 · 加密
+</div>`
+      },
+      {
+        type: '论坛',
+        time: '2026-05-24 14:30',
+        body: `<iframe src="assets/tieba-general.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 冷知识吧 · 帖子缓存
+</div>`
+      }
+    ]
+  },
+  21: {
+    id: '21',
+    location: '节点 #21',
+    fragments: [
+      {
+        type: '档案',
+        time: '2026-05-30 14:20',
+        body: `<iframe src="assets/chaisang.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 个人博客存档
+</div>`
+      }
+    ]
+  },
+  8: {
+    id: '08',
+    location: '节点 #08',
+    fragments: [
+      {
+        type: '网页',
+        time: '2026-06-10 10:23',
+        body: `<iframe src="assets/weather-query.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 区域公共气象服务平台 · 观测点 4409
+</div>`
+      },
+      {
+        type: '小游戏',
+        time: '2007-08-16 12:40',
+        body: `<iframe src="assets/lingnan-boxing-game.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 地方文化活动资料页 · 网页小游戏存档
+</div>`
+      },
+      {
+        type: '备忘录',
+        time: '2026-06-11 20:03',
+        body: `<iframe src="assets/memo-xiaochu.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: iPhone 备忘录 · 本地缓存
+</div>`
+      }
+    ]
+  },
+  9: {
+    id: '09',
+    location: '节点 #09',
+    fragments: [
+      {
+        type: '网页',
+        time: '2010-03-21 16:08',
+        body: `<iframe src="assets/spring-festival-archive.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 地方民俗资料页 · 历史缓存
+</div>`
+      },
+      {
+        type: '观测记录',
+        time: '—— —— ——',
+        body: `<iframe class="dark-frame" src="assets/node09-shadow-log.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 加密观测记录·A=1
+</div>`
+      }
+    ]
+  },
+  10: {
+    id: '10',
+    location: '节点 #10',
+    fragments: [
+      {
+        type: '网页',
+        time: '2024-08-13 02:34',
+        body: `<iframe class="dark-frame" src="assets/snore-forum.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 异闻讨论区 · 灵异未解板块 · 已归档
+</div>`
+      },
+      {
+        type: '博客',
+        time: '2026-05-11 21:08',
+        body: `<iframe src="assets/blog-guyue-huashan.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 旧浪博客 · 个人日志缓存
+</div>`
+      },
+      {
+        type: '备忘录',
+        time: '2026-06-18 22:14',
+        body: `<iframe src="assets/memo-xiaochu-02.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: iPhone 备忘录 · 本地缓存
+</div>`
+      }
+    ]
+  },
+  14: {
+    id: '14',
+    location: '节点 #14',
+    fragments: [
+      {
+        type: '个人资料',
+        time: '2026-06-10 21:17',
+        body: `<iframe src="assets/dating-profile.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 心意相知 · 相亲简历缓存
+</div>`
+      },
+      {
+        type: '论坛',
+        time: '2011-06-15 09:23',
+        body: `<iframe src="assets/love-forum.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 情感夜话论坛 · 帖子缓存
+</div>`
+      },
+      {
+        type: '日志',
+        time: '2026-06-16 19:44',
+        body: `<iframe src="assets/c2-05.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 苏的调查档案 · 编号 C2-05 · 加密
+</div>`
+      }
+    ]
+  },
+  1: {
+    id: '01',
+    location: '节点 #01',
+    fragments: [
+      {
+        type: '旧报',
+        time: '1907-07-16 04:10',
+        body: `<iframe src="assets/judgement-old-newspaper.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 地方文献影印存页 · 卷七
+</div>`
+      },
+      {
+        type: '判牍',
+        time: '1905-04-··',
+        body: `<iframe class="dark-frame" src="assets/node01-judgment.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 中国裁判文书网 · 已脱敏
+</div>`
+      }
+    ]
+  },
+  16: {
+    id: '16',
+    location: '节点 #16',
+    fragments: [
+      {
+        type: '日志',
+        time: '2026-06-25 18:46',
+        body: `<iframe src="assets/c2-06.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 苏的调查档案 · 编号 C2-06 · 加密
+</div>`
+      },
+      {
+        type: '网页',
+        time: '2016-09-07 16:22',
+        body: `<iframe src="assets/baidu-zhidao-history-pdf.html?v=2"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 白度知道 · 历史资料 · 网页缓存
+</div>`
+      }
+    ]
+  },
+  15: {
+    id: '15',
+    location: '节点 #15',
+    fragments: [
+      {
+        type: '地图',
+        time: '2026-06-26 11:40',
+        body: `<iframe class="dark-frame" src="assets/node15-seventh-map.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 未知 · 路径缓存
+</div>`
+      },
+      {
+        type: '网页',
+        time: '2026-06-26 11:46',
+        body: `<iframe src="assets/node15-world-not-found.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 未知 · 页面快照
+</div>`
+      },
+      {
+        type: '网页',
+        time: '2026-06-26 12:08',
+        body: `<iframe src="assets/homer-flower-orders.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 荷马鲜花 · 订单查询系统
+</div>`
+      }
+    ]
+  },
+  18: {
+    id: '18',
+    location: '节点 #18',
+    fragments: [
+      {
+        type: '网页',
+        time: '2026-06-27 00:18',
+        body: `<iframe class="dark-frame" src="assets/exchange-market.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 未知 · 页面快照
+</div>`
+      },
+      {
+        type: '论坛',
+        time: '2018-04-19 22:46',
+        body: `<iframe src="assets/node18-acrostic-thread.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 旧城生活板 · 历史页面缓存
+</div>`
+      },
+      {
+        type: '备忘录',
+        time: '2026-06-25 23:18',
+        body: `<iframe src="assets/memo-xiaochu-03.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: iPhone 备忘录 · 本地缓存
+</div>`
+      }
+    ]
+  },
+  17: {
+    id: '17',
+    location: '节点 #17',
+    fragments: [
+      {
+        type: '网页',
+        time: '2026-06-27 09:42',
+        body: `<iframe src="assets/local-gazetteer-person-index.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 地方文献数字化协作平台 · 人物索引
+</div>`
+      }
+    ]
+  },
+  13: {
+    id: '13',
+    location: '节点 #13',
+    fragments: [
+      {
+        type: '网页',
+        time: '2026-06-27 10:16',
+        body: `<iframe src="assets/local-gazetteer-women-index.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 地方文献数字化协作平台 · 人物索引
+</div>`
+      },
+      {
+        type: '日志',
+        time: '2026-07-01 22:18',
+        body: `<iframe src="assets/c2-07.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 苏的调查档案 · 编号 C2-07 · 加密
+</div>`
+      }
+    ]
+  }
+};
+
+const archivedLogs = [
+  { id: 'c201', kind: 'su', label: 'C2-01', time: '2026-05-31 20:15', source: '微聊', src: 'assets/c2-01.html' },
+  { id: 'c202', kind: 'su', label: 'C2-02', time: '2026-06-06 14:25', source: '#0204', src: 'assets/detective-note.html' },
+  { id: 'c203', kind: 'su', label: 'C2-03', time: '2026-06-11 23:10', source: '#1102', src: 'assets/c2-03.html' },
+  { id: 'c204', kind: 'su', label: 'C2-04', time: '2026-06-15 00:00', source: '聚合搜索', src: 'assets/c2-04.html' },
+  { id: 'memo01', kind: 'iphone', label: 'iPhone 备忘录', time: '2026-06-11 20:03', source: '#0803', src: 'assets/memo-xiaochu.html' },
+  { id: 'c205', kind: 'su', label: 'C2-05', time: '2026-06-16 19:44', source: '#1403', src: 'assets/c2-05.html' },
+  { id: 'memo02', kind: 'iphone', label: 'iPhone 备忘录', time: '2026-06-18 22:14', source: '#1003', src: 'assets/memo-xiaochu-02.html' },
+  { id: 'c206', kind: 'su', label: 'C2-06', time: '2026-06-25 18:46', source: '#1601', src: 'assets/c2-06.html' },
+  { id: 'memo03', kind: 'iphone', label: 'iPhone 备忘录', time: '2026-06-25 23:18', source: '#1803', src: 'assets/memo-xiaochu-03.html' },
+  { id: 'c207', kind: 'su', label: 'C2-07', time: '2026-07-01 22:18', source: '#1302', src: 'assets/c2-07.html' },
+  { id: 'memo04', kind: 'iphone', label: 'iPhone 备忘录', time: '2026-07-05 23:57', source: '#0001', src: 'assets/memo-xiaochu-04.html' },
+];
+
+let signalTimer = null;
+
+function archiveWomenLearningSrc() {
+  return `assets/archive-women-learning.html${gameState.archiveLoggedIn ? '?loggedIn=1' : ''}`;
+}
+
+function jiafuCollapseSrc() {
+  const params = [];
+  if (gameState.jiafuCollapseSettled) params.push('hideEyes=1');
+  if (gameState.jiafuCollapseSettled) params.push('settled=1');
+  return `assets/jiafu-collapse.html${params.length ? '?' + params.join('&') : ''}`;
+}
+
+function newNode20BlogFragment() {
+  return {
+    type: '博客',
+    time: '2024-03-21 23:40',
+    body: `<iframe src="assets/blog-japan-murder-2024.html"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 个人博客 · 2024 年缓存
+</div>`
+  };
+}
+
+function node6RecordSrc() {
+  const modules = {
+    wechat: gameState.xiaoECorruptionTriggered || !document.getElementById('wechatBtn')?.style.display,
+    logs: gameState.logArchiveEnabled,
+    search: gameState.searchEngineEnabled
+  };
+  const params = new URLSearchParams();
+  params.set('opened', JSON.stringify(gameState.unlockedNodes.slice().sort((a, b) => a - b)));
+  params.set('confirmed', JSON.stringify(gameState.knownPlaceNames.slice().sort((a, b) => a - b)));
+  params.set('errors', JSON.stringify(gameState.verifyErrors || {}));
+  params.set('modules', JSON.stringify(modules));
+  const visibleLogs = (gameState.viewedLogs || []).filter(id => !/^emith|^log0?3$/i.test(String(id)));
+  params.set('logs', JSON.stringify(visibleLogs));
+  return 'assets/yan-node-record.html?' + params.toString();
+}
+
+function applyOracleCollapseState() {
+  const node20 = signalData[20];
+  if (!node20) return;
+  const firstTwo = node20.fragments.slice(0, 2);
+  const existingThird = node20.fragments[2];
+  if (node20.fragments.length !== 3 || !existingThird || !existingThird.body.includes('blog-japan-murder-2024.html')) {
+    node20.fragments = firstTwo.concat(newNode20BlogFragment());
+  }
+}
+
+function renderFragment(data) {
+  const f = data.fragments[signalIndex];
+  if (signalNodeId === 6 && signalIndex === 0) {
+    f.body = `<iframe class="dark-frame" src="${node6RecordSrc()}"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: ？？？
+</div>`;
+  }
+  if (signalNodeId === 6 && signalIndex === 1) {
+    const instant = gameState.node6NotePlayed ? '?instant=1' : '';
+    f.body = `<iframe src="assets/yan-note-02.html${instant}"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: ？？？
+</div>`;
+  }
+  // 注入文档版本号，重置后旧解锁记录失效
+  const ver = gameState.docVersion || 1;
+  const docSession = encodeURIComponent(gameState.docSession || '');
+  const c2Suffix = `?v=${encodeURIComponent(ver)}&s=${docSession}`;
+  if (f.body.includes('c2-01.html')) {
+    f.body = f.body.replace('src="assets/c2-01.html"', `src="assets/c2-01.html${c2Suffix}"`);
+  }
+  if (f.body.includes('detective-note.html')) {
+    f.body = f.body.replace('src="assets/detective-note.html"', `src="assets/detective-note.html${c2Suffix}`);
+  }
+  if (f.body.includes('c2-03.html')) {
+    f.body = f.body.replace('src="assets/c2-03.html"', `src="assets/c2-03.html${c2Suffix}`);
+  }
+  if (f.body.includes('c2-05.html')) {
+    f.body = f.body.replace('src="assets/c2-05.html"', `src="assets/c2-05.html${c2Suffix}`);
+  }
+  if (f.body.includes('c2-06.html')) {
+    f.body = f.body.replace('src="assets/c2-06.html"', `src="assets/c2-06.html${c2Suffix}`);
+  }
+  if (f.body.includes('c2-07.html')) {
+    f.body = f.body.replace('src="assets/c2-07.html"', `src="assets/c2-07.html${c2Suffix}`);
+  }
+  if (f.body.includes('emith-log-03.html')) {
+    const suffix = gameState.searchEngineEnabled ? '?connected=1' : '';
+    f.body = f.body.replace('src="assets/emith-log-03.html"', `src="assets/emith-log-03.html${suffix}"`);
+  }
+  if (signalNodeId === 20 && signalIndex === 1) {
+    f.body = `<iframe class="dark-frame" src="${jiafuCollapseSrc()}"></iframe>
+<div style="margin-top:10px; font-size:12px; color:#889a96; text-align:center;">
+  来源: 未知信号 · 无法追踪
+</div>`;
+  }
+  clearYanHandEffect();
+  signalViewport.innerHTML = `<div class="fragment active">
+    ${f.type === '帖子' ? `<div class="frag-header">
+      <div class="forum-meta">
+        <div class="avatar">${f.avatar || 'U'}</div>
+        <div>
+          <div class="uname">${f.uname || '匿名'}</div>
+          <div class="utime">${f.time}　<span class="forum-board">${f.board || '闲聊'}</span></div>
+        </div>
+      </div>
+    </div>` : ''}
+    <div class="frag-body">${f.body}</div>
+    ${f.footer ? `<div class="frag-footer">${f.footer}</div>` : ''}
+  </div>`;
+  signalViewport.scrollTop = 0;
+  signalPrev.classList.toggle('hidden', signalIndex === 0);
+  signalNext.classList.toggle('hidden', signalIndex === data.fragments.length - 1);
+  document.getElementById('signalPageNum').textContent = (signalIndex + 1) + '/' + data.fragments.length;
+
+  // 节点12图片碎片：第一次看到01，第二次开始永久切换到02
+  if (signalNodeId === 12 && f.type === '图片') {
+    const count = gameState.node12imgViewCount;
+    if (count >= 1) {
+      const img = signalViewport.querySelector('img');
+      if (img) img.src = 'assets/CAESAR3vhdufkSN.png';
+    }
+    gameState.node12imgViewCount = count + 1;
+    saveGame();
+  }
+  if (f.body.includes('memo-xiaochu.html')) markLogViewed('memo01');
+  if (f.body.includes('memo-xiaochu-02.html')) markLogViewed('memo02');
+  if (f.body.includes('memo-xiaochu-03.html')) markLogViewed('memo03');
+  if (f.body.includes('memo-xiaochu-04.html')) markLogViewed('memo04');
+  if (signalNodeId === 3 && signalIndex === 1 && !gameState.node3AuthorLogViewed) {
+    gameState.node3AuthorLogViewed = true;
+    saveGame();
+  }
+  if (signalNodeId === 6 && signalIndex === 1 && !gameState.node6NotePlayed) {
+    startYanHandSequence();
+  } else if (yanNoteLocked) {
+    setYanNoteLocked(false);
+  }
+}
+
+function goToFragment(idx, data) {
+  if (controlsLocked) return;
+  signalIndex = idx;
+  renderFragment(data);
+}
+
+function showSignal(nodeId, startIdx) {
+  signalNodeId = nodeId;
+  const data = signalData[nodeId];
+  if (!data) {
+    const node = nodes.find(n => n.id === nodeId);
+    addLog('[小E] 信号异常，无法解析信号内容。');
+    addLog(`[小E] 从信号碎片中提取到地名：${node.placeName}`);
+    renderChat('e', `信号不稳定……但我拼出了一个地名：「${node.placeName}」。`);
+    return;
+  }
+
+  signalId.textContent = data.id;
+  signalLocation.textContent = data.location;
+
+  signalScreen.classList.remove('collapsing', 'appearing');
+  signalOverlay.classList.add('active');
+  startSignalMorse();
+  if (forceNextSignalAppear) {
+    forceNextSignalAppear = false;
+    void signalScreen.offsetWidth;
+    signalScreen.classList.add('appearing');
+    setTimeout(() => signalScreen.classList.remove('appearing'), 460);
+  }
+  signalIndex = startIdx || 0;
+  signalDataRef = data;
+  renderFragment(data);
+
+  // 导航
+  if (data.fragments.length <= 1) {
+    signalPrev.classList.add('hidden');
+    signalNext.classList.add('hidden');
+  }
+
+  const navTo = (idx) => goToFragment(idx, data);
+
+  signalPrev.onclick = () => navTo(signalIndex - 1);
+  signalNext.onclick = () => navTo(signalIndex + 1);
+
+  addLog(`[小E] 信号源 #${data.id} 已接入，获取到 ${data.fragments.length} 条信息。`);
+  // 实时更新时间
+  if (signalTimer) clearInterval(signalTimer);
+  const updateTime = () => {
+    document.getElementById('signalTime').textContent = formatClock(getStoryNow());
+  };
+  updateTime();
+  signalTimer = setInterval(updateTime, 1000);
+}
+
+function closeSignal(force) {
+  if (yanNoteLocked && !force) {
+    yanStillSpeaking();
+    return;
+  }
+  if (controlsLocked && !force) return;
+  const shouldEnableLogArchive = signalNodeId === 16 && !gameState.node16LogArchivePrompted;
+  const shouldEnableSearch = signalNodeId === 3 && gameState.node3AuthorLogViewed && !gameState.node3SearchPrompted;
+  signalOverlay.classList.remove('active');
+  stopSignalMorse();
+  clearYanHandEffect();
+  if (yanNoteLocked) setYanNoteLocked(false);
+  if (signalTimer) { clearInterval(signalTimer); signalTimer = null; }
+  signalViewport.innerHTML = '';
+  if (shouldEnableLogArchive) {
+    gameState.node16LogArchivePrompted = true;
+    gameState.logArchiveEnabled = true;
+    syncViewedLogsFromStorage();
+    document.getElementById('logsBtn').style.display = '';
+    saveGame();
+    showIntegrationNotice('新增控制模块：日志归档已接入控制窗口。');
+    renderChat('system', '新增控制模块：日志归档已接入控制窗口。');
+  }
+  if (shouldEnableSearch) {
+    gameState.node3SearchPrompted = true;
+    gameState.searchEngineEnabled = true;
+    document.getElementById('searchBtn').style.display = '';
+    saveGame();
+    showIntegrationNotice('新增控制模块：聚合搜索已接入控制窗口。');
+    renderChat('system', '新增控制模块：聚合搜索已接入控制窗口。');
+  }
+}
+
+function closeSignalForRitual(done) {
+  const finish = () => {
+    signalOverlay.classList.remove('active');
+    signalScreen.classList.remove('collapsing');
+    signalViewport.innerHTML = '';
+    if (signalTimer) { clearInterval(signalTimer); signalTimer = null; }
+    if (done) done();
+  };
+  if (!signalOverlay.classList.contains('active')) {
+    finish();
+    return;
+  }
+  stopSignalMorse();
+  clearYanHandEffect();
+  signalScreen.classList.remove('appearing');
+  void signalScreen.offsetWidth;
+  signalScreen.classList.add('collapsing');
+  setTimeout(finish, 2200);
+}
+
+signalClose.addEventListener('click', () => closeSignal());
+signalOverlay.addEventListener('click', (e) => {
+  if (e.target === signalOverlay) {
+    if (yanNoteLocked) {
+      yanStillSpeaking();
+      return;
+    }
+    closeSignal();
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if (!signalOverlay.classList.contains('active')) return;
+  if (yanNoteLocked && ['Escape', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+    yanStillSpeaking();
+    return;
+  }
+  if (controlsLocked) return;
+  if (e.key === 'Escape') closeSignal();
+  if (e.key === 'ArrowLeft' && signalIndex > 0) goToFragment(signalIndex - 1, signalDataRef);
+  if (e.key === 'ArrowRight' && signalDataRef && signalIndex < signalDataRef.fragments.length - 1) goToFragment(signalIndex + 1, signalDataRef);
+});
+
+document.addEventListener('click', (e) => {
+  if (!yanNoteLocked) return;
+  const blocked = e.target.closest('.page-btn, .signal-close-btn, .action-btn');
+  if (!blocked) return;
+  e.preventDefault();
+  e.stopPropagation();
+  yanStillSpeaking();
+}, true);
+
+window.addEventListener('message', (e) => {
+  const data = e.data || {};
+  if (data.type === 'citymystery-sujianwei-ritual-query') {
+    let seen = false;
+    try {
+      seen = localStorage.getItem('citymystery_sujianwei_ritual_seen') === '1' ||
+        localStorage.getItem('citymystery_sujianwei_ritual_seen_v2') === '1' ||
+        !!localStorage.getItem('citymystery_sujianwei_seen_event');
+    } catch(err) {}
+    if (seen && e.source) {
+      e.source.postMessage({ type: 'citymystery-sujianwei-ritual-seen' }, '*');
+    }
+    return;
+  }
+  if (data.type === 'citymystery-sujianwei-ritual-seen') {
+    try {
+      localStorage.setItem('citymystery_sujianwei_ritual_seen', '1');
+      localStorage.setItem('citymystery_sujianwei_ritual_seen_v2', '1');
+      localStorage.setItem('citymystery_sujianwei_seen_event', String(Date.now()));
+    } catch(err) {}
+    const exchangeFrame = signalViewport.querySelector('iframe[src*="exchange-market.html"]');
+    if (exchangeFrame && exchangeFrame.contentWindow) {
+      exchangeFrame.contentWindow.postMessage({ type: 'citymystery-sujianwei-ritual-seen' }, '*');
+    }
+    return;
+  }
+  if (data.type === 'citymystery-su-access-opened') {
+    startSuAccessRitual();
+    return;
+  }
+  if (data.type === 'archive-login-complete') {
+    if (signalNodeId === 4 && signalIndex === 1 && !gameState.archiveLoggedIn) {
+      gameState.archiveLoggedIn = true;
+      saveGame();
+    }
+    return;
+  }
+  if (data.type === 'jiafu-collapse-complete') {
+    if (signalNodeId === 20 && signalIndex === 1 && !gameState.jiafuCollapseSettled) {
+      gameState.jiafuCollapseSettled = true;
+      gameState.oracleResolved = true;
+      saveGame();
+    }
+    return;
+  }
+  if (data.type === 'citymystery-log-viewed') {
+    markLogViewed(data.id);
+  }
+  if (data.type === 'yan-note-complete') {
+    if (signalNodeId === 6 && signalIndex === 1) {
+      yanNoteStartPending = false;
+      yanNoteReady = false;
+      yanHandFinished = false;
+      gameState.node6NotePlayed = true;
+      saveGame();
+      setYanNoteLocked(false);
+    }
+    return;
+  }
+  if (data.type === 'yan-note-ready') {
+    if (signalNodeId === 6 && signalIndex === 1 && yanNoteLocked) {
+      yanNoteReady = true;
+      sendYanNoteStartIfReady();
+    }
+    return;
+  }
+});
+window.addEventListener('storage', (event) => {
+  if (event.key === 'citymystery_su_access_opened_event' && event.newValue) {
+    startSuAccessRitual();
+  }
+});
+
+// ============================================================
+//  指令输入
+// ============================================================
+const cmdInput = document.getElementById('cmd-input');
+cmdInput.addEventListener('keydown', (e) => {
+  if (controlsLocked && !gameState.xiaoECorrupted && !xiaoERitualState) return;
+  if (e.key === 'Enter') {
+    handleCommand(cmdInput.value.trim());
+    cmdInput.value = '';
+  }
+});
+document.querySelector('.side-input').addEventListener('click', () => {
+  if (document.body.classList.contains('ritual-input-active') && !cmdInput.disabled) {
+    cmdInput.focus();
+  }
+});
+document.addEventListener('click', (e) => {
+  if (!document.body.classList.contains('ritual-input-active')) return;
+  if (xiaoERitualState !== 'name' || xiaoERitualSpeaking || cmdInput.disabled) return;
+  if (e.target.closest('#cmd-input, .ritual-choice-row')) return;
+  setTimeout(() => cmdInput.focus(), 0);
+});
+
+// 键盘快捷键
+document.addEventListener('keydown', (e) => {
+  if (controlsLocked && !gameState.xiaoECorrupted) return;
+  if (e.target.tagName === 'INPUT') return;
+  if (signalOverlay.classList.contains('active')) return;
+  if (document.getElementById('logOverlay').classList.contains('active')) return;
+  // 不拦截 Ctrl/Cmd 组合键（复制等）
+  if (e.ctrlKey || e.metaKey) return;
+  if (e.key === 'p') { handleCommand('probe'); e.preventDefault(); }
+  else if (e.key === 'n') { handleCommand('nodes'); e.preventDefault(); }
+  else if (e.key === 'h') { handleCommand('help'); e.preventDefault(); }
+  else if (e.key === 'c') { handleCommand('clear'); e.preventDefault(); }
+});
+
+// 底部操作按钮
+document.getElementById('actionBar').addEventListener('click', (e) => {
+  const btn = e.target.closest('.action-btn');
+  if (!btn) return;
+  const cmd = btn.dataset.cmd;
+
+  // 重置按钮不受错乱影响
+  if (cmd === 'reset') {
+    if (confirm('确定要重置所有进度吗？')) {
+      try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+      try { localStorage.removeItem('wechat_messages'); } catch(e) {}
+      try { localStorage.removeItem('wechat_sidebar'); } catch(e) {}
+      try { localStorage.removeItem('wechat_messages_initial'); } catch(e) {}
+      try { localStorage.removeItem('wechat_sidebar_initial'); } catch(e) {}
+      try { localStorage.removeItem('wechat_messages_secondary'); } catch(e) {}
+      try { localStorage.removeItem('wechat_sidebar_secondary'); } catch(e) {}
+      try { localStorage.removeItem('wechat_account_state_v1'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_story_real_start'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_viewed_logs'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_ending_search_trace'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_sujianwei_ritual_seen'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_sujianwei_ritual_seen_v2'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_sujianwei_seen_event'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_su_access_opened_event'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_tarot_gate'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_tarot_collect'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_tarot_gate_v2'); } catch(e) {}
+      try { localStorage.removeItem('citymystery_tarot_collect_v2'); } catch(e) {}
+      try {
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('doc_unlocked_')) localStorage.removeItem(key);
+        });
+      } catch(e) {}
+      try { localStorage.setItem('citymystery_reset_stamp', String(Date.now())); } catch(e) {}
+      location.reload();
+    }
+    return;
+  }
+
+  if (cmd === 'wechat') {
+    window.open('assets/wechat-web.html', '_blank', 'noopener');
+    return;
+  }
+  if (cmd === 'logs') {
+    openLogArchive();
+    return;
+  }
+  if (cmd === 'search') {
+    window.open('assets/emith-search.html', '_blank');
+    return;
+  }
+  if (controlsLocked) return;
+  // any button cancels pending verify
+  if (cmd !== 'verify') verifyPending = false;
+  if (cmdInput.placeholder !== '和小E说话...') cmdInput.placeholder = '和小E说话...';
+
+  if (cmd === 'probe') {
+    handleCommand('probe');
+  } else if (cmd === 'nodes') {
+    handleCommand('nodes');
+  } else if (cmd === 'help') {
+    handleCommand('help');
+  } else if (cmd === 'clear') {
+    handleCommand('clear');
+  } else if (cmd === 'verify') {
+    verifyPending = true;
+    cmdInput.placeholder = '输入地名...';
+    cmdInput.focus();
+    renderChat('e', '请确认当前地点名称：');
+  }
+});
+
+function handleCommand(input) {
+  if (xiaoERitualState) {
+    if (!input || xiaoERitualSpeaking) return;
+    if (handleXiaoERitualInput(input)) return;
+  }
+  if (controlsLocked && !gameState.xiaoECorrupted) return;
+  if (!input) return;
+
+  // 小E错乱状态 — 拦截一切输入，检查私人密钥
+  if (gameState.xiaoECorrupted) {
+    if (input === PRIVATE_KEY) {
+      recoverFromCorruption();
+    } else {
+      renderChat('e', corruptedNextLine(), true);
+    }
+    return;
+  }
+
+  // verify pending mode
+  if (verifyPending) {
+    verifyPending = false;
+    cmdInput.placeholder = '和小E说话...';
+    const name = input.trim();
+    if (!name) {
+      renderChat('e', '嗯？我没听清。需要确认地名时点「确认地点」按钮。');
+      return;
+    }
+    const current = nodes.find(n => n.id === gameState.currentNode);
+    if (name === current.placeName) {
+      if (gameState.currentNode === 0) {
+        if (!gameState.knownPlaceNames.includes(0)) {
+          gameState.knownPlaceNames.push(0);
+          saveGame();
+        }
+        window.location.href = 'assets/route-cache-7f31.html';
+        return;
+      }
+      if (!gameState.knownPlaceNames.includes(gameState.currentNode)) {
+        gameState.knownPlaceNames.push(gameState.currentNode);
+      }
+      const adjacentIds = connections
+        .filter(([a, b]) => a === gameState.currentNode || b === gameState.currentNode)
+        .map(([a, b]) => a === gameState.currentNode ? b : a);
+      adjacentIds.forEach(id => {
+        if (!gameState.unlockedNodes.includes(id)) {
+          gameState.unlockedNodes.push(id);
+        }
+      });
+      renderChat('e', `「${name}」… 确认无误，相邻节点已解锁。`);
+      saveGame();
+      renderMap();
+      updateOnlineCount();
+    } else {
+      const key = String(gameState.currentNode);
+      gameState.verifyErrors[key] = (Number(gameState.verifyErrors[key]) || 0) + 1;
+      saveGame();
+      renderChat('e', '不对，和信号源的信息对不上，再查查看？');
+    }
+    return;
+  }
+
+  // command parser
+  if (input === 'help') {
+    renderChat('system', '使用底部按钮操作：');
+    renderChat('system', '📡 查看信号 — 接入当前信号源');
+    renderChat('system', '✓ 确认地点 — 输入地名验证，解锁相邻节点');
+    renderChat('system', '⊞ 节点列表 — 查看已解锁节点');
+    renderChat('system', '✕ 清除 — 清屏');
+    renderChat('system', '快捷键: P 查看信号 / N 节点列表 / H 帮助 / C 清除');
+    renderChat('system', '也可以直接和我说话。');
+  }
+  else if (input === 'probe') {
+    renderChat('system', '正在探测信号源...');
+    setTimeout(() => {
+      showSignal(gameState.currentNode);
+    }, 600);
+  }
+  else if (input === 'nodes') {
+    const unlocked = gameState.unlockedNodes.map(id => {
+      const n = nodes.find(node => node.id === id);
+      return `${n.name}`;
+    }).join(' ');
+    renderChat('system', `在线节点: ${unlocked || '无'}`);
+    const totalNodes = gameState.knownPlaceNames.includes(6) ? 22 : 21;
+    renderChat('system', `${gameState.unlockedNodes.length}/${totalNodes} 个节点在线`);
+  }
+  else if (input === 'clear') {
+    document.getElementById('chat-area').innerHTML = '';
+  }
+  else {
+    // pass to 小E
+    renderChat('player', input);
+    setTimeout(() => {
+      const responses = [
+        '收到。正在处理。',
+        '明白了，我来查一下。',
+        '了解，我来监视着。',
+        '收到。有新发现会立刻通知你。',
+        '好的。我会继续跟进。',
+      ];
+      const reply = responses[Math.floor(Math.random() * responses.length)];
+      renderChat('e', reply);
+    }, 600);
+  }
+}
+
+// 窗口改变时重绘地图
+window.addEventListener('resize', renderMap);
+
+// ============================================================
+//  启动 — 有存档则跳过开场
+// ============================================================
+if (localStorage.getItem(SAVE_KEY)) {
+  intro.style.display = 'none';
+  document.getElementById('main-ui').classList.add('active');
+  initMain();
+}
+</script>
+</body>
+</html>

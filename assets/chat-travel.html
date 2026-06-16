@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>聊天记录</title>
+<style>
+html {
+  min-height: 100%;
+  background: #20272c;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  min-height: 100vh;
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #20272c;
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.chat-window {
+  width: 320px;
+  background: #ededed;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+
+.top-bar {
+  background: #fff;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #222;
+  border-bottom: 0.5px solid #d9d9d9;
+  position: relative;
+}
+.top-bar .back {
+  position: absolute;
+  left: 16px;
+  font-size: 14px;
+  color: #576b95;
+  font-weight: 400;
+}
+
+.chat-body {
+  padding: 16px 14px 8px;
+}
+
+.date-divider {
+  text-align: center;
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 16px;
+}
+
+.msg-row {
+  display: flex;
+  margin-bottom: 14px;
+  align-items: flex-start;
+}
+.msg-row.right {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 36px; height: 36px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+.avatar.left {
+  background: #2a2a2a;
+  color: transparent;
+  margin-right: 8px;
+}
+.avatar.right {
+  margin-left: 8px;
+  background-image: url(小初头像.png);
+  background-size: cover;
+  background-position: center;
+}
+
+.bubble-wrapper {
+  max-width: 72%;
+}
+
+.bubble {
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+.msg-row.left .bubble {
+  background: #fff;
+  border-radius: 4px 10px 10px 10px;
+  color: #222;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+}
+.msg-row.right .bubble {
+  background: #95ec69;
+  border-radius: 10px 4px 10px 10px;
+  color: #222;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+}
+
+.msg-time {
+  font-size: 10px;
+  color: #b0b0b0;
+  margin-top: 3px;
+}
+.msg-row.right .msg-time { text-align: right; }
+
+.sys-info {
+  text-align: center;
+  font-size: 10px;
+  color: #bbb;
+  padding: 6px 0 10px;
+  border-top: 0.5px solid #e0e0e0;
+  margin: 4px 12px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="chat-window">
+  <div class="top-bar">
+    <span class="back">‹ 返回</span>
+    偃
+  </div>
+
+  <div class="chat-body">
+    <div class="date-divider">2026年5月27日 15:47</div>
+
+    <div class="msg-row left">
+      <div class="avatar left">偃</div>
+      <div class="bubble-wrapper">
+        <div class="bubble">如何？</div>
+      </div>
+    </div>
+
+    <div class="msg-row right">
+      <div class="avatar right"></div>
+      <div class="bubble-wrapper">
+        <div class="bubble">目前还没什么线索，我还在想到底是谁。。</div>
+      </div>
+    </div>
+
+    <div class="msg-row left">
+      <div class="avatar left">偃</div>
+      <div class="bubble-wrapper">
+        <div class="bubble">好，仪器怎么样？</div>
+      </div>
+    </div>
+
+    <div class="msg-row right">
+      <div class="avatar right"></div>
+      <div class="bubble-wrapper">
+        <div class="bubble">还没有实战过，我怎么知道？</div>
+      </div>
+    </div>
+
+    <div class="msg-row left">
+      <div class="avatar left">偃</div>
+      <div class="bubble-wrapper">
+        <div class="bubble">整个行动切记小心，被发现了就不好了</div>
+      </div>
+    </div>
+
+    <div class="msg-row right">
+      <div class="avatar right"></div>
+      <div class="bubble-wrapper">
+        <div class="bubble">要你说！</div>
+      </div>
+    </div>
+
+    <div class="msg-row right">
+      <div class="avatar right"></div>
+      <div class="bubble-wrapper">
+        <div class="bubble">我说过了我知道该怎么做</div>
+      </div>
+    </div>
+
+    <div class="msg-row left">
+      <div class="avatar left">偃</div>
+      <div class="bubble-wrapper">
+        <div class="bubble">是不是快到站了</div>
+      </div>
+    </div>
+
+    <div class="msg-row right">
+      <div class="avatar right"></div>
+      <div class="bubble-wrapper">
+        <div class="bubble">对，我发现这601路还蛮快的呢</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sys-info">已加密 · 该会话已被删除</div>
+</div>
+
+</body>
+</html>

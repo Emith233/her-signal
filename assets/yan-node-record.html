@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>#0601 / 监视后台</title>
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100%; height: 100%; background: #06090b; color: #c8d4cf; }
+body {
+  overflow: hidden;
+  font-family: "Courier New", "Microsoft YaHei", monospace;
+}
+.monitor {
+  height: 100%;
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: 42px minmax(0, 1fr) 30px;
+  background:
+    radial-gradient(circle at 70% 20%, rgba(78, 112, 105, .18), transparent 34%),
+    linear-gradient(180deg, #0b1114, #050708);
+}
+.topbar {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) 180px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  border-bottom: 1px solid #22343a;
+  background: #0d1519;
+  color: #8fa8a1;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.live {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background: #b43b3b;
+  box-shadow: 0 0 12px rgba(180, 59, 59, .72);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse { 50% { opacity: .32; } }
+.query {
+  color: #d6e2dd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.time { text-align: right; color: #728780; }
+.grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 250px;
+  gap: 10px;
+  padding: 10px;
+}
+.panel {
+  min-height: 0;
+  border: 1px solid #22343a;
+  background: rgba(11, 17, 20, .88);
+  display: flex;
+  flex-direction: column;
+}
+.panel-title {
+  flex-shrink: 0;
+  padding: 9px 11px;
+  border-bottom: 1px solid #22343a;
+  background: rgba(255,255,255,.025);
+  color: #85a39b;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.panel-body {
+  min-height: 0;
+  overflow: auto;
+  padding: 10px;
+}
+.identity {
+  display: grid;
+  gap: 8px;
+}
+.field {
+  border: 1px solid #1c2c31;
+  background: rgba(255,255,255,.02);
+  padding: 8px;
+}
+.label {
+  display: block;
+  color: #617973;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+.value { color: #d4ded9; font-size: 13px; }
+.modules {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+.module {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px dotted rgba(124,154,145,.2);
+  padding-bottom: 5px;
+  font-size: 12px;
+}
+.ok { color: #9cc9b7; }
+.muted { color: #62716f; }
+.warn { color: #d2a17f; }
+.trace {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(180px, 1fr) 160px;
+  gap: 10px;
+}
+.map {
+  position: relative;
+  border: 1px solid #1c2c31;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,.025) 1px, transparent 1px),
+    rgba(4, 8, 10, .6);
+  background-size: 34px 34px;
+  overflow: hidden;
+}
+.map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, rgba(145, 181, 170, .1), transparent);
+  height: 30%;
+  animation: scan 3.2s linear infinite;
+}
+@keyframes scan {
+  from { transform: translateY(-120%); }
+  to { transform: translateY(340%); }
+}
+.dot {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1px solid #324a50;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #6e827e;
+  font-size: 11px;
+  background: #0c1418;
+  z-index: 2;
+}
+.dot.open { border-color: #5b8876; color: #b2d6c7; box-shadow: 0 0 16px rgba(91,136,118,.18); }
+.dot.confirmed { background: #1b2d2b; }
+.dot.current { border-color: #b99a63; color: #e0c68f; box-shadow: 0 0 22px rgba(185,154,99,.24); }
+.edge {
+  position: absolute;
+  height: 1px;
+  transform-origin: 0 0;
+  background: rgba(82, 104, 103, .28);
+  z-index: 1;
+}
+.edge.open {
+  background: rgba(111, 164, 140, .72);
+  box-shadow: 0 0 10px rgba(111, 164, 140, .18);
+}
+.feed {
+  border: 1px solid #1c2c31;
+  overflow: auto;
+  padding: 9px 10px;
+  background: rgba(0,0,0,.2);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.feed-line {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 10px;
+  border-bottom: 1px dotted rgba(124,154,145,.16);
+  padding: 2px 0;
+}
+.feed-line:last-child { border-bottom: 0; }
+.feed-time { color: #5f746f; }
+.side-list {
+  display: grid;
+  gap: 7px;
+  font-size: 12px;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px dotted rgba(124,154,145,.2);
+  padding-bottom: 5px;
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 14px;
+  border-top: 1px solid #22343a;
+  color: #5f746f;
+  font-size: 11px;
+  background: #0d1519;
+}
+@media (max-width: 860px) {
+  body { overflow: auto; }
+  .monitor { min-height: 100vh; height: auto; }
+  .topbar, .grid { grid-template-columns: 1fr; }
+  .time { text-align: left; }
+  .grid { min-height: 900px; }
+}
+</style>
+</head>
+<body>
+<main class="monitor">
+  <header class="topbar">
+    <div><span class="live"></span>#0601 / WATCH CONSOLE</div>
+    <div class="query">TARGET: 02#56741 · NODE: #06 · ROLE: 调查者</div>
+    <div class="time" id="stamp">--</div>
+  </header>
+
+  <section class="grid">
+    <aside class="panel">
+      <div class="panel-title">对象档案</div>
+      <div class="panel-body">
+        <div class="identity">
+          <div class="field"><span class="label">SESSION</span><span class="value">02#56741</span></div>
+          <div class="field"><span class="label">身份标记</span><span class="value">调查者</span></div>
+          <div class="field"><span class="label">当前节点</span><span class="value">#06</span></div>
+          <div class="field"><span class="label">记录状态</span><span class="value ok">持续写入</span></div>
+        </div>
+        <div class="panel-title" style="margin:12px -10px 0;">控制模块</div>
+        <div class="modules" id="modules"></div>
+      </div>
+    </aside>
+
+    <section class="panel">
+      <div class="panel-title">路径监视</div>
+      <div class="panel-body trace">
+        <div class="map" id="map"></div>
+        <div class="feed" id="feed"></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-title">行为统计</div>
+      <div class="panel-body">
+        <div class="side-list" id="stats"></div>
+        <div class="panel-title" style="margin:14px -10px 0;">错误输入</div>
+        <div class="side-list" id="errors" style="margin-top:10px;"></div>
+        <div class="panel-title" style="margin:14px -10px 0;">日志索引</div>
+        <div class="side-list" id="logs" style="margin-top:10px;"></div>
+      </div>
+    </aside>
+  </section>
+
+  <footer class="footer">
+    <span>输入、关闭、切换、停留，均计入记录。</span>
+  </footer>
+</main>
+<script>
+(function() {
+  var params = new URLSearchParams(location.search);
+  function parse(name, fallback) {
+    try { return JSON.parse(params.get(name) || ''); } catch(e) { return fallback; }
+  }
+  function padNode(id) { return '#' + String(id).padStart(2, '0'); }
+  function row(left, right, cls) {
+    return '<div class="row"><span>' + left + '</span><span class="' + (cls || 'muted') + '">' + right + '</span></div>';
+  }
+  function feed(type, text) {
+    return '<div class="feed-line"><span class="feed-time">' + type + '</span><span>' + text + '</span></div>';
+  }
+
+  var opened = parse('opened', []);
+  var confirmed = parse('confirmed', []);
+  var errors = parse('errors', {});
+  var modules = parse('modules', {});
+  var logs = parse('logs', []);
+
+  function getStoryNow() {
+    var storyStart = new Date('2026-07-06T00:00:00+08:00').getTime();
+    var key = 'citymystery_story_real_start';
+    var realStart = Number(localStorage.getItem(key) || '0');
+    if (!realStart) {
+      realStart = Date.now();
+      try { localStorage.setItem(key, String(realStart)); } catch(e) {}
+    }
+    return new Date(storyStart + Math.max(0, Date.now() - realStart));
+  }
+
+  /* document.getElementById('stamp').textContent = getStoryNow().toLocaleString('zh-CN', { hour12: false }); */
+
+  var positions = {
+    1:[34,60], 2:[44,76], 3:[76,38], 4:[86,84], 5:[38,36], 6:[86,26], 7:[10,86],
+    8:[72,46], 9:[46,52], 10:[22,44], 11:[70,78], 12:[18,78], 13:[64,30], 14:[60,62],
+    15:[10,32], 16:[8,54], 17:[52,20], 18:[24,22], 19:[30,88], 20:[56,82], 21:[84,56]
+  };
+  var connections = [
+    [7,12], [12,19], [19,2], [2,20], [20,11], [11,4],
+    [4,21], [21,8], [8,14], [14,9], [9,1], [1,10], [10,16],
+    [16,15], [15,18], [18,5], [5,17], [17,13], [13,3], [3,6]
+  ];
+  var map = document.getElementById('map');
+  var mapWidth = map.clientWidth || 640;
+  var mapHeight = map.clientHeight || 360;
+  function point(pos) {
+    return {
+      x: pos[0] / 100 * mapWidth,
+      y: pos[1] / 100 * mapHeight
+    };
+  }
+  function drawEdge(a, b, active) {
+    var p1 = positions[a];
+    var p2 = positions[b];
+    if (!p1 || !p2) return;
+    var start = point(p1);
+    var end = point(p2);
+    var dx = end.x - start.x;
+    var dy = end.y - start.y;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    var angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    map.insertAdjacentHTML('beforeend',
+      '<div class="edge' + (active ? ' open' : '') + '" style="left:' + start.x + 'px;top:' + start.y + 'px;width:' + len + 'px;transform:rotate(' + angle + 'deg);"></div>'
+    );
+  }
+  connections.forEach(function(pair) {
+    var a = pair[0];
+    var b = pair[1];
+    var active = opened.indexOf(a) !== -1 && opened.indexOf(b) !== -1;
+    drawEdge(a, b, active);
+  });
+  if (confirmed.indexOf(6) !== -1) {
+    positions[0] = [80, 8];
+    drawEdge(6, 0, true);
+  }
+  Object.keys(positions).forEach(function(id) {
+    var pos = positions[id];
+    var cls = 'dot';
+    if (opened.indexOf(Number(id)) !== -1) cls += ' open';
+    if (confirmed.indexOf(Number(id)) !== -1) cls += ' confirmed';
+    if (Number(id) === 6) cls += ' current';
+    if (Number(id) === 0) cls += ' open';
+    map.insertAdjacentHTML('beforeend', '<div class="' + cls + '" style="left:' + pos[0] + '%;top:' + pos[1] + '%;">' + id + '</div>');
+  });
+
+  document.getElementById('modules').innerHTML = [
+    ['小E', 'online', 'ok'],
+    ['微聊', modules.wechat ? 'mounted' : '未接入', modules.wechat ? 'ok' : 'muted'],
+    ['日志归档', modules.logs ? 'indexed' : '未接入', modules.logs ? 'ok' : 'muted'],
+    ['聚合搜索', modules.search ? 'mounted' : '未接入', modules.search ? 'ok' : 'muted']
+  ].map(function(item) { return '<div class="module"><span>' + item[0] + '</span><span class="' + item[2] + '">' + item[1] + '</span></div>'; }).join('');
+
+  document.getElementById('stats').innerHTML = [
+    row('已开启节点', opened.length + ' / ' + (confirmed.indexOf(6) !== -1 ? 22 : 21), 'ok'),
+    row('已确认地名', confirmed.length + ' / ' + (confirmed.indexOf(6) !== -1 ? 22 : 21), confirmed.length ? 'ok' : 'muted'),
+    row('当前停留', '#06', 'warn'),
+    row('对象状态', '已入场', 'warn')
+  ].join('');
+
+  var errorKeys = Object.keys(errors).filter(function(key) { return Number(errors[key]) > 0; }).sort(function(a,b) { return Number(a) - Number(b); });
+  document.getElementById('errors').innerHTML = errorKeys.length
+    ? errorKeys.map(function(id) { return row(padNode(id), errors[id] + ' 次', 'warn'); }).join('')
+    : row('错误输入', '0 次', 'ok');
+
+  document.getElementById('logs').innerHTML = logs.length
+    ? logs.map(function(id) { return row(id, 'viewed', 'ok'); }).join('')
+    : row('归档记录', '无', 'muted');
+
+  var feedLines = [];
+  feedLines.push(feed('ENTRY', '02#56741 进入 #06'));
+  opened.slice().sort(function(a,b){return a-b;}).forEach(function(id) {
+    feedLines.push(feed('NODE', padNode(id) + ' 已开启'));
+  });
+  confirmed.slice().sort(function(a,b){return a-b;}).forEach(function(id) {
+    feedLines.push(feed('VERIFY', padNode(id) + ' 地名已确认'));
+  });
+  errorKeys.forEach(function(id) {
+    feedLines.push(feed('ERROR', padNode(id) + ' 输入错误 ' + errors[id] + ' 次'));
+  });
+  if (logs.length) {
+    logs.forEach(function(id) { feedLines.push(feed('LOG', id + ' 已索引')); });
+  }
+  feedLines.push(feed('WATCH', '离场指令等待中'));
+  document.getElementById('feed').innerHTML = feedLines.join('');
+})();
+</script>
+</body>
+</html>

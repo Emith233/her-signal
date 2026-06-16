@@ -1,0 +1,165 @@
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body {
+  background: #000;
+  color: #eee;
+  font-family: "Songti SC", SimSun, serif;
+  overflow: hidden;
+}
+.ending-shell {
+  width: 100vw;
+  min-height: 100vh;
+  padding: 36px 24px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  animation: endingAppear 1.4s ease both;
+}
+.ending-content {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  width: min(720px, 100%);
+}
+.ending-id {
+  color: #d6d6d6;
+  font-size: 13px;
+  letter-spacing: 6px;
+  font-family: "Courier New", monospace;
+}
+.ending-title {
+  margin: 0;
+  font-size: clamp(72px, 18vw, 180px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: 10px;
+}
+.ending-title .red,
+.red {
+  color: #a3131d;
+}
+.ending-title .green,
+.green {
+  color: #36b7ad;
+}
+.ending-title .gray,
+.gray {
+  color: #8f8f8f;
+}
+.ending-title .gold,
+.gold {
+  color: #d6b35a;
+}
+.ending-text {
+  margin: 0;
+  max-width: 620px;
+  color: #aaa;
+  font-size: 16px;
+  line-height: 2;
+  letter-spacing: 1px;
+}
+.story {
+  position: relative;
+  width: min(780px, calc(100vw - 36px));
+  height: min(660px, 78vh);
+  text-align: center;
+  color: #d8d8d8;
+  font-size: clamp(20px, 2.35vw, 26px);
+  line-height: 2.05;
+  letter-spacing: 1px;
+}
+.story p {
+  margin: 0;
+}
+.line-in {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--line-top, 0px);
+  opacity: 0;
+  visibility: hidden;
+  min-height: 2em;
+  transform: none;
+}
+.line-in.shown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 1.15s ease, visibility 1.15s ease;
+}
+.story .center {
+  text-align: center;
+}
+.story .quiet {
+  color: #8c8c8c;
+}
+.story .final-red {
+  color: #b30f1b;
+  font-size: clamp(38px, 6.8vw, 68px);
+  font-weight: 700;
+  line-height: 1.7;
+  text-align: center;
+  letter-spacing: 3px;
+}
+.line-in.final-red.shown {
+  transition: none;
+}
+body.ending-e01 .ending-id,
+body.ending-e01 .ending-title {
+  color: #a3131d;
+}
+body.ending-e02 .ending-id,
+body.ending-e02 .ending-title {
+  color: #8f8f8f;
+}
+body.ending-e03 .ending-id,
+body.ending-e03 .ending-title {
+  color: #36b7ad;
+}
+body.ending-e04 .ending-id,
+body.ending-e04 .ending-title {
+  color: #d6b35a;
+}
+.ending-back,
+.story-btn {
+  margin-top: 26px;
+  border: 1px solid #444;
+  background: transparent;
+  color: #c9c9c9;
+  padding: 14px 34px;
+  font: 18px/1 "Microsoft YaHei", "PingFang SC", sans-serif;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+}
+.ending-back:hover,
+.story-btn:hover {
+  border-color: #777;
+  color: #fff;
+}
+.hidden {
+  display: none;
+}
+.fade {
+  animation: endingAppear 1.1s ease both;
+}
+@keyframes endingAppear {
+  from { opacity: 0; filter: blur(5px); }
+  to { opacity: 1; filter: blur(0); }
+}
+@media (max-width: 620px) {
+  body { overflow: auto; }
+  .ending-shell { min-height: 100vh; padding: 28px 16px; }
+  .ending-title { font-size: clamp(68px, 26vw, 132px); letter-spacing: 5px; }
+  .story { font-size: 18px; line-height: 1.85; }
+  .ending-back, .story-btn { padding: 12px 24px; font-size: 16px; }
+}
+@media (max-width: 480px) {
+  .ending-shell { padding: 20px 12px; }
+  .ending-id { font-size: 11px; letter-spacing: 4px; }
+  .ending-title { font-size: clamp(52px, 22vw, 90px); letter-spacing: 3px; }
+  .story { height: auto; min-height: min(520px, 70vh); font-size: 16px; line-height: 1.8; }
+  .line-in { top: auto; position: relative; margin: 6px 0; min-height: 1.6em; }
+  .story .final-red { font-size: clamp(28px, 8vw, 48px); }
+  .ending-back, .story-btn { margin-top: 18px; padding: 10px 20px; font-size: 15px; min-height: 44px; }
+  .ending-text { font-size: 14px; }
+}

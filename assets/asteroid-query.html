@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小行星查询系统 · 紫银山天文台</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(40, 80, 120, 0.15), transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(30, 60, 100, 0.10), transparent 50%),
+    #0f1828;
+  color: #dce5ed;
+  font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background: rgba(18, 28, 46, 0.8);
+  backdrop-filter: blur(2px);
+  border-bottom: 1px solid rgba(60, 120, 170, 0.08);
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.topbar .mpc {
+  font-size: 10px;
+  color: rgba(100, 170, 220, 0.25);
+  border: 1px solid rgba(60, 120, 170, 0.1);
+  padding: 3px 9px;
+  border-radius: 3px;
+  letter-spacing: 1px;
+}
+.topbar .title {
+  font-size: 13px;
+  color: rgba(160, 200, 220, 0.45);
+  letter-spacing: 3px;
+  font-weight: 400;
+}
+.topbar .title span { color: rgba(100, 170, 220, 0.15); }
+
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+}
+
+.panel {
+  width: 480px;
+  max-width: 100%;
+}
+
+/* 查询行 */
+.query-row {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(20, 34, 56, 0.9), rgba(16, 28, 48, 0.9));
+  border: 1px solid rgba(60, 120, 170, 0.1);
+  border-radius: 8px;
+  padding: 6px 6px 6px 22px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.query-row:focus-within {
+  border-color: rgba(80, 150, 210, 0.2);
+  box-shadow: 0 2px 25px rgba(40, 100, 180, 0.06);
+}
+.query-row .qlabel {
+  font-size: 11px;
+  color: rgba(100, 170, 220, 0.3);
+  letter-spacing: 2px;
+  margin-right: 14px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.query-row .pref {
+  color: rgba(80, 150, 210, 0.2);
+  font-size: 16px;
+  margin-right: 4px;
+}
+.query-row input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: #d0e4f0;
+  font-family: "SF Mono", "JetBrains Mono", "Courier New", monospace;
+  font-size: 20px;
+  padding: 10px 4px;
+  outline: none;
+  letter-spacing: 5px;
+  font-weight: 400;
+}
+.query-row input::placeholder {
+  color: rgba(60, 120, 170, 0.08);
+  font-size: 14px;
+  letter-spacing: 2px;
+  font-weight: 300;
+}
+.query-row button {
+  background: linear-gradient(135deg, rgba(40, 90, 160, 0.15), rgba(30, 70, 140, 0.10));
+  border: 1px solid rgba(60, 120, 170, 0.12);
+  color: rgba(140, 200, 230, 0.5);
+  padding: 9px 26px;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+}
+.query-row button:hover {
+  background: linear-gradient(135deg, rgba(50, 110, 190, 0.2), rgba(40, 90, 170, 0.15));
+  border-color: rgba(80, 150, 210, 0.2);
+  color: rgba(160, 215, 240, 0.7);
+}
+
+/* 提示 */
+.hint {
+  font-size: 12px;
+  color: rgba(80, 150, 210, 0.12);
+  margin-top: 10px;
+  min-height: 1.4em;
+  padding-left: 4px;
+  letter-spacing: 0.5px;
+}
+.hint.err { color: rgba(200, 130, 110, 0.5); }
+
+/* 结果卡片 */
+.result {
+  display: none;
+  margin-top: 18px;
+}
+.result.show { display: block; }
+
+.card {
+  background: linear-gradient(135deg, rgba(20, 34, 56, 0.85), rgba(14, 26, 46, 0.85));
+  border: 1px solid rgba(60, 120, 170, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+.card .content {
+  padding: 24px 28px;
+}
+.card .fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card .fields .row {
+  display: flex;
+  align-items: baseline;
+}
+.card .fields .row .k {
+  width: 48px;
+  font-size: 10px;
+  color: rgba(80, 150, 210, 0.2);
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.card .fields .row .v {
+  font-size: 16px;
+  color: #d0dce8;
+  letter-spacing: 0.3px;
+}
+.card .fields .row .v .hl {
+  color: rgba(100, 190, 240, 0.7);
+}
+.card .fields .row .v .sub {
+  font-size: 13px;
+  color: rgba(100, 170, 220, 0.2);
+  margin-left: 6px;
+}
+.card .fields .hr {
+  border: none;
+  border-top: 1px solid rgba(60, 120, 170, 0.05);
+  margin: 5px 0;
+}
+
+/* 轨道 */
+.orbit-box {
+  background: rgba(8, 16, 30, 0.3);
+  border-top: 1px solid rgba(60, 120, 170, 0.04);
+  padding: 14px;
+  text-align: center;
+}
+.orbit-box canvas {
+  width: 170px;
+  height: 58px;
+  display: inline-block;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="mpc">MPC</span>
+  <span class="title">紫银山天文台 <span>·</span> 小行星数据库</span>
+</div>
+
+<div class="main">
+  <div class="panel">
+
+    <div class="query-row">
+      <span class="qlabel">编号</span>
+      <span class="pref">#</span>
+      <input type="text" id="i" maxlength="6" placeholder="输入编号" autofocus>
+      <button id="b">查询</button>
+    </div>
+
+    <div class="hint" id="h">请输入小行星编号</div>
+
+    <div class="result" id="r">
+      <div class="card">
+        <div class="content">
+          <div class="fields">
+            <div class="row">
+              <div class="k">编号</div>
+              <div class="v"><span class="hl" id="rn">#3452</span></div>
+            </div>
+            <div class="row">
+              <div class="k">名称</div>
+              <div class="v" id="rnm">Wang Zhenyi <span class="sub">王贞仪</span></div>
+            </div>
+            <hr class="hr">
+            <div class="row">
+              <div class="k">分类</div>
+              <div class="v" id="ro">主带小行星</div>
+            </div>
+            <div class="row">
+              <div class="k">发现</div>
+              <div class="v" id="rd">1931-01-12</div>
+            </div>
+          </div>
+        </div>
+        <div class="orbit-box">
+          <canvas id="oc"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var i=document.getElementById('i'), b=document.getElementById('b');
+  var h=document.getElementById('h'), r=document.getElementById('r');
+  var rn=document.getElementById('rn'), rnm=document.getElementById('rnm');
+  var ro=document.getElementById('ro'), rd=document.getElementById('rd');
+  var c=document.getElementById('oc'), x=c.getContext('2d');
+  var found=false;
+  c.width=340; c.height=116;
+
+  function draw(s){
+    var w=340, h=116, cx=w*0.42, cy=h*0.5, sc=Math.min(w,h)*0.28;
+    x.clearRect(0,0,w,h);
+
+    x.strokeStyle='rgba(100,170,220,0.025)'; x.lineWidth=0.3;
+    for(var i=-3;i<=3;i++){
+      x.beginPath(); x.moveTo(cx+i*sc*0.2,0); x.lineTo(cx+i*sc*0.2,h); x.stroke();
+      x.beginPath(); x.moveTo(0,cy+i*sc*0.2); x.lineTo(w,cy+i*sc*0.2); x.stroke();
+    }
+
+    x.beginPath(); x.arc(cx,cy,sc*0.35,0,Math.PI*2);
+    x.strokeStyle='rgba(100,170,220,0.08)'; x.lineWidth=0.5; x.stroke();
+
+    var g=x.createRadialGradient(cx-2,cy-2,0,cx,cy,sc*0.07);
+    g.addColorStop(0,'rgba(220,210,180,0.08)'); g.addColorStop(1,'rgba(220,210,180,0.01)');
+    x.fillStyle=g; x.beginPath(); x.arc(cx,cy,sc*0.07,0,Math.PI*2); x.fill();
+    x.fillStyle='rgba(220,210,180,0.12)'; x.beginPath(); x.arc(cx,cy,1.3,0,Math.PI*2); x.fill();
+
+    var ea=Date.now()*0.00004;
+    var ex=cx+Math.cos(ea)*sc*0.35, ey=cy+Math.sin(ea)*sc*0.35;
+    x.fillStyle='rgba(80,170,240,0.15)'; x.beginPath(); x.arc(ex,ey,1.3,0,Math.PI*2); x.fill();
+
+    if(s){
+      x.beginPath(); x.ellipse(cx+sc*0.02,cy,sc*0.55,sc*0.4,0.08,0,Math.PI*2);
+      x.strokeStyle='rgba(80,200,180,0.08)'; x.lineWidth=0.5; x.setLineDash([3,4]); x.stroke(); x.setLineDash([]);
+
+      var aa=Date.now()*0.00006;
+      var ax=cx+sc*0.02+Math.cos(aa)*sc*0.55, ay=cy+Math.sin(aa)*sc*0.4;
+      x.shadowColor='rgba(80,200,180,0.08)'; x.shadowBlur=5;
+      x.fillStyle='rgba(80,200,180,0.25)'; x.beginPath(); x.arc(ax,ay,1.3,0,Math.PI*2); x.fill();
+      x.shadowBlur=0;
+    }
+  }
+  setInterval(function(){draw(found);},100);
+
+  function q(){
+    var v=i.value.trim();
+    if(v==='3452'){
+      found=true; rn.textContent='#'+v;
+      rnm.innerHTML='Wang Zhenyi <span class="sub">王贞仪</span>';
+      ro.textContent='主带小行星'; rd.textContent='1931-01-12';
+      r.classList.add('show'); h.textContent='找到 1 条记录'; h.className='hint';
+    }else if(v===''){
+      found=false; r.classList.remove('show'); h.textContent='请输入小行星编号'; h.className='hint';
+    }else{
+      found=false; r.classList.remove('show'); h.textContent='未找到匹配记录，请确认编号'; h.className='hint err';
+    }
+  }
+  b.addEventListener('click',q);
+  i.addEventListener('keydown',function(e){if(e.key==='Enter')q();});
+  draw(false);
+})();
+</script>
+</body>
+</html>

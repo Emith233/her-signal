@@ -1,0 +1,141 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>备忘录</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { min-height: 100vh; }
+body {
+  background: #e8e4dc;
+  font-family: "Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 28px 12px;
+  color: #1a1a1a;
+}
+
+.notepad {
+  width: min(620px, 100%);
+  background: #fffdf7;
+  border: 1px solid #d0ccc4;
+  box-shadow: 2px 3px 12px rgba(0,0,0,0.10);
+  position: relative;
+}
+
+/* 顶部 */
+.notepad .topbar {
+  background: #f5f0e8;
+  border-bottom: 1px solid #d8d4cc;
+  padding: 8px 14px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.notepad .topbar .title {
+  font-size: 13px; font-weight: 600; color: #444; letter-spacing: 0.5px;
+}
+.notepad .topbar .time {
+  font-size: 11px; color: #999;
+}
+
+/* 工具栏 */
+.notepad .toolbar {
+  background: #faf8f4;
+  border-bottom: 1px solid #e0dcd4;
+  padding: 6px 14px;
+  display: flex; gap: 16px; align-items: center;
+  font-size: 11px; color: #888;
+}
+.notepad .toolbar .icon {
+  display: inline-block; width: 14px; text-align: center; color: #aaa;
+}
+
+/* 正文区 */
+.notepad .body {
+  padding: 24px 30px 30px;
+  font-size: 16px;
+  line-height: 1.82;
+  color: #2a2a2a;
+  min-height: 380px;
+}
+.notepad .body .date-line {
+  font-size: 12px; color: #999; margin-bottom: 14px;
+  border-bottom: 1px dashed #e0dcd4; padding-bottom: 8px;
+}
+.notepad .body p {
+  margin-bottom: 0;
+  text-indent: 0;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+.notepad .body .empty-line {
+  height: 1em;
+}
+.notepad .body strong {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* 底部状态栏 */
+.notepad .statusbar {
+  background: #f5f0e8;
+  border-top: 1px solid #d8d4cc;
+  padding: 6px 14px;
+  font-size: 10px; color: #aaa;
+  display: flex; justify-content: space-between;
+}
+
+/* 纸张横线纹理 */
+.notepad .rule-line {
+  position: absolute; left: 22px; right: 22px;
+  border-bottom: 1px solid #f0ece4;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<div class="notepad">
+
+  <div class="topbar">
+    <span class="title">&#x270E; 备忘录</span>
+    <span class="time">最后编辑：2026年6月11日 20:03</span>
+  </div>
+
+  <div class="toolbar">
+    <span><span class="icon">&#x270E;</span> 编辑</span>
+    <span><span class="icon">&#x2B06;</span> 分享</span>
+    <span><span class="icon">&#x1F4C2;</span> 整理</span>
+    <span style="margin-left:auto; color:#b0a898;">自建备忘录</span>
+  </div>
+
+  <div class="body">
+
+    <div class="date-line">2026年6月11日 20:03 &nbsp;|&nbsp; 来自 iPhone</div>
+
+    <p>离家到现在，差不多两周多了。</p>
+
+    <p>偃说，只要我把这些都走一遍，就能实现我的愿望。</p>
+
+    <p>我又不傻。我没什么愿望，只是找个借口出走罢了。</p>
+
+    <div class="empty-line"></div>
+
+    <p>至今和偃全是线上联络。没见过面，不知道他长什么样，也不知道他到底想干嘛。</p>
+
+    <p>走过的地方，偃说是循序渐进的。按他的说法，后面的<strong>仪式</strong>会越来越难。</p>
+
+    <p>偃让我别担心。我本来就不担心，只是觉得……漫长。</p>
+
+    <p>仪式之后是<strong>请式</strong>。偃说仪式必须实地完成，请式则可以通过媒介。</p>
+
+    <p>但请式到底是什么，我其实完全不知道。</p>
+
+  </div>
+
+  <div class="statusbar">
+    <span>字数：198</span>
+    <span>未同步到 iCloud</span>
+  </div>
+
+</div>
+
+</body>
+</html>

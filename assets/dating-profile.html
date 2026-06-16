@@ -1,0 +1,241 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>个人相亲简历</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background: #f0f2f5;
+  font-family: "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  color: #333;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 32px 16px;
+}
+
+.profile-page {
+  width: 720px;
+  padding-bottom: 40px;
+}
+
+/* ===== 导航 ===== */
+.nav-bar {
+  background: #fff; border-radius: 10px; padding: 0 20px;
+  margin-bottom: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  display: flex; align-items: center; height: 52px;
+}
+.nav-bar .logo {
+  font-size: 16px; font-weight: 600; color: #e05a5a;
+  margin-right: 36px; letter-spacing: 1px;
+}
+.nav-bar a {
+  text-decoration: none; color: #555; font-size: 14px;
+  margin-right: 24px; padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.nav-bar a.active {
+  color: #e05a5a; border-bottom-color: #e05a5a;
+}
+.nav-bar a:hover { color: #e05a5a; }
+
+/* ===== 资料卡 ===== */
+.profile-card {
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+/* 头部 */
+.card-header {
+  background: linear-gradient(135deg, #fae8e8, #fdf2f2);
+  padding: 28px 30px 24px;
+  display: flex; gap: 24px;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 90px; height: 90px; border-radius: 50%;
+  background: linear-gradient(135deg, #d4c8b8, #c0b0a0);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: #fff; font-weight: 300;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.avatar-placeholder { margin-top: 6px; }
+
+.header-info {
+  flex: 1; padding-top: 4px;
+}
+.header-info .name {
+  font-size: 22px; font-weight: 600; color: #222;
+  display: flex; align-items: center; gap: 10px;
+}
+.header-info .name .tag {
+  font-size: 11px; color: #e05a5a; background: #fdecec;
+  padding: 1px 10px; border-radius: 10px; font-weight: 400;
+}
+.header-info .basic {
+  margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 18px;
+  font-size: 14px; color: #666;
+}
+.header-info .basic span { display: inline-flex; align-items: center; gap: 4px; }
+.header-info .basic .dot { color: #ddd; }
+
+/* ===== 标签区 ===== */
+.section { padding: 20px 30px; border-bottom: 1px solid #f0f0f0; }
+.section:last-of-type { border-bottom: none; }
+
+.section-title {
+  font-size: 15px; font-weight: 600; color: #333;
+  margin-bottom: 12px; display: flex; align-items: center;
+}
+.section-title .bar {
+  display: inline-block; width: 3px; height: 16px;
+  background: #e05a5a; border-radius: 2px; margin-right: 8px;
+}
+
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag {
+  background: #f5f5f5; color: #555; font-size: 13px;
+  padding: 4px 14px; border-radius: 14px; border: 1px solid #eee;
+}
+
+/* 自我介绍 */
+.desc-text {
+  font-size: 14px; line-height: 1.9; color: #444;
+}
+.desc-text p { margin-bottom: 0.5em; }
+.desc-text p:last-child { margin-bottom: 0; }
+
+/* 择偶要求 */
+.require-list { list-style: none; padding: 0; }
+.require-list li {
+  font-size: 14px; color: #444; line-height: 2;
+  padding-left: 18px; position: relative;
+}
+.require-list li::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 5px; height: 5px; background: #e05a5a; border-radius: 50%;
+  opacity: 0.5;
+}
+
+/* ===== 联系方式区 ===== */
+.contact-section {
+  background: #faf8f6; padding: 20px 30px;
+  border-top: 1px solid #eee;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.contact-info { flex: 1; }
+.contact-info .label {
+  font-size: 12px; color: #999; margin-bottom: 6px; letter-spacing: 1px;
+}
+.contact-info .wxid {
+  font-size: 18px; font-weight: 600; color: #e05a5a;
+  letter-spacing: 1px;
+}
+.contact-info .wxid .prefix {
+  font-weight: 400; color: #888; font-size: 13px;
+}
+
+/* ===== 底部 ===== */
+.footer {
+  margin-top: 18px; text-align: center;
+  font-size: 11px; color: #ccc; letter-spacing: 0.5px;
+}
+</style>
+</head>
+<body>
+
+<div class="profile-page">
+
+  <!-- 导航 -->
+  <div class="nav-bar">
+    <div class="logo">&#x2661; 心意相知</div>
+    <a href="#" class="active">资料</a>
+    <a href="#">动态</a>
+    <a href="#">择偶要求</a>
+    <a href="#">联系他</a>
+  </div>
+
+  <!-- 资料卡 -->
+  <div class="profile-card">
+
+    <!-- 头部 -->
+    <div class="card-header">
+      <img src="荷花头像.jpg" alt="头像" style="width:90px;height:90px;border-radius:50%;object-fit:cover;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+      <div class="header-info">
+        <div class="name">
+          迟来的晴天
+          <span class="tag">认真了解中</span>
+        </div>
+        <div class="basic">
+          <span>31岁</span><span class="dot">|</span>
+          <span>男</span><span class="dot">|</span>
+          <span>暂未公开</span><span class="dot">|</span>
+          <span>数据整理员</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 兴趣与性格 -->
+    <div class="section">
+      <div class="section-title"><span class="bar"></span>兴趣</div>
+      <div class="tag-list">
+        <span class="tag">阅读</span>
+        <span class="tag">散步</span>
+        <span class="tag">旧资料整理</span>
+        <span class="tag">天气记录</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="bar"></span>性格标签</div>
+      <div class="tag-list">
+        <span class="tag">稳重</span>
+        <span class="tag">安静</span>
+        <span class="tag">细心</span>
+        <span class="tag">重视承诺</span>
+      </div>
+    </div>
+
+    <!-- 自我介绍 -->
+    <div class="section">
+      <div class="section-title"><span class="bar"></span>自我介绍</div>
+      <div class="desc-text">
+        <p>我不太相信系统自动推荐出来的匹配。</p>
+        <p>比起条件完全合适，我更在意两个人是否愿意认真回应。</p>
+        <p>如果你真的想认识我，请记住我的微聊号。</p>
+        <p>有些关系不是靠算法开始的，而是靠一次明确的选择。</p>
+      </div>
+    </div>
+
+    <!-- 择偶要求 -->
+    <div class="section">
+      <div class="section-title"><span class="bar"></span>择偶要求</div>
+      <ul class="require-list">
+        <li>真诚</li>
+        <li>有耐心</li>
+        <li>能认真回复消息</li>
+        <li>不轻易失联</li>
+        <li>愿意做出明确选择</li>
+        <li>尊重彼此的节奏</li>
+      </ul>
+    </div>
+
+    <!-- 联系方式 -->
+    <div class="contact-section">
+      <div class="contact-info">
+        <div class="label">联系方式</div>
+        <div class="wxid">
+          <span class="prefix">微聊号：</span>HKFD1314
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

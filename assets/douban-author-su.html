@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>豆板作者 · 苏见微</title>
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: #f3f3f0;
+  color: #333;
+  font: 13px/1.75 "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+}
+a { color: #3377aa; text-decoration: none; }
+a:hover { color: #fff; background: #3377aa; }
+.topbar {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 0 22px;
+  background: #edf4ed;
+  border-bottom: 1px solid #d5dfd5;
+}
+.logo { color: #0a8f3c; font-size: 20px; font-weight: 700; letter-spacing: 3px; }
+.nav { color: #55705d; font-size: 12px; }
+.wrap {
+  width: min(920px, calc(100% - 28px));
+  margin: 24px auto 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 22px;
+}
+.main, .side {
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.main { padding: 24px 28px 30px; }
+.profile {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+.avatar {
+  width: 132px;
+  aspect-ratio: 3 / 4;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f7f7f7;
+  border: 1px solid #e2e2e2;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+h1 {
+  margin: 0;
+  color: #111;
+  font-size: 24px;
+  font-weight: 500;
+}
+.sub { margin-top: 6px; color: #777; }
+.meta { margin-top: 12px; color: #666; }
+.meta span { margin-right: 16px; }
+.section-title {
+  margin: 22px 0 10px;
+  color: #007722;
+  font-size: 15px;
+  font-weight: 600;
+}
+.bio p { margin: 0 0 10px; text-align: justify; }
+.works {
+  border-top: 1px solid #eee;
+  margin-top: 8px;
+}
+.work {
+  padding: 13px 0;
+  border-bottom: 1px solid #eee;
+}
+.work-title { color: #3377aa; font-size: 15px; }
+.work-meta { margin-top: 4px; color: #999; font-size: 12px; }
+.note {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: #f8f8f8;
+  color: #777;
+  border-left: 3px solid #d8d8d8;
+  font-size: 12px;
+}
+.side { padding: 18px; align-self: start; }
+.side h2 {
+  margin: 0 0 12px;
+  color: #007722;
+  font-size: 14px;
+}
+.stat {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed #e4e4e4;
+  color: #666;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.tag {
+  padding: 2px 8px;
+  background: #f1f7f1;
+  color: #4d7f57;
+  border: 1px solid #dcebdc;
+  border-radius: 2px;
+  font-size: 12px;
+}
+.footer {
+  width: min(920px, calc(100% - 28px));
+  margin: 0 auto 24px;
+  color: #aaa;
+  font-size: 11px;
+}
+@media (max-width: 760px) {
+  .wrap { display: block; }
+  .side { margin-top: 16px; }
+  .profile { grid-template-columns: 104px 1fr; gap: 14px; }
+  .avatar { width: 104px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">豆板</div>
+  <div class="nav">读书　电影　音乐　同城　小组</div>
+</div>
+
+<div class="wrap">
+  <main class="main">
+    <section class="profile">
+      <div class="avatar"><img src="sujianwei.png" alt="苏见微"></div>
+      <div>
+        <h1>苏见微</h1>
+        <div class="sub">悬疑推理小说作者 / 笔名：苏苏</div>
+        <div class="meta"><span>首次发表时间：2019-02-27</span><span>主页创建时间：2019-04-04</span></div>
+      </div>
+    </section>
+
+    <section class="bio">
+      <div class="section-title">作者简介</div>
+      <p>苏见微，青年悬疑推理小说作者，长期创作以“波波野女士”为主角的系列侦探故事。作品以女性侦探视角、城市传闻见长，风格偏本格推理。</p>
+      <p>读者常以笔名“苏苏”称呼她。她在访谈中提到，自己只是打造了波波野女士的泥塑，而读者们赐予她生命。</p>
+    </section>
+
+    <section>
+      <div class="section-title">相关作品</div>
+      <div class="works">
+        <div class="work">
+          <div class="work-title">《大侦探波波野女士》</div>
+          <div class="work-meta">悬疑 / 推理　2019-02-27</div>
+        </div>
+        <div class="work">
+          <div class="work-title">《密室中的波波野女士》</div>
+          <div class="work-meta">悬疑 / 推理　2020-09-18</div>
+        </div>
+        <div class="work">
+          <div class="work-title">《轮渡上的波波野女士》</div>
+          <div class="work-meta">悬疑 / 推理　2022-06-24</div>
+        </div>
+        <div class="work">
+          <div class="work-title">《波波野女士的巴黎之旅》</div>
+          <div class="work-meta">悬疑 / 推理 / 情感　2024-05-17</div>
+        </div>
+        <div class="work">
+          <div class="work-title">《波波野女士与未寄出的信》</div>
+          <div class="work-meta">悬疑 / 推理 / 情感　待出版</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="side">
+    <h2>作者信息</h2>
+    <div class="stat"><span>关注人数</span><strong>12437</strong></div>
+    <div class="stat"><span>作品收藏</span><strong>58291</strong></div>
+    <div class="stat"><span>读者短评</span><strong>3098</strong></div>
+    <div class="section-title">常见标签</div>
+    <div class="tag-row">
+      <span class="tag">悬疑</span>
+      <span class="tag">推理</span>
+      <span class="tag">女性侦探</span>
+      <span class="tag">波波野女士</span>
+    </div>
+  </aside>
+</div>
+
+<div class="footer">© 豆板读书 · 页面缓存 · 条目编号 author-102704</div>
+</body>
+</html>

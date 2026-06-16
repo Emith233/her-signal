@@ -1,0 +1,118 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>备忘录</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { min-height: 100vh; }
+body {
+  background: #e8e4dc;
+  font-family: "Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 28px 12px;
+  color: #1a1a1a;
+}
+.notepad {
+  width: min(620px, 100%);
+  background: #fffdf7;
+  border: 1px solid #d0ccc4;
+  box-shadow: 2px 3px 12px rgba(0,0,0,0.10);
+  position: relative;
+}
+.notepad .topbar {
+  background: #f5f0e8;
+  border-bottom: 1px solid #d8d4cc;
+  padding: 8px 14px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.notepad .topbar .title { font-size: 13px; font-weight: 600; color: #444; letter-spacing: 0.5px; }
+.notepad .topbar .time { font-size: 11px; color: #999; }
+.notepad .toolbar {
+  background: #faf8f4;
+  border-bottom: 1px solid #e0dcd4;
+  padding: 6px 14px;
+  display: flex; gap: 16px; align-items: center;
+  font-size: 11px; color: #888;
+}
+.notepad .toolbar .icon { display: inline-block; width: 14px; text-align: center; color: #aaa; }
+.notepad .body {
+  padding: 24px 30px 30px;
+  font-size: 16px;
+  line-height: 1.82;
+  color: #2a2a2a;
+  min-height: 380px;
+}
+.notepad .body .date-line {
+  font-size: 12px; color: #999; margin-bottom: 14px;
+  border-bottom: 1px dashed #e0dcd4; padding-bottom: 8px;
+}
+.notepad .body p {
+  margin-bottom: 0;
+  text-indent: 0;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+.notepad .body .empty-line { height: 1em; }
+.notepad .statusbar {
+  background: #f5f0e8;
+  border-top: 1px solid #d8d4cc;
+  padding: 6px 14px;
+  font-size: 10px; color: #aaa;
+  display: flex; justify-content: space-between;
+}
+</style>
+</head>
+<body>
+<div class="notepad">
+  <div class="topbar">
+    <span class="title">&#x270E; 备忘录</span>
+    <span class="time">最后编辑：2026年6月25日 23:18</span>
+  </div>
+  <div class="toolbar">
+    <span><span class="icon">&#x270E;</span> 编辑</span>
+    <span><span class="icon">&#x2B06;</span> 分享</span>
+    <span><span class="icon">&#x1F4C2;</span> 整理</span>
+    <span style="margin-left:auto; color:#b0a898;">自建备忘录</span>
+  </div>
+  <div class="body">
+    <div class="date-line">2026年6月25日 23:18 &nbsp;|&nbsp; 来自 iPhone</div>
+
+    <p>小时候看童话书，正义总能战胜邪恶，王子总能跟公主修成正果。</p>
+    <p>就算是故事中的反派多么强大，骑着白马的王子总能及时赶来，斩除妖患！</p>
+    <p>但是为什么就一定默认，存在这么一个白马王子呢？为什么我自己就拯救不了我自己呢？</p>
+    <p>好吧好吧好吧，我只是在尽量减轻自己的罪恶感。</p>
+
+    <div class="empty-line"></div>
+
+    <p>今天下午的时候，祂的仪式开始了。</p>
+    <p>祂说，我需要献祭的是，在未来的某个时刻，那个将要拯救我的人。</p>
+    <p>我当时就忍不住了，我问祂，我为什么需要被拯救，我难道在跌入深渊，真是可笑！</p>
+    <p>祂却只是一句，那么一个人一定存在。</p>
+    <p>紧接着，祂拧动着硕大的身躯，背过身去，对了这个时候我觉得祂像特鲁。</p>
+    <p>如果我有龙符咒就好了，那样我还会在这里低声下气地进行仪式？！</p>
+
+    <div class="empty-line"></div>
+
+    <p>我又想起来偃曾经说过，他会拯救我。难道最后他会被献祭？我不希望这种事情发生，虽然我对偃可以说一无所知，但是他让我从枯燥的生活中喘过气来。</p>
+    <p>他告诉我，等一切结束，什么都可以实现，什么都可以改变。</p>
+    <p>我爸不会有外遇。</p>
+    <p>我妈不会残疾。</p>
+    <p>我爷爷不会在赶去医院的路上出车祸。</p>
+    <p>我的小狗不会被投毒。</p>
+    <p>小燕不会因为得绝症离开我。</p>
+    <p>……</p>
+    <p>我不会过着刻板、乏味、枯燥的生活。</p>
+    <p>但是想起来，到现在为止，偃只告诉我要进行仪式和请式，我对于这背后的东西一无所知，这不公平！我去问偃，他就顾左右而言他，我很讨厌这样的态度，有话直说不好吗？</p>
+    <p>好吧，我承认我又有点情绪化了，我太累了，这一个月以来我第一次感觉那么那么累。</p>
+    <p>我没有办法再硬撑着去说：“我没有什么愿望，我只希望自己能够自由地活着，而这，我现在已经做到了。”</p>
+    <p>虽然这是当时我跟偃说的原话。</p>
+    <p>我还有好多好多好多好多好多想要改变的。</p>
+    <p>我的人生本不该如此。</p>
+  </div>
+  <div class="statusbar">
+    <span>字数：698</span>
+    <span>未同步到 iCloud</span>
+  </div>
+</div>
+</body>
+</html>

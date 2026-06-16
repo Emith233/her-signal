@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-05 生路</title>
+<link rel="stylesheet" href="sys-frame.css">
+<link rel="preload" as="audio" href="西江紫堂 - 僕は僕じゃない僕であって僕じゃ.mp3">
+<style>
+body.ending-e05 .ending-id,
+body.ending-e05 .ending-title {
+  color: #9bd8bd;
+}
+@font-face {
+  font-family: "RitualLishu";
+  src:
+    url("fonts/STLITI.ttf") format("truetype"),
+    local("Libian SC"),
+    local("隶书"),
+    local("LiSu"),
+    local("STLiti");
+  font-display: swap;
+}
+.story {
+  z-index: 2;
+  height: min(720px, 82vh);
+}
+.story p {
+  text-shadow: 0 2px 10px rgba(0,0,0,.78);
+}
+.doom-bg {
+  position: fixed;
+  inset: -4vh -4vw;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-content: start;
+  gap: 18px 24px;
+  overflow: hidden;
+  color: rgba(90, 0, 8, .36);
+  font: 700 clamp(24px, 4vw, 58px)/1.1 "RitualLishu", "Libian SC", "隶书", "LiSu", "STLiti", "Songti SC", SimSun, serif;
+  letter-spacing: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transform: rotate(-7deg) scale(1.12);
+  transition: opacity 1s ease, filter 1s ease;
+}
+.doom-bg.active {
+  opacity: 1;
+}
+.doom-bg.fading {
+  opacity: 0;
+  filter: blur(5px);
+}
+.whiteout {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 4.2s ease;
+}
+.whiteout.active {
+  opacity: 1;
+}
+.farewell {
+  opacity: 0;
+  color: #050505;
+  font: 400 clamp(34px, 8vw, 96px)/1.35 "Songti SC", SimSun, serif;
+  letter-spacing: 3px;
+  transition: opacity 1.6s ease;
+}
+.farewell.show {
+  opacity: 1;
+}
+@media (max-width: 620px) {
+  .doom-bg {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+}
+</style>
+</head>
+<body class="ending-e05">
+<main class="ending-shell" id="screen">
+  <section class="ending-content fade" id="titleScreen">
+    <div class="ending-id">E-05</div>
+    <h1 class="ending-title"><span class="green">生路</span></h1>
+  </section>
+  <div class="doom-bg" id="doomBg"></div>
+  <section class="story hidden" id="storyScreen"></section>
+  <section class="story hidden" id="secondScreen"></section>
+  <section class="story hidden" id="thirdScreen"></section>
+</main>
+<div class="whiteout" id="whiteout">
+  <div class="farewell" id="farewell">再见，小初姐姐</div>
+</div>
+<audio id="endingBgm" src="西江紫堂 - 僕は僕じゃない僕であって僕じゃ.mp3" preload="auto" loop></audio>
+
+<script>
+const titleScreen = document.getElementById('titleScreen');
+const storyScreen = document.getElementById('storyScreen');
+const secondScreen = document.getElementById('secondScreen');
+const thirdScreen = document.getElementById('thirdScreen');
+const doomBg = document.getElementById('doomBg');
+const whiteout = document.getElementById('whiteout');
+const farewell = document.getElementById('farewell');
+const endingBgm = document.getElementById('endingBgm');
+const LINE_STEP = 72;
+const BUTTON_GAP = 50;
+const BGM_TARGET_VOLUME = 0.48;
+let bgmStarted = false;
+
+const firstLines = [
+  '你记忆中最早的事是父母的争吵，',
+  '你在争吵中醒来。',
+  '周遭的一切，陌生而又熟悉。',
+  '但你记得父母带你去医院看爷爷时，',
+  '爷爷脸上的笑容。'
+];
+const secondLinesA = [
+  '好乱啊……',
+  '渴望改变的人囿于深井。',
+  '下定决心的人献出生命。',
+  '期待胜利的人一睡不醒。',
+  '以人生的长度衡量，',
+  '你不过是婴儿。'
+];
+const secondLinesB = [
+  '之后的事情呢？',
+  '小初的位置已经确定了。',
+  '但是没人管她的话，会饿死的。'
+];
+const thirdLinesA = [
+  '居然叫她姐姐嘛……',
+  '……',
+  '自我意识走向毁灭，',
+  '是一件痛苦而庄重的事情。',
+  '但是你好像……',
+  '满脸笑容？'
+];
+const thirdLinesB = [
+  '人类的感情真是复杂……',
+  '……',
+  '决定好了？'
+];
+
+function place(el, index, extra) {
+  el.style.setProperty('--line-top', ((index * LINE_STEP) + (extra || 0)) + 'px');
+}
+
+function addLine(section, text, index) {
+  const p = document.createElement('p');
+  p.textContent = text;
+  p.className = 'line-in';
+  place(p, index);
+  section.appendChild(p);
+  return p;
+}
+
+function addButton(section, text, onClick, index) {
+  const p = document.createElement('p');
+  p.className = 'center line-in';
+  place(p, index, BUTTON_GAP);
+  const btn = document.createElement('button');
+  btn.className = 'story-btn';
+  btn.type = 'button';
+  btn.textContent = text;
+  btn.addEventListener('click', () => {
+    playBgm();
+    onClick();
+  });
+  p.appendChild(btn);
+  section.appendChild(p);
+  requestAnimationFrame(() => p.classList.add('shown'));
+}
+
+function playBgm() {
+  if (bgmStarted) return;
+  bgmStarted = true;
+  endingBgm.volume = 0;
+  const playPromise = endingBgm.play();
+  if (playPromise && playPromise.catch) {
+    playPromise.catch(() => {
+      bgmStarted = false;
+    });
+  }
+  fadeInBgm();
+}
+
+function fadeInBgm() {
+  const startedAt = Date.now();
+  const duration = 3600;
+  function tick() {
+    const progress = Math.min(1, (Date.now() - startedAt) / duration);
+    endingBgm.volume = BGM_TARGET_VOLUME * progress;
+    if (progress < 1 && bgmStarted) requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+function armBgmFallback() {
+  const start = () => playBgm();
+  window.addEventListener('pointerdown', start, { once: true });
+  window.addEventListener('keydown', start, { once: true });
+  window.addEventListener('touchstart', start, { once: true });
+}
+
+function fadeOutBgm() {
+  const startVolume = endingBgm.volume || BGM_TARGET_VOLUME;
+  const startedAt = Date.now();
+  const duration = 4200;
+  function tick() {
+    const progress = Math.min(1, (Date.now() - startedAt) / duration);
+    endingBgm.volume = startVolume * (1 - progress);
+    if (progress < 1) requestAnimationFrame(tick);
+    else endingBgm.pause();
+  }
+  tick();
+}
+
+function revealLines(section, lines, after, startIndex) {
+  const offset = startIndex || 0;
+  const elements = lines.map((text, index) => addLine(section, text, offset + index));
+  lines.forEach((text, index) => {
+    setTimeout(() => {
+      elements[index].classList.add('shown');
+      if (index === lines.length - 1 && after) setTimeout(after, 1750);
+    }, index * 1550);
+  });
+}
+
+function swap(from, to, reveal) {
+  from.classList.add('hidden');
+  to.classList.remove('hidden');
+  to.classList.add('fade');
+  if (reveal) reveal();
+}
+
+function fillDoom(text) {
+  doomBg.innerHTML = '';
+  for (let i = 0; i < 90; i++) {
+    const span = document.createElement('span');
+    span.textContent = text;
+    doomBg.appendChild(span);
+  }
+  doomBg.classList.add('active');
+}
+
+function clearDoom() {
+  doomBg.classList.remove('active');
+}
+
+function transitionDoom(text, done) {
+  doomBg.classList.add('fading');
+  setTimeout(() => {
+    fillDoom(text);
+    requestAnimationFrame(() => {
+      doomBg.classList.remove('fading');
+      if (done) setTimeout(done, 450);
+    });
+  }, 700);
+}
+
+function finish() {
+  fadeOutBgm();
+  clearDoom();
+  storyScreen.classList.add('hidden');
+  secondScreen.classList.add('hidden');
+  thirdScreen.classList.add('hidden');
+  whiteout.classList.add('active');
+  setTimeout(() => farewell.classList.add('show'), 4400);
+  setTimeout(() => {
+    location.href = 'note-7a10.html';
+  }, 9800);
+}
+
+try { endingBgm.load(); } catch(e) {}
+armBgmFallback();
+setTimeout(() => {
+  playBgm();
+  titleScreen.classList.add('hidden');
+  storyScreen.classList.remove('hidden');
+  storyScreen.classList.add('fade');
+  revealLines(storyScreen, firstLines, () => {
+    addButton(storyScreen, '一切好像没有那么糟……', () => {
+      swap(storyScreen, secondScreen, () => {
+        revealLines(secondScreen, secondLinesA, () => {
+          addButton(secondScreen, '婴儿的使命也太重了……', () => {
+            secondScreen.innerHTML = '';
+            revealLines(secondScreen, secondLinesB, () => {
+              addButton(secondScreen, '小初姐姐的事已经安排好了。', () => {
+                swap(secondScreen, thirdScreen, () => {
+                  fillDoom('你会毁掉一切');
+                  revealLines(thirdScreen, thirdLinesA, () => {
+                    addButton(thirdScreen, '哎你说，苏苏姐的日志也是写给我的，是吧？', () => {
+                      Array.from(thirdScreen.querySelectorAll('.line-in.shown')).forEach(el => {
+                        el.style.transition = 'opacity .8s ease, filter .8s ease';
+                        el.style.opacity = '0';
+                        el.style.filter = 'blur(4px)';
+                      });
+                      transitionDoom('收手', () => {
+                        thirdScreen.innerHTML = '';
+                        revealLines(thirdScreen, thirdLinesB, () => {
+                          addButton(thirdScreen, '嗯，决定好了。', finish, thirdLinesB.length);
+                        });
+                      });
+                    }, thirdLinesA.length);
+                  });
+                });
+              }, secondLinesB.length);
+            });
+          }, secondLinesA.length);
+        });
+      });
+    }, firstLines.length);
+  });
+}, 3200);
+</script>
+</body>
+</html>

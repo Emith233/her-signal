@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>··</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; }
+body {
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(17,21,24,0.2), rgba(5,6,7,0.86)),
+    radial-gradient(circle at 50% 28%, rgba(125, 90, 72, 0.16), transparent 46%),
+    #090b0d;
+  color: #cfc6b4;
+  font-family: "Songti SC", "SimSun", "Noto Serif SC", serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: clamp(12px, 2.4vmin, 26px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+}
+
+.scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background: repeating-linear-gradient(180deg, transparent 0, transparent 10px, rgba(255,255,255,0.035) 11px);
+}
+
+.eyes {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  width: min(62%, 520px);
+  height: min(20%, 150px);
+  transform: translate(-50%, -50%);
+  opacity: 0.32;
+  pointer-events: none;
+}
+.eye {
+  position: absolute;
+  top: 22%;
+  width: 34%;
+  height: 56%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(238, 220, 177, 0.28) 0 5%, rgba(86, 30, 25, 0.42) 6% 11%, transparent 12%),
+    radial-gradient(ellipse at center, rgba(224, 204, 158, 0.28), rgba(154, 77, 52, 0.14) 34%, transparent 68%);
+  box-shadow: inset 0 0 18px rgba(232, 205, 151, 0.12), 0 0 34px rgba(180, 75, 48, 0.12);
+}
+.eye::before {
+  content: "";
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: 42%;
+  height: 1px;
+  background: rgba(216, 190, 145, 0.28);
+  box-shadow: 0 0 12px rgba(216, 190, 145, 0.2);
+}
+.eye.left { left: 4%; transform: rotate(5deg) scaleX(1.18); }
+.eye.right { right: 4%; transform: rotate(-5deg) scaleX(1.18); }
+
+.words {
+  position: relative;
+  z-index: 1;
+  max-width: 70%;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 0.6s ease-out 0.4s forwards;
+}
+.words .line {
+  font-size: clamp(18px, 3.4vmin, 34px);
+  line-height: 2;
+  letter-spacing: 4px;
+  text-shadow: 0 0 40px rgba(200, 180, 140, 0.24), 0 0 80px rgba(200, 180, 140, 0.08);
+}
+
+.choices { visibility: hidden; display: flex; align-items: center; z-index: 1; padding: 36px 0; }
+.choices.show { visibility: visible; }
+.choices .btn {
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: clamp(22px, 4vmin, 40px);
+  letter-spacing: 6px;
+  cursor: pointer;
+  padding: 8px 0;
+  opacity: 0;
+  text-shadow: 0 0 40px rgba(200, 180, 140, 0.12);
+}
+.choices.show .btn {
+  animation: fadeIn 0.6s ease-out 0.4s forwards;
+}
+.choices .btn:hover { opacity: 0.6 !important; }
+.choices .btn.top { color: #7a9a6a; }
+.choices .btn.bot { color: #b89860; }
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+<div class="scene">
+  <div class="scan"></div>
+  <div class="eyes" aria-hidden="true">
+    <div class="eye left"></div>
+    <div class="eye right"></div>
+  </div>
+  <div class="choices" id="choices">
+    <button class="btn top" onclick="pick('mercenary')">拿钱办事的人</button>
+  </div>
+  <div class="words" id="words">
+    <div class="line" id="line"></div>
+  </div>
+  <div class="choices" id="choices2">
+    <button class="btn bot" onclick="pick('truth')">寻找真相的人</button>
+  </div>
+</div>
+<script>
+(function() {
+  var lines = [
+    "短短数月，你已是第三个来到这里的人了。",
+    "但你身上，没有祂们的气息。",
+    "借助信息网络来探寻么……有意思。",
+    "在你之前，来过一位少女，和一个写侦探小说的。",
+    "那么，你又是谁？"
+  ];
+  var n = parseInt(location.search.match(/n=(\d)/)?.[1]) || 1;
+  if (n < 1 || n > lines.length) n = 1;
+  document.getElementById('line').textContent = lines[n - 1];
+  if (n === 5) {
+    setTimeout(function() {
+      document.getElementById('choices').classList.add('show');
+      document.getElementById('choices2').classList.add('show');
+    }, 1600);
+  }
+  window.pick = function(choice) {
+    document.getElementById('choices').classList.remove('show');
+    document.getElementById('choices2').classList.remove('show');
+    var w = document.getElementById('words');
+    w.style.opacity = '0';
+    w.style.animation = 'none';
+    document.getElementById('line').textContent = (choice === 'mercenary') ? '……也好。' : '……是么。';
+    void w.offsetHeight;
+    w.style.animation = 'fadeIn 0.6s ease-out 0.2s forwards';
+    try {
+      window.parent.postMessage({
+        type: 'oracle-choice-complete',
+        choice: choice,
+        clue: 7
+      }, '*');
+    } catch(e) {}
+  };
+})();
+</script>
+</body>
+</html>

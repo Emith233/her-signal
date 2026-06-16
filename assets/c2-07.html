@@ -1,0 +1,127 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>加密文档 · C2-07</title>
+<style type="text/css">
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #171d21; font-family: 'American Typewriter','Courier New','Courier',monospace; }
+body { display: flex; flex-direction: column; color: #c8d0c8; }
+.top { background: #1e262b; border-bottom: 1px solid #2d383e; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.top .id { font-size: 12px; color: #7a9a8a; letter-spacing: 1px; }
+.top .badge { font-size: 11px; color: #6a7a6a; border: 1px solid #3a4a3a; padding: 2px 10px; letter-spacing: 1px; }
+.pw-layer { flex: 1; display: flex; align-items: center; justify-content: center; background: #171d21; }
+.pw-layer .panel { background: #1e262b; border: 1px solid #2d383e; border-radius: 6px; padding: 36px 40px; text-align: center; min-width: 300px; }
+.pw-layer .icon { color: #4a5a5a; font-size: 28px; margin-bottom: 12px; }
+.pw-layer .prompt { font-size: 12px; color: #7a8a7a; letter-spacing: 1px; margin-bottom: 20px; }
+.pw-layer .row { display: flex; align-items: center; justify-content: center; gap: 8px; background: #13191d; border: 1px solid #2d383e; border-radius: 4px; padding: 8px 14px; margin: 0 auto; width: fit-content; }
+.pw-layer .row .label { color: #5a6a5a; font-size: 11px; letter-spacing: 1px; }
+.pw-layer .row input { background: transparent; border: none; color: #b8c8b8; font-family: 'Courier New', monospace; font-size: 14px; outline: none; letter-spacing: 6px; width: 100px; padding: 0; }
+.pw-layer .error { font-size: 11px; color: #b56a6a; min-height: 1.4em; margin-top: 14px; visibility: hidden; letter-spacing: 1px; }
+.pw-layer .error.show { visibility: visible; }
+.pw-layer button { margin-top: 18px; background: transparent; border: 1px solid #3a4a4a; color: #7a9a8a; padding: 8px 30px; font-family: 'Courier New',monospace; font-size: 12px; cursor: pointer; letter-spacing: 2px; transition: all 0.25s; border-radius: 3px; }
+.pw-layer button:hover { border-color: #6a9a7a; color: #8ac8a0; background: rgba(100,160,120,0.06); }
+.doc-layer { display: none; flex: 1; flex-direction: column; min-height: 0; }
+.doc-layer.active { display: flex; }
+.doc-layer .body { flex: 1; overflow-y: auto; padding: 34px clamp(28px, 6vw, 76px); line-height: 1.82; font-family: "Songti SC","Noto Serif CJK SC","STSong",SimSun,serif; font-size: 16px; color: #d1d8d1; background: #171d21; }
+.doc-layer .body .log-entry { max-width: 780px; margin: 0 auto; text-indent: 0; }
+.doc-layer strong { color: #e1e9df; font-weight: 700; }
+.doc-layer .bot { background: #1e262b; border-top: 1px solid #2d383e; padding: 8px 20px; display: flex; justify-content: space-between; font-size: 11px; color: #5a6a5a; flex-shrink: 0; }
+.doc-layer .bot .writer { color: #6a8a7a; }
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="id">C2-07</span>
+  <span class="badge">ENCRYPTED</span>
+</div>
+<div class="pw-layer" id="pwLayer">
+  <div class="panel">
+    <div class="icon">◇</div>
+    <div class="prompt">此文档已加密</div>
+    <div class="row">
+      <span class="label">KEY</span>
+      <input type="password" id="pwInput" maxlength="10" autofocus>
+    </div>
+    <div class="error" id="pwError">密码错误</div>
+    <button id="btnUnlock">UNLOCK</button>
+  </div>
+</div>
+<div class="doc-layer" id="docLayer">
+  <div class="body">
+    <div class="log-entry">
+小初的信号昨天刚刚出现在下一个位置，我终于能赶上了。<br>
+下个地方是一个四省交界处，还蛮稀奇的。而且这个城市的行政区划很别致，像是一群区县在排队，我这次要去的是队头。<br>
+这几天紧赶慢赶也没时间更新这个调查日志，老实说就连现在写这个的时候，我还在吹头发。<br><br>
+想写点啥呢，但已经跟调查这件事无关了，每个地方都是无功而返，也就记下了这些地名、人物、祠堂等等。<br>
+我只是有些莫名的激动，在镜子面前愣了好一会儿。我肯定瘦了。<br>
+马上就能见到你了，小初。<br>
+我想起来，<strong>他</strong>刚告诉我你的名字那会儿，我若有所思地点头，是啊是啊，在我心中你就该是这个名字。<br>
+初，是零，是初心，是一切的起点，我的这段故事的起点。<br>
+一说我的这段故事，我就想起来，本来呢我是想为自己的下一本小说找素材的，不过现在，可算是一身轻了！<br>
+讨厌……在写这一段话的时候突然就有点想哭。<br><br>
+在我七八岁的时候，喜欢窝在床上沙发上看《冒险小虎队》，我最喜欢的是每个长篇故事后面附的几个小的推理解谜，我喜欢解谜的喜悦与揭秘时的刺激感。<br>
+等长到十来岁，我开始喜欢看连载的长篇悬疑小说和国内外作家的推理名作，我喜欢看这些案件的机关设计，喜欢看案件破解的那一刻，那时候我求着我妈给我买福尔摩斯同款的小猎帽，我用筷子假装烟斗，我把自己当做侦探。<br>
+我一直没有走出这样的幻想，大学期间我一直在写作，我笔下的侦探波波野女士自信聪明，总能破解谜案、寻得真相，那是梦中我自己的模样。<br>
+当收拾行李踏上这次旅途的时候，我想着或许我真的能当一回侦探，以至于其实……我还捎上了我中学时候买的那顶猎帽，你可别笑话姐姐我。那时候，我跟你现在一般年龄。<br><br>
+小初，我还是流下眼泪了。我想起来我第一次将波波野女士拿给主编看的时候，那时候的老主编约我线下见一面，他给我提了很多建议，包括剧情的衔接、诡计的设计以及小说出版后的市场性问题，他说的很中肯也很打击人，我来来回回修了两个多月才定稿。<br>
+两年前，老主编退休了，新来的主编也约我线下见一面，我还记得他看完我的新大纲后的第一句话是，“要不要给波波野女士设计个男朋友？”我说，按照波波野女士的性格，她应该不会在这种情况下做这种事情。主编说，观众们会喜欢，这些老套的推理已经不能吸引人了。那次，我们不欢而散。回家后，我站在镜子前，向着波波野女士发誓，我一定会坚守初心。<br>
+几个月后，波波野系列的新作出版，其中一半以上的内容是波波野女士与她男朋友的相识、拉扯、暧昧，主编说，在下一本中，让他们修成正果。是的，我没有坚持住初心。<br><br>
+说实在的，当时的我没有感觉很难过，那一次改动让我大赚一笔，我甚至感觉自己每天喜气洋洋的。<br>
+最近这段时间我却开始反复想这些事、反思自己，他跟我说了很多你的故事，这让我感触很多。上次在饸烙店吃过饭后，我又想去追问些，但是他已经不再回我，如果正如他所说的，那么他应该已经坚持到了极限。<br>
+在追上你以后呢，我想着想办法去找到他，救他。<br>
+小初，我们一起。
+    </div>
+  </div>
+  <div class="bot">
+    <span class="writer">记录人：苏</span>
+    <span>2026年7月1日</span>
+  </div>
+</div>
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var ver = params.get('v') || '';
+  var session = params.get('s') || '';
+  var archiveId = params.get('archive') === '1' ? params.get('id') : '';
+  var PREFIX = 'doc_unlocked_c207';
+  var RESET_STAMP = localStorage.getItem('citymystery_reset_stamp') || '0';
+  var KEY = 'doc_unlocked_c207_v' + ver + '_s' + (session || RESET_STAMP);
+  function unlock() {
+    document.getElementById('pwLayer').style.display = 'none';
+    document.getElementById('docLayer').classList.add('active');
+    try { localStorage.setItem(KEY, '1'); } catch(e) {}
+    markArchiveViewed('c207');
+  }
+  function markArchiveViewed(id) {
+    try {
+      var viewed = JSON.parse(localStorage.getItem('citymystery_viewed_logs') || '[]');
+      if (viewed.indexOf(id) === -1) viewed.push(id);
+      localStorage.setItem('citymystery_viewed_logs', JSON.stringify(viewed));
+      parent.postMessage({ type: 'citymystery-log-viewed', id: id }, '*');
+    } catch(e) {}
+  }
+  try { if (hasUnlocked()) unlock(); } catch(e) {}
+  function hasUnlocked() {
+    if (archiveId === 'c207' && session) return true;
+    return localStorage.getItem(KEY) === '1';
+  }
+  document.getElementById('btnUnlock').addEventListener('click', checkPw);
+  document.getElementById('pwInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkPw();
+  });
+  function checkPw() {
+    var input = document.getElementById('pwInput');
+    var error = document.getElementById('pwError');
+    if (input.value === 'su0404') {
+      unlock();
+    } else {
+      error.textContent = 'ACCESS DENIED';
+      error.classList.add('show');
+      input.value = '';
+      input.focus();
+    }
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-01 献祭</title>
+<link rel="stylesheet" href="sys-frame.css">
+</head>
+<body class="ending-e01">
+<main class="ending-shell" id="screen">
+  <section class="ending-content fade" id="titleScreen">
+    <div class="ending-id">E-01</div>
+    <h1 class="ending-title"><span class="red">献祭</span></h1>
+  </section>
+
+  <section class="story hidden" id="storyScreen"></section>
+
+  <section class="story hidden" id="secondScreen"></section>
+
+  <section class="story hidden" id="finalScreen"></section>
+</main>
+
+<script>
+const titleScreen = document.getElementById('titleScreen');
+const storyScreen = document.getElementById('storyScreen');
+const secondScreen = document.getElementById('secondScreen');
+const finalScreen = document.getElementById('finalScreen');
+
+const firstLines = [
+  '你发现小初的时候，她蹲坐在废弃大楼天台的一隅。',
+  '她拒绝你的靠近，但你仍然伸出援手。',
+  '“怎么会这样……怎么会这样……”',
+  '她反复默念着这些话。',
+  '你意识到她也不过是16岁的少女，这段时间想必经历了很多。'
+];
+const secondLines = [
+  '她用惊恐的眼神望着你。'
+];
+const finalLines = [
+  '“不要！”',
+  '“不要……”',
+  '……',
+  '再次醒来。',
+  '你是最后一个祭品。'
+];
+const LINE_STEP = 72;
+const BUTTON_GAP = 50;
+
+function place(el, index, extra) {
+  el.style.setProperty('--line-top', ((index * LINE_STEP) + (extra || 0)) + 'px');
+}
+
+function addLine(section, text, className, index) {
+  const p = document.createElement('p');
+  p.textContent = text;
+  if (className) p.className = className;
+  p.classList.add('line-in');
+  place(p, index);
+  section.appendChild(p);
+  return p;
+}
+
+function addButton(section, text, onClick, index) {
+  const p = document.createElement('p');
+  p.className = 'center line-in';
+  place(p, index, BUTTON_GAP);
+  const btn = document.createElement('button');
+  btn.className = 'story-btn';
+  btn.type = 'button';
+  btn.textContent = text;
+  btn.addEventListener('click', onClick);
+  p.appendChild(btn);
+  section.appendChild(p);
+  requestAnimationFrame(() => p.classList.add('shown'));
+}
+
+function addBackButton(section, index) {
+  const p = document.createElement('p');
+  p.className = 'center line-in';
+  place(p, index, BUTTON_GAP);
+  const btn = document.createElement('button');
+  btn.className = 'ending-back';
+  btn.type = 'button';
+  btn.textContent = '回到结局前';
+  btn.addEventListener('click', () => {
+    try { localStorage.setItem('citymystery_ending_search_trace', 'E-01'); } catch(e) {}
+    location.href = '../index.html';
+  });
+  p.appendChild(btn);
+  section.appendChild(p);
+  requestAnimationFrame(() => p.classList.add('shown'));
+}
+
+function revealLines(section, lines, options) {
+  section.innerHTML = '';
+  const elements = lines.map((text, index) => {
+    let className = '';
+    if (options?.quiet?.includes(index)) className = 'quiet center';
+    if (options?.center?.includes(index)) className = 'center';
+    if (options?.red?.includes(index)) className = 'final-red';
+    return addLine(section, text, className, index);
+  });
+  lines.forEach((text, index) => {
+    setTimeout(() => {
+      const line = elements[index];
+      line.classList.add('shown');
+      if (index === lines.length - 1 && options?.after) {
+        setTimeout(options.after, 1750);
+      }
+    }, index * 1550);
+  });
+}
+
+function swap(from, to, reveal) {
+  from.classList.add('hidden');
+  to.classList.remove('hidden');
+  to.classList.add('fade');
+  if (reveal) reveal();
+}
+
+setTimeout(() => {
+  swap(titleScreen, storyScreen, () => revealLines(storyScreen, firstLines, {
+    after: () => addButton(storyScreen, '“小初……”', () => {
+      swap(storyScreen, secondScreen, () => revealLines(secondScreen, secondLines, {
+        after: () => addButton(secondScreen, '“不用担心……”', () => {
+          swap(secondScreen, finalScreen, () => revealLines(finalScreen, finalLines, {
+            quiet: [2],
+            center: [3],
+            red: [4],
+            after: () => addBackButton(finalScreen, finalLines.length)
+          }));
+        }, secondLines.length)
+      }));
+    }, firstLines.length)
+  }));
+}, 3200);
+</script>
+</body>
+</html>

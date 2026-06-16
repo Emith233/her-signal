@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方志人物关联检索</title>
+<style>
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body {
+  background: #e9ece9;
+  color: #2e3936;
+  font: 14px/1.75 "Microsoft YaHei","PingFang SC",Arial,sans-serif;
+  padding: 18px;
+}
+.site { width: min(980px, 100%); min-height: calc(100vh - 36px); margin: 0 auto; border: 1px solid #aebbb7; background: #fbfcfa; box-shadow: 0 5px 18px rgba(54,72,67,.1); }
+.topline { display: flex; justify-content: space-between; padding: 5px 14px; background: #e3e9e7; border-bottom: 1px solid #bdc9c6; color: #788681; font-size: 11px; }
+.hero { padding: 21px 22px 17px; background: #42635d; border-bottom: 3px solid #a28252; color: #f5f7f4; }
+.hero h1 { margin: 0; font-family: "Songti SC",SimSun,serif; font-size: 25px; font-weight: normal; letter-spacing: 3px; }
+.hero p { margin: 5px 0 0; color: #c9d7d3; font-size: 12px; letter-spacing: 1px; }
+.nav { padding: 6px 18px; background: #f0f3f1; border-bottom: 1px solid #c8d1ce; color: #667a74; font-size: 12px; }
+.nav span { margin-right: 18px; }
+.main { padding: 19px 22px 24px; }
+.crumb { margin-bottom: 14px; color: #899691; font-size: 12px; }
+.box { border: 1px solid #c5cfcc; background: #fff; }
+.box-head { padding: 8px 12px; background: #e9efed; border-bottom: 1px solid #c5cfcc; color: #3f625c; font-weight: bold; }
+.intro { padding: 13px 15px 5px; color: #5b6966; }
+.intro p { margin: 0 0 6px; }
+.batch { padding: 11px 15px 15px; }
+.sample { display: grid; grid-template-columns: 150px minmax(0,1fr) 190px; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px dotted #d8dfdd; }
+.sample:first-child { border-top: 0; }
+.sample label { color: #60736f; font-size: 12px; }
+input {
+  height: 36px;
+  min-width: 0;
+  border: 1px solid #b8c5c1;
+  border-radius: 0;
+  background: #fbfcfb;
+  color: #2f403c;
+  padding: 0 10px;
+  outline: none;
+  font-size: 14px;
+}
+input:focus { border-color: #64877f; box-shadow: 0 0 0 2px rgba(83,126,117,.1); }
+.status { color: #a5aeab; font-size: 12px; }
+.status.ok { color: #4f7a68; }
+.status.bad { color: #a35e56; }
+.controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 15px; border-top: 1px solid #d4ddda; background: #f7f9f8; }
+button { border: 1px solid #52766e; border-radius: 0; background: #547b73; color: #fff; padding: 8px 19px; cursor: pointer; font-size: 13px; }
+button:hover { background: #42665f; }
+.record { color: #88948f; font: 11px/1.7 "Courier New",monospace; }
+.message { min-height: 24px; padding: 10px 15px; border-top: 1px solid #d4ddda; color: #a35e56; font-size: 12px; }
+.result { display: none; margin-top: 15px; border: 1px solid #b9c6c2; background: #fff; }
+.result.show { display: block; animation: reveal .55s ease both; }
+.result-title { padding: 8px 12px; border-bottom: 1px solid #c9d3d0; background: #e7eeec; color: #3d625b; font-weight: bold; }
+.result-body { display: grid; grid-template-columns: 144px 1fr; }
+.term, .value { padding: 8px 12px; border-bottom: 1px solid #e0e5e3; }
+.term { background: #f6f8f7; color: #78847f; font-size: 12px; }
+.value { color: #35423f; }
+.value.name { color: #772e28; font-family: "Songti SC",SimSun,serif; font-size: 22px; letter-spacing: 5px; }
+.note { padding: 13px 15px; color: #687570; font-size: 13px; line-height: 1.9; }
+.footer { margin-top: 17px; padding-top: 10px; border-top: 1px solid #d1dad7; color: #9aa5a1; font-size: 11px; text-align: center; }
+@keyframes reveal { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 680px) {
+  body { padding: 7px; }
+  .site { min-height: calc(100vh - 14px); }
+  .main { padding: 14px 11px 18px; }
+  .sample { grid-template-columns: 1fr; gap: 4px; padding: 9px 0; }
+  .result-body { grid-template-columns: 106px 1fr; }
+}
+</style>
+</head>
+<body>
+<main class="site">
+  <div class="topline"><span>地方文献数字化协作平台</span><span>数据版本：2026.06</span></div>
+  <header class="hero">
+    <h1>方志人物关联检索</h1>
+    <p>地方人物 · 籍贯 · 旧迹 · 活动地交叉索引</p>
+  </header>
+  <nav class="nav"><span>首页</span><span>地方志库</span><span>人物索引</span><span>条目归并</span><span>使用说明</span></nav>
+  <section class="main">
+    <div class="crumb">当前位置：首页 &gt; 人物索引 &gt; 缺失记录恢复</div>
+    <section class="box">
+      <div class="box-head">缺失记录恢复</div>
+      <div class="intro">
+        <p>部分地方人物条目尚未完成归并。</p>
+        <p>如需恢复缺失记录，请录入三条已确认的女性人物样本。系统将根据既有地方文献关系进行自动比对。</p>
+      </div>
+      <div class="batch">
+        <div class="sample"><label for="sample1">已确认人物样本 01</label><input id="sample1" autocomplete="off"><span class="status" id="status1">等待录入</span></div>
+        <div class="sample"><label for="sample2">已确认人物样本 02</label><input id="sample2" autocomplete="off"><span class="status" id="status2">等待录入</span></div>
+        <div class="sample"><label for="sample3">已确认人物样本 03</label><input id="sample3" autocomplete="off"><span class="status" id="status3">等待录入</span></div>
+      </div>
+      <div class="controls">
+        <div class="record">待恢复记录：<b id="remaining">1</b><br>条目状态：<span id="recordState">缺少关联规则</span></div>
+        <button type="button" id="searchBtn">开始关联检索</button>
+      </div>
+      <div class="message" id="message"></div>
+    </section>
+    <section class="result" id="result">
+      <div class="result-title">归并结果 · 缺失条目已恢复</div>
+      <div class="result-body">
+        <div class="term">人物</div><div class="value name">武则天</div>
+        <div class="term">条目状态</div><div class="value">已归并</div>
+      </div>
+      <div class="note">此地与该人物息息相关。<br>如已理解此前人物与地点的共同规律，想必不难找到答案。</div>
+    </section>
+    <footer class="footer">方志人物关联检索 · 地方文献数字化协作平台 · 仅供资料整理使用</footer>
+  </section>
+</main>
+<script>
+(function() {
+  var people = {
+    '秋瑾': '绍兴',
+    '冼夫人': '茂名',
+    '班昭': '咸阳',
+    '王贞仪': '南京',
+    '卓文君': '邛崃'
+  };
+  var inputs = [1, 2, 3].map(function(n) { return document.getElementById('sample' + n); });
+  var statuses = [1, 2, 3].map(function(n) { return document.getElementById('status' + n); });
+  function normalize(value) { return value.replace(/\s+/g, ''); }
+  function inspect() {
+    var values = inputs.map(function(input) { return normalize(input.value); });
+    var seen = {};
+    values.forEach(function(value, index) {
+      var status = statuses[index];
+      status.className = 'status';
+      if (!value) {
+        status.textContent = '等待录入';
+      } else if (!people[value]) {
+        status.classList.add('bad');
+        status.textContent = '未找到符合条件的女性人物记录';
+      } else if (seen[value]) {
+        status.classList.add('bad');
+        status.textContent = '样本重复，请更换记录';
+      } else {
+        seen[value] = true;
+        status.classList.add('ok');
+        status.textContent = '已收录 · 关联地点：' + people[value];
+      }
+    });
+    return values;
+  }
+  inputs.forEach(function(input) {
+    input.addEventListener('input', inspect);
+    input.addEventListener('keydown', function(e) { if (e.key === 'Enter') recover(); });
+  });
+  function recover() {
+    var values = inspect();
+    var unique = new Set(values);
+    var valid = values.length === 3 && values.every(function(value) { return people[value]; }) && unique.size === 3;
+    var message = document.getElementById('message');
+    if (!valid) {
+      message.textContent = '归并失败：请录入三条有效且不重复的女性人物记录。';
+      document.getElementById('result').classList.remove('show');
+      return;
+    }
+    message.textContent = '关联规则已确认。缺失条目已恢复。';
+    document.getElementById('remaining').textContent = '0';
+    document.getElementById('recordState').textContent = '已归并';
+    document.getElementById('result').classList.add('show');
+  }
+  document.getElementById('searchBtn').addEventListener('click', recover);
+})();
+</script>
+</body>
+</html>

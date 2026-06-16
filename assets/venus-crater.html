@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金星陨击坑查询系统 · 金星天文台</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  background: #0e1a2b;
+  color: #d8e4ee;
+  font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== 顶栏 ===== */
+.topbar {
+  background: #121e32;
+  border-bottom: 1px solid #1e3450;
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-icon {
+  width: 28px; height: 28px;
+  border: 1px solid #2a4a6a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a7a9a;
+  font-size: 13px;
+}
+.topbar-title { display: flex; flex-direction: column; }
+.topbar-title .cn {
+  font-size: 12px;
+  color: #8ab4d0;
+  letter-spacing: 2px;
+}
+.topbar-title .en {
+  font-size: 9px;
+  color: #3a5a78;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.topbar-right { display: flex; align-items: center; gap: 6px; }
+.status-dot {
+  width: 6px; height: 6px;
+  background: #5ad48a;
+  border-radius: 50%;
+}
+.status-text {
+  font-size: 10px;
+  color: #4a7a8a;
+  letter-spacing: 1px;
+}
+
+/* ===== 主体 ===== */
+.main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  justify-content: center;
+  padding: 30px 24px 34px;
+}
+.main::-webkit-scrollbar { width: 8px; }
+.main::-webkit-scrollbar-track { background: #0a1422; }
+.main::-webkit-scrollbar-thumb {
+  background: #2a4a62;
+  border-radius: 8px;
+  border: 2px solid #0a1422;
+}
+.panel {
+  width: 900px;
+  max-width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ===== 页面标题 ===== */
+.page-title { text-align: center; padding: 10px 0 2px; }
+.page-title .cn {
+  font-size: 18px;
+  color: #b0d4ec;
+  letter-spacing: 6px;
+  font-weight: 400;
+}
+.page-title .en {
+  font-size: 11px;
+  color: #3a5a78;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ===== 卡片通用 ===== */
+.section-card {
+  background: #142236;
+  border: 1px solid #1e3450;
+  border-radius: 6px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.1);
+}
+
+/* ===== 搜索区 ===== */
+.search-area { padding: 20px 22px 16px; }
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #0a1426;
+  border: 1px solid #1a3050;
+  border-radius: 6px;
+  padding: 4px 4px 4px 18px;
+  transition: border-color 0.2s;
+}
+.search-row:focus-within { border-color: #2a5a7a; }
+.search-row .pref {
+  font-size: 11px;
+  color: #2a4a6a;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.search-row input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: #d8eaf4;
+  font-family: "SF Mono", "JetBrains Mono", "Courier New", monospace;
+  font-size: 18px;
+  padding: 9px 4px;
+  outline: none;
+  letter-spacing: 4px;
+}
+.search-row input::placeholder {
+  color: #1a2a40;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.search-row button {
+  background: #1a2e4a;
+  border: 1px solid #2a4a6a;
+  color: #7ab0d0;
+  padding: 9px 24px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: background 0.15s;
+}
+.search-row button:hover {
+  background: #203c5a;
+  color: #90c4e0;
+}
+
+.search-hint {
+  font-size: 12px;
+  color: #52748a;
+  margin-top: 11px;
+  min-height: 1.4em;
+}
+.search-hint.err { color: #b5786a; }
+
+/* ===== 结果区 ===== */
+.result-area { display: none; }
+.result-area.show { display: block; }
+
+.result-card { padding: 0; overflow: hidden; }
+.result-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid #1a2e48;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.result-header .label {
+  font-size: 10px;
+  color: #3a6a8a;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.result-header .state {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #70988f;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.result-header .state::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #58b89b;
+  box-shadow: 0 0 8px rgba(88,184,155,0.5);
+}
+
+.result-body {
+  display: flex;
+  gap: 0;
+  min-height: 300px;
+}
+
+/* 左侧 — 陨石坑示意图 */
+.crater-map {
+  width: 230px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  border-right: 1px solid #1a2e48;
+  background: #0c1628;
+}
+.crater-map canvas { width: 178px; height: 178px; display: block; }
+
+/* 中间 — 信息列表 */
+.crater-info {
+  flex: 1;
+  padding: 20px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.crater-info .row {
+  display: flex;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid #1a2e48;
+}
+.crater-info .row:last-child { border-bottom: none; }
+.crater-info .row .k {
+  width: 72px;
+  font-size: 10px;
+  color: #3a6a8a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.crater-info .row .v {
+  font-size: 14px;
+  color: #d8e4ee;
+}
+.crater-info .row .v .hl { color: #80c4e8; }
+.crater-info .row .v .sub {
+  font-size: 12px;
+  color: #3a6a8a;
+  margin-left: 6px;
+}
+.crater-info .row .v .note {
+  font-size: 12px;
+  color: #7a9aaa;
+}
+
+/* 右侧 — 雷达图 */
+.radar-map {
+  width: 192px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  border-left: 1px solid #1a2e48;
+  background: #0c1628;
+}
+.radar-map canvas { width: 150px; height: 150px; display: block; }
+
+/* ===== 页脚 ===== */
+.terminal-foot {
+  min-height: 72px;
+  padding: 17px 4px 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid rgba(42,74,106,0.5);
+  color: #446579;
+  font-size: 10px;
+  line-height: 1.8;
+  letter-spacing: 1px;
+}
+.terminal-foot .right {
+  color: #587e82;
+  text-align: right;
+  white-space: nowrap;
+}
+.bottom-space {
+  height: 28px;
+  flex-shrink: 0;
+}
+
+/* ===== 空状态 ===== */
+.empty-state { display: none; text-align: center; padding: 40px 20px; }
+.empty-state.show { display: block; }
+.empty-state .icon {
+  font-size: 24px;
+  color: #1a2e4a;
+  margin-bottom: 12px;
+}
+.empty-state .text {
+  font-size: 12px;
+  color: #1e3450;
+  letter-spacing: 1px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 700px) {
+  .result-body { flex-direction: column; }
+  .crater-map, .radar-map {
+    width: 100%;
+    border-right: none;
+    border-left: none;
+    border-bottom: 1px solid #1a2e48;
+    padding: 16px;
+  }
+  .crater-map { border-top: 1px solid #1a2e48; }
+  .search-row { flex-wrap: wrap; }
+  .search-row input { max-width: 100%; flex-basis: 100%; }
+  .terminal-foot { min-height: 82px; padding: 16px 2px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-icon">&#9790;</div>
+    <div class="topbar-title">
+      <span class="cn">金星天文台观测终端</span>
+      <span class="en">VENUS OBSERVATORY TERMINAL</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="status-dot"></span>
+    <span class="status-text">数据库已连接</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="panel">
+
+    <div class="page-title">
+      <div class="cn">金星陨击坑查询系统</div>
+      <div class="en">Venus Crater Lookup</div>
+    </div>
+
+    <div class="section-card search-area">
+      <div class="search-row">
+        <span class="pref">陨击坑编号</span>
+        <input type="text" id="craterInput" maxlength="6" placeholder="输入编号" autofocus>
+        <button id="craterBtn">查询</button>
+      </div>
+      <div class="search-hint" id="craterHint">请输入陨击坑编号</div>
+    </div>
+
+    <div class="result-area" id="resultArea">
+      <div class="section-card result-card">
+        <div class="result-header">
+          <div class="label">查询结果</div>
+          <div class="state">档案匹配</div>
+        </div>
+        <div class="result-body">
+
+          <div class="crater-map">
+            <canvas id="craterCanvas"></canvas>
+          </div>
+
+          <div class="crater-info" id="craterInfo">
+            <div class="row">
+              <div class="k">名称</div>
+              <div class="v"><span class="hl">Wangzhenyi</span> <span class="sub">王贞仪陨击坑</span></div>
+            </div>
+            <div class="row">
+              <div class="k">天体</div>
+              <div class="v">金星</div>
+            </div>
+            <div class="row">
+              <div class="k">类型</div>
+              <div class="v">陨击坑</div>
+            </div>
+            <div class="row">
+              <div class="k">编号</div>
+              <div class="v"><span class="hl">6487</span></div>
+            </div>
+            <div class="row">
+              <div class="k">直径</div>
+              <div class="v">23.40 km</div>
+            </div>
+            <div class="row">
+              <div class="k">经度</div>
+              <div class="v">217.80&deg;E</div>
+            </div>
+            <div class="row">
+              <div class="k">纬度</div>
+              <div class="v">13.20&deg;N</div>
+            </div>
+            <div class="row">
+              <div class="k">批准</div>
+              <div class="v">1994</div>
+            </div>
+            <div class="row">
+              <div class="k">说明</div>
+              <div class="v"><span class="note">18世纪中国天文学家、数学家</span></div>
+            </div>
+          </div>
+
+          <div class="radar-map">
+            <canvas id="radarCanvas"></canvas>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="icon">&#9632;</div>
+      <div class="text">未找到相关陨击坑记录</div>
+    </div>
+
+    <footer class="terminal-foot">
+      <div>VENUS SURFACE ARCHIVE<br>观测资料镜像 · 坐标基准 V-04</div>
+      <div class="right">LOCAL CACHE<br>READ ONLY</div>
+    </footer>
+    <div class="bottom-space" aria-hidden="true"></div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  var input = document.getElementById('craterInput');
+  var btn = document.getElementById('craterBtn');
+  var hint = document.getElementById('craterHint');
+  var resultArea = document.getElementById('resultArea');
+  var emptyState = document.getElementById('emptyState');
+
+  var cc = document.getElementById('craterCanvas');
+  var cx = cc.getContext('2d');
+  cc.width = 320; cc.height = 320;
+
+  var rc = document.getElementById('radarCanvas');
+  var rx = rc.getContext('2d');
+  rc.width = 280; rc.height = 280;
+
+  function drawCrater() {
+    var w = 320, h = 320, cx_ = w/2, cy_ = h/2;
+    cx.clearRect(0, 0, w, h);
+
+    // 底色
+    var bg = cx.createRadialGradient(cx_, cy_, 0, cx_, cy_, 150);
+    bg.addColorStop(0, 'rgba(60, 100, 150, 0.15)');
+    bg.addColorStop(0.5, 'rgba(40, 70, 110, 0.08)');
+    bg.addColorStop(1, 'rgba(20, 40, 60, 0.02)');
+    cx.fillStyle = bg;
+    cx.beginPath(); cx.arc(cx_, cy_, 145, 0, Math.PI*2); cx.fill();
+
+    // 外圈
+    cx.strokeStyle = 'rgba(80, 160, 220, 0.15)';
+    cx.lineWidth = 0.6;
+    cx.beginPath(); cx.arc(cx_, cy_, 145, 0, Math.PI*2); cx.stroke();
+
+    // 经纬网格
+    cx.strokeStyle = 'rgba(80, 160, 220, 0.05)';
+    cx.lineWidth = 0.4;
+    for (var i = 0; i < 12; i++) {
+      var a = i * Math.PI / 6;
+      cx.beginPath();
+      cx.moveTo(cx_, cy_);
+      cx.lineTo(cx_ + Math.cos(a) * 145, cy_ + Math.sin(a) * 145);
+      cx.stroke();
+    }
+    for (var r = 30; r <= 120; r += 30) {
+      cx.beginPath(); cx.arc(cx_, cy_, r, 0, Math.PI*2); cx.stroke();
+    }
+
+    // 陨石坑
+    var g = cx.createRadialGradient(cx_-10, cy_-10, 0, cx_, cy_, 55);
+    g.addColorStop(0, 'rgba(100, 190, 240, 0.15)');
+    g.addColorStop(0.4, 'rgba(60, 140, 200, 0.08)');
+    g.addColorStop(1, 'rgba(30, 70, 110, 0.02)');
+    cx.fillStyle = g;
+    cx.beginPath(); cx.arc(cx_, cy_, 55, 0, Math.PI*2); cx.fill();
+
+    // 陨石坑边缘
+    cx.strokeStyle = 'rgba(80, 180, 230, 0.2)';
+    cx.lineWidth = 0.8;
+    cx.beginPath(); cx.arc(cx_, cy_, 55, 0, Math.PI*2); cx.stroke();
+    cx.strokeStyle = 'rgba(80, 180, 230, 0.08)';
+    cx.lineWidth = 0.5;
+    cx.beginPath(); cx.arc(cx_+4, cy_+4, 53, 0, Math.PI*2); cx.stroke();
+
+    // 文字
+    cx.fillStyle = 'rgba(100, 170, 230, 0.15)';
+    cx.font = '9px sans-serif';
+    cx.textAlign = 'center';
+    cx.fillText('Wangzhenyi', cx_, cy_ + 86);
+    cx.fillStyle = 'rgba(100, 170, 230, 0.08)';
+    cx.font = '7px sans-serif';
+    cx.fillText('IMPACT CRATER', cx_, cy_ + 100);
+  }
+
+  function drawRadar() {
+    var w = 280, h = 280, cx_ = w/2, cy_ = h/2;
+    rx.clearRect(0, 0, w, h);
+
+    // 外圈
+    rx.strokeStyle = 'rgba(80, 160, 220, 0.12)';
+    rx.lineWidth = 0.5;
+    rx.beginPath(); rx.arc(cx_, cy_, 125, 0, Math.PI*2); rx.stroke();
+
+    // 环形格
+    rx.strokeStyle = 'rgba(80, 160, 220, 0.06)';
+    rx.lineWidth = 0.3;
+    for (var r = 30; r <= 120; r += 30) {
+      rx.beginPath(); rx.arc(cx_, cy_, r, 0, Math.PI*2); rx.stroke();
+    }
+
+    // 十字线
+    for (var i = 0; i < 8; i++) {
+      var a = i * Math.PI / 4;
+      rx.beginPath(); rx.moveTo(cx_, cy_);
+      rx.lineTo(cx_ + Math.cos(a) * 125, cy_ + Math.sin(a) * 125);
+      rx.stroke();
+    }
+
+    // 扫描弧
+    var t = Date.now() * 0.0003;
+    rx.fillStyle = 'rgba(80, 200, 180, 0.04)';
+    rx.beginPath(); rx.moveTo(cx_, cy_);
+    rx.arc(cx_, cy_, 125, t - 0.4, t);
+    rx.closePath(); rx.fill();
+
+    // 扫描线
+    rx.strokeStyle = 'rgba(80, 200, 180, 0.12)';
+    rx.lineWidth = 0.6;
+    rx.beginPath(); rx.moveTo(cx_, cy_);
+    rx.lineTo(cx_ + Math.cos(t) * 125, cy_ + Math.sin(t) * 125);
+    rx.stroke();
+
+    // 目标标记
+    var dx = cx_ - 50, dy = cy_ - 12;
+    var g = rx.createRadialGradient(dx, dy, 0, dx, dy, 8);
+    g.addColorStop(0, 'rgba(100, 200, 240, 0.2)');
+    g.addColorStop(1, 'rgba(100, 200, 240, 0.01)');
+    rx.fillStyle = g;
+    rx.beginPath(); rx.arc(dx, dy, 8, 0, Math.PI*2); rx.fill();
+    rx.fillStyle = 'rgba(100, 200, 240, 0.25)';
+    rx.beginPath(); rx.arc(dx, dy, 2.5, 0, Math.PI*2); rx.fill();
+    rx.strokeStyle = 'rgba(100, 200, 240, 0.1)';
+    rx.lineWidth = 0.4;
+    rx.beginPath(); rx.arc(dx, dy, 4.5, 0, Math.PI*2); rx.stroke();
+
+    // 标注
+    rx.fillStyle = 'rgba(100, 170, 230, 0.1)';
+    rx.font = '7px sans-serif';
+    rx.textAlign = 'center';
+    rx.fillText('SURFACE RADAR', cx_, cy_ + 142);
+  }
+
+  setInterval(function() { drawRadar(); }, 100);
+  drawCrater();
+  drawRadar();
+
+  function query() {
+    var v = input.value.trim();
+    if (v === '6487') {
+      resultArea.classList.add('show');
+      emptyState.classList.remove('show');
+      hint.textContent = '找到 1 条记录';
+      hint.className = 'search-hint';
+      drawCrater();
+    } else if (v === '') {
+      resultArea.classList.remove('show');
+      emptyState.classList.remove('show');
+      hint.textContent = '请输入陨击坑编号';
+      hint.className = 'search-hint';
+    } else {
+      resultArea.classList.remove('show');
+      emptyState.classList.add('show');
+      hint.textContent = '';
+      hint.className = 'search-hint';
+    }
+  }
+
+  btn.addEventListener('click', query);
+  input.addEventListener('keydown', function(e) { if (e.key === 'Enter') query(); });
+})();
+</script>
+</body>
+</html>

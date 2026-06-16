@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>加密文档 · C2-04</title>
+<style type="text/css">
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #171d21; font-family: 'American Typewriter','Courier New','Courier',monospace; }
+body { display: flex; flex-direction: column; color: #c8d0c8; }
+.top { background: #1e262b; border-bottom: 1px solid #2d383e; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.top .id { font-size: 12px; color: #7a9a8a; letter-spacing: 1px; }
+.top .badge { font-size: 11px; color: #6a7a6a; border: 1px solid #3a4a3a; padding: 2px 10px; letter-spacing: 1px; }
+.pw-layer { flex: 1; display: flex; align-items: center; justify-content: center; background: #171d21; }
+.pw-layer .panel { background: #1e262b; border: 1px solid #2d383e; border-radius: 6px; padding: 36px 40px; text-align: center; min-width: 300px; }
+.pw-layer .icon { color: #4a5a5a; font-size: 28px; margin-bottom: 12px; }
+.pw-layer .prompt { font-size: 12px; color: #7a8a7a; letter-spacing: 1px; margin-bottom: 20px; }
+.pw-layer .row { display: flex; align-items: center; justify-content: center; gap: 8px; background: #13191d; border: 1px solid #2d383e; border-radius: 4px; padding: 8px 14px; margin: 0 auto; width: fit-content; }
+.pw-layer .row .label { color: #5a6a5a; font-size: 11px; letter-spacing: 1px; }
+.pw-layer .row input { background: transparent; border: none; color: #b8c8b8; font-family: 'Courier New', monospace; font-size: 14px; outline: none; letter-spacing: 2px; width: 180px; padding: 0; }
+.pw-layer .error { font-size: 11px; color: #b56a6a; min-height: 1.4em; margin-top: 14px; visibility: hidden; letter-spacing: 1px; }
+.pw-layer .error.show { visibility: visible; }
+.pw-layer button { margin-top: 18px; background: transparent; border: 1px solid #3a4a4a; color: #7a9a8a; padding: 8px 30px; font-family: 'Courier New',monospace; font-size: 12px; cursor: pointer; letter-spacing: 2px; transition: all 0.25s; border-radius: 3px; }
+.pw-layer button:hover { border-color: #6a9a7a; color: #8ac8a0; background: rgba(100,160,120,0.06); }
+.doc-layer { display: none; flex: 1; flex-direction: column; min-height: 0; }
+.doc-layer.active { display: flex; }
+.doc-layer .body { flex: 1; overflow-y: auto; padding: 34px clamp(28px, 6vw, 76px); line-height: 1.82; font-family: "Songti SC","Noto Serif CJK SC","STSong",SimSun,serif; font-size: 16px; color: #d1d8d1; background: #171d21; }
+.doc-layer .body .log-entry { max-width: 780px; margin: 0 auto; text-indent: 0; }
+.doc-layer .bot { background: #1e262b; border-top: 1px solid #2d383e; padding: 8px 20px; display: flex; justify-content: space-between; font-size: 11px; color: #5a6a5a; flex-shrink: 0; }
+.doc-layer .bot .writer { color: #6a8a7a; }
+</style>
+</head>
+<body>
+<div class="top"><span class="id">C2-04</span><span class="badge">ENCRYPTED</span></div>
+<div class="pw-layer" id="pwLayer">
+  <div class="panel">
+    <div class="icon">◇</div>
+    <div class="prompt">此文档已加密</div>
+    <div class="row"><span class="label">KEY</span><input type="password" id="pwInput" autofocus></div>
+    <div class="error" id="pwError">密码错误</div>
+    <button id="btnUnlock">UNLOCK</button>
+  </div>
+</div>
+<div class="doc-layer" id="docLayer">
+  <div class="body"><div class="log-entry">
+小初，是他告诉我你叫小初，没想到到现在我才知道你的名字。<br>
+我跟你说小初，这个日志我刚写两行，就有点想笑。因为我感觉我好像是写给你看的，虽然我知道，你根本就看不到哈哈哈哈。<br>
+但是我就这样叫着小初啊小初，感觉在叫自己的孩子，也感觉在叫年轻时的我自己。<br>
+他说了你朋友的去世，说了你家里纷杂的事情，我蛮同情你的，我理解你为什么选择离家出走。<br>
+我羡慕你义无反顾地选择自己的道路，我觉得，这很酷哎。<br>
+虽然可能会把很多事情变复杂，把很多人牵扯进去，但是反正不花咱自个的钱不是吗！<br>
+大闹一场又能怎样？这个世界不会因为这些事停转。
+  </div></div>
+  <div class="bot"><span class="writer">记录人：苏</span><span>2026年6月15日</span></div>
+</div>
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var ver = params.get('v') || '';
+  var session = params.get('s') || '';
+  var archiveId = params.get('archive') === '1' ? params.get('id') : '';
+  var RESET_STAMP = localStorage.getItem('citymystery_reset_stamp') || '0';
+  var KEY = 'doc_unlocked_c204_v' + ver + '_s' + (session || RESET_STAMP);
+  function markArchiveViewed(id) {
+    try {
+      var viewed = JSON.parse(localStorage.getItem('citymystery_viewed_logs') || '[]');
+      if (viewed.indexOf(id) === -1) viewed.push(id);
+      localStorage.setItem('citymystery_viewed_logs', JSON.stringify(viewed));
+      parent.postMessage({ type: 'citymystery-log-viewed', id: id }, '*');
+    } catch(e) {}
+  }
+  function unlock() {
+    document.getElementById('pwLayer').style.display = 'none';
+    document.getElementById('docLayer').classList.add('active');
+    try { localStorage.setItem(KEY, '1'); } catch(e) {}
+    markArchiveViewed('c204');
+  }
+  function hasUnlocked() {
+    if (archiveId === 'c204' && session) return true;
+    return localStorage.getItem(KEY) === '1';
+  }
+  if (navigator.cookieEnabled) {
+    try { if (hasUnlocked()) unlock(); } catch(e) {}
+  }
+  document.getElementById('btnUnlock').addEventListener('click', checkPw);
+  document.getElementById('pwInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') checkPw(); });
+  function checkPw() {
+    var input = document.getElementById('pwInput');
+    var error = document.getElementById('pwError');
+    if (input.value === 'su0404') {
+      unlock();
+    } else {
+      error.textContent = 'ACCESS DENIED';
+      error.classList.add('show');
+      input.value = '';
+      input.focus();
+    }
+  }
+})();
+</script>
+</body>
+</html>

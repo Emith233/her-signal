@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>苏见微</title>
+<style>
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #000;
+}
+body {
+  color: #b90000;
+  font: 21px/1.85 "STKaiti", "KaiTi", "Kaiti SC", "Songti SC", "SimSun", serif;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 0, 0, .04) 1px, transparent 1px),
+    radial-gradient(circle at 50% 8%, rgba(125, 0, 0, .2), transparent 34%),
+    radial-gradient(circle at 50% 100%, rgba(80, 0, 0, .16), transparent 42%);
+  background-size: 100% 5px, auto, auto;
+}
+a {
+  color: #ff3030;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 48, 48, .7);
+}
+a:hover { color: #ffeded; border-bottom-color: #ffeded; }
+.page {
+  position: relative;
+  width: min(920px, calc(100% - 28px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 26px 0 64px;
+  background: #000;
+}
+.return-link {
+  position: fixed;
+  left: 18px;
+  top: 18px;
+  z-index: 2;
+  color: rgba(185, 0, 0, .62);
+  font-size: 12px;
+  letter-spacing: 2px;
+  transform: rotate(180deg);
+  transform-origin: center;
+}
+.photo {
+  width: min(430px, 82vw);
+  margin: 0 auto 26px;
+  background: #000;
+  box-shadow: 0 0 42px rgba(160, 0, 0, .2);
+}
+.photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.inverted-text {
+  margin-top: 92px;
+  transform: rotate(180deg);
+  transform-origin: center;
+}
+.header {
+  text-align: center;
+  padding: 10px 0 24px;
+}
+h1 {
+  margin: 10px 0 0;
+  color: #e00000;
+  font-family: "Songti SC", "STSong", "SimSun", serif;
+  font-size: clamp(36px, 8vw, 72px);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: 8px;
+  text-shadow: 0 0 12px rgba(210, 0, 0, .52), 2px 0 0 rgba(80, 0, 0, .9);
+}
+.section {
+  margin-top: 28px;
+  padding: 4px 0;
+}
+.section p {
+  margin: 0 0 13px;
+  color: #c90000;
+  text-align: center;
+}
+.section p:last-child { margin-bottom: 0; }
+.result {
+  margin-top: 28px;
+  padding: 4px 0;
+  color: #ed1616;
+  font-family: "STKaiti", "KaiTi", "Kaiti SC", "Songti SC", serif;
+  font-size: clamp(34px, 6vw, 58px);
+  line-height: 1.28;
+  text-align: center;
+  letter-spacing: 2px;
+  text-shadow: 0 0 14px rgba(225, 0, 0, .45);
+}
+@media (max-width: 680px) {
+  .page { width: min(100% - 22px, 920px); padding-top: 18px; }
+  .return-link { position: static; display: inline-block; margin-bottom: 18px; }
+  .photo { width: min(330px, 86vw); margin-bottom: 26px; }
+  .inverted-text { margin-top: 76px; }
+  body { font-size: 18px; }
+  .section { padding: 20px 18px; }
+  .result { font-size: clamp(30px, 9vw, 46px); }
+  h1 { letter-spacing: 4px; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <a class="return-link" href="emith-search.html">Σ 聚合搜索</a>
+
+  <figure class="photo">
+    <img src="sujianwei2.png?v=20260614-2314" alt="苏见微">
+  </figure>
+
+  <div class="inverted-text">
+    <header class="header">
+      <h1>苏见微</h1>
+    </header>
+
+    <section class="section">
+      <p>以虚构为门，窥见旧神之影。</p>
+    </section>
+
+    <section class="section">
+      <p>渴望新生之人。</p>
+      <p>渴望拯救他人之人。</p>
+      <p>她的死亡，献给死神。</p>
+    </section>
+
+    <section class="section">
+      <p>以八卦撕裂躯体。</p>
+      <p>献祭得以成立。</p>
+    </section>
+
+    <div class="result">死神许可<a href="profile-yc-02.html">袁以初</a>作为新的愚者。</div>
+  </div>
+</main>
+<script>
+try {
+  localStorage.setItem('citymystery_sujianwei_ritual_seen', '1');
+  localStorage.setItem('citymystery_sujianwei_ritual_seen_v2', '1');
+  localStorage.setItem('citymystery_sujianwei_seen_event', String(Date.now()));
+} catch(e) {}
+try {
+  if (window.opener) window.opener.postMessage({ type: 'citymystery-sujianwei-ritual-seen' }, '*');
+} catch(e) {}
+try {
+  if (window.parent && window.parent !== window) window.parent.postMessage({ type: 'citymystery-sujianwei-ritual-seen' }, '*');
+} catch(e) {}
+try {
+  new BroadcastChannel('citymystery').postMessage({ type: 'citymystery-sujianwei-ritual-seen' });
+} catch(e) {}
+</script>
+</body>
+</html>

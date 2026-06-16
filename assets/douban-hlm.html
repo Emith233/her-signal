@@ -1,0 +1,116 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>豆板 · 红楼梦</title>
+<style type="text/css">
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body { font-family: 'Helvetica Neue','PingFang SC','Microsoft YaHei',sans-serif; background: #f0f0f0; color: #333; font-size: 13px; line-height: 180%; }
+
+.topbar { background: #f0f3f5; border-bottom: 1px solid #e0e0e0; padding: 8px 16px; display: flex; align-items: center; gap: 12px; }
+.topbar .logo { color: #11aa55; font-weight: 700; font-size: 16px; letter-spacing: 2px; }
+.topbar .nav { font-size: 12px; color: #999; }
+
+.page { max-width: 600px; margin: 0 auto; background: #fff; min-height: 100%; }
+.book-header { padding: 20px 20px 12px; display: flex; gap: 20px; }
+.book-header .cover { width: 88px; height: 124px; border-radius: 3px; flex-shrink: 0; overflow: hidden; }
+.book-header .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.book-header .info { flex: 1; }
+.book-header .info .title { font-size: 20px; font-weight: 600; color: #111; }
+.book-header .info .author { color: #37a; font-size: 13px; margin-top: 4px; }
+.book-header .info .rating { margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.book-header .info .rating .stars { color: #e09015; font-size: 16px; letter-spacing: 1px; }
+.book-header .info .rating .score { font-size: 16px; font-weight: 600; color: #e09015; }
+.book-header .info .rating .count { color: #999; font-size: 12px; }
+.book-header .info .meta { color: #999; font-size: 12px; margin-top: 4px; }
+.book-header .info .meta span { margin-right: 12px; }
+
+.section-title { font-size: 14px; font-weight: 600; color: #111; padding: 16px 20px 8px; border-top: 1px solid #eee; }
+
+.review { padding: 0 20px 16px; }
+.review .r-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.review .r-header .ravatar { width: 28px; height: 28px; border-radius: 50%; background: #d0e0d0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #4a8a5a; font-weight: 600; }
+.review .r-header .rname { font-size: 12px; color: #37a; }
+.review .r-header .rtime { font-size: 11px; color: #bbb; }
+.review .r-content p { margin: 0.5em 0; text-align: justify; }
+.review .r-content .quote { background: #f6f8fa; border-left: 3px solid #bbb; padding: 8px 12px; margin: 0.6em 0; color: #666; font-size: 12px; text-align: justify; }
+
+.footer { text-align: center; padding: 14px; font-size: 11px; color: #ccc; background: #fafafa; border-top: 1px solid #eee; }
+.footer b { color: #bbb; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="topbar">
+  <span class="logo">豆板</span>
+  <span class="nav">读书 · 电影 · 音乐</span>
+</div>
+
+<div class="book-header">
+  <div class="cover"><img src="hlm-scene.jpg" alt="红楼梦"></div>
+  <div class="info">
+    <div class="title">红楼梦</div>
+    <div class="author">曹雪芹 著 / 人民文学出版社</div>
+    <div class="rating">
+      <span class="stars">★★★★★</span>
+      <span class="score">9.8</span>
+      <span class="count">(486231人评价)</span>
+    </div>
+    <div class="meta">
+      <span>出版年: 1791</span>
+      <span>定价: 免费</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">热门书评 · · · · · ·</div>
+
+<div class="review">
+  <div class="r-header">
+    <div class="ravatar">林</div>
+    <span class="rname">林泉</span>
+    <span class="rtime">2024-12-03</span>
+  </div>
+  <div class="r-content">
+    <p>读了十几年红楼，每次重读都能发现新的细节。曹公笔下的每个人物都是立体的——你不一定喜欢他们，但你一定能理解他们。</p>
+    <p>黛玉的敏感、宝钗的周全、探春的刚烈、凤姐的精明……没有一个人是脸谱化的，每个人都有自己的不得已。这就是红楼梦最了不起的地方：它不评判，它只呈现。</p>
+    <p>有人说这是一部&ldquo;百科全书&rdquo;，我倒觉得它更像一面镜子——你是什么样的人，就看到什么样的故事。</p>
+  </div>
+</div>
+
+<div class="review">
+  <div class="r-header">
+    <div class="ravatar">潇</div>
+    <span class="rname">潇湘子</span>
+    <span class="rtime">2025-02-21</span>
+  </div>
+  <div class="r-content">
+    <p>最爱看大观园里过节的段落——元宵放灯、中秋联诗、冬日赏雪。曹公写日常生活的笔力无人能及，一个螃蟹宴就能写出半卷风俗画。</p>
+    <p>以前读的时候只顾着看情节，后来才发现这些细碎的日常才是全书最珍贵的东西。大观园里的每一顿饭、每一场诗会、每一次玩笑，都是回不去的时光。</p>
+    <p>这些日子越美好，读到后面的落差就越让人怅然。曹公不写悲剧，他只是把美好一个一个摆出来，再让你看着它们一个一个消失。</p>
+  </div>
+</div>
+
+<div class="review">
+  <div class="r-header">
+    <div class="ravatar">南</div>
+    <span class="rname">南柯</span>
+    <span class="rtime">2025-05-17</span>
+  </div>
+  <div class="r-content">
+    <p>重读红楼，最感慨的不是宝黛爱情，而是那座<strong>大厦</strong>真正倾倒时的声响。</p>
+    <p>书里有一处细节以前从未留意——抄检大观园之后，探春说了一句话：</p>
+    <div class="quote">&ldquo;你们别忙，自然连你们抄的日子有呢！……咱们也渐渐的来了。可知这样大族人家，若从外头杀来，一时是杀不死的，这是古人曾说的&lsquo;百足之虫，死而不僵&rsquo;，必须先从家里自杀自灭起来，才能一败涂地！&rdquo;</div>
+    <p>所谓&ldquo;一败涂地&rdquo;，正应了那句&ldquo;好一似食尽鸟投林，落了片白茫茫大地真干净&rdquo;。</p>
+    <p>这座位于金陵的百年府邸，从外面看上去依然雕梁画栋，内里却早已蛀空。等到真正垮下来的时候，不过是一夜之间的事。曹公写的是家族，也是命运——没有什么东西是永恒的，繁华底下永远藏着倒计时。</p>
+  </div>
+</div>
+
+<div class="footer">
+Powered by <b>Emith</b>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交易所</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --bg: #0b0b0d;
+  --panel: #121214;
+  --text: #e8e3da;
+  --muted: #a9a29a;
+  --red: #7a1118;
+  --bright-red: #b11226;
+  --gold: #8a6a37;
+  --line: #2a2a2d;
+}
+@font-face {
+  font-family: "RitualLishu";
+  src:
+    url("fonts/STLITI.ttf") format("truetype"),
+    local("Libian SC"),
+    local("隶书"),
+    local("LiSu"),
+    local("STLiti");
+  font-display: swap;
+}
+html, body { min-height: 100%; margin: 0; }
+body {
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(85,16,20,.1), transparent 44%),
+    radial-gradient(ellipse at 50% 50%, #121214 0, #0b0b0d 62%, #070708 100%);
+  color: var(--text);
+  font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: .2;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 31px, rgba(138,106,55,.04) 32px);
+}
+.shell { height: 100vh; min-height: 520px; display: grid; grid-template-rows: auto 1fr auto; padding: 17px 28px 13px; position: relative; overflow: hidden; }
+.top { display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; min-height: 42px; border-bottom: 1px solid rgba(138,106,55,.26); }
+.title { grid-column: 2; color: #ddd5c8; font-family: "Songti SC", SimSun, serif; font-size: 26px; letter-spacing: 12px; padding-left: 12px; }
+.stats { justify-self: end; display: flex; gap: 14px; color: #756f68; font: 11px/1.8 "Courier New", monospace; }
+.main { display: grid; place-items: center; padding: 15px 0; min-height: 0; }
+.panel {
+  width: min(720px, 94vw);
+  position: relative;
+  padding: 26px 48px 20px;
+  border: 1px solid var(--line);
+  background: rgba(18,18,20,.88);
+  box-shadow: 0 18px 60px rgba(0,0,0,.3), inset 0 0 60px rgba(0,0,0,.16);
+}
+.panel::before, .panel::after { content: ""; position: absolute; width: 46px; height: 46px; border-color: rgba(138,106,55,.55); }
+.panel::before { left: -1px; top: -1px; border-left: 1px solid; border-top: 1px solid; }
+.panel::after { right: -1px; bottom: -1px; border-right: 1px solid; border-bottom: 1px solid; }
+.seal { width: 54px; height: 54px; margin: 0 auto 12px; border: 1px solid rgba(138,106,55,.34); border-radius: 50%; display: grid; place-items: center; color: rgba(138,106,55,.54); font: 23px/1 SimSun, serif; }
+.seal::after { content: ""; width: 38px; height: 38px; border: 1px solid rgba(122,17,24,.38); transform: rotate(45deg); position: absolute; }
+h1 { margin: 0 0 28px; color: var(--text); text-align: center; font: 400 22px/1.5 "Songti SC", SimSun, serif; letter-spacing: 2px; }
+.sub { margin: 5px 0 16px; text-align: center; color: #77716b; font-size: 11px; }
+.form { display: grid; gap: 10px; }
+.input-row { display: grid; grid-template-columns: 0 minmax(0, 1fr); align-items: center; transition: grid-template-columns .25s; }
+.input-row.armed { grid-template-columns: 32px minmax(0, 1fr); }
+.hash-hint { overflow: hidden; color: #e8c35c; font: 700 22px/1 "Impact", "Arial Black", "Heiti SC", sans-serif; text-align: center; opacity: 0; transition: opacity .25s; }
+.input-row.armed .hash-hint { opacity: 1; }
+input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #383438;
+  border-radius: 0;
+  outline: none;
+  background: #0d0d0f;
+  color: #e0dbd2;
+  padding: 0 16px;
+  text-align: center;
+  font-size: 17px;
+  box-shadow: inset 0 5px 14px rgba(0,0,0,.28);
+  transition: .3s;
+}
+input:focus { border-color: rgba(177,18,38,.62); box-shadow: inset 0 5px 14px rgba(0,0,0,.28), 0 0 22px rgba(122,17,24,.13); }
+button {
+  min-width: 128px;
+  height: 38px;
+  border: 1px solid #4a3d3e;
+  border-radius: 0;
+  background: #171719;
+  color: #d6d0c7;
+  cursor: pointer;
+  font-size: 15px;
+  letter-spacing: 3px;
+  transition: border-color .3s, background .3s, box-shadow .3s;
+}
+button:hover { border-color: #7a3439; background: #241417; box-shadow: 0 0 18px rgba(122,17,24,.15); }
+.primary { justify-self: center; }
+.feedback { min-height: 82px; margin-top: 16px; border-top: 1px solid rgba(138,106,55,.18); padding-top: 12px; color: #c9c1b7; text-align: center; font-size: 15px; line-height: 1.7; }
+.feedback small { display: block; color: #817871; font-size: 12px; letter-spacing: 1px; }
+.feedback .danger { color: #a72a31; }
+.feedback .blood-question {
+  color: #6f1616;
+  font: 700 clamp(28px, 4.8vw, 44px)/1.45 "RitualLishu", "Libian SC", "隶书", "LiSu", "STLiti", "Songti SC", SimSun, serif;
+  letter-spacing: 2px;
+  text-shadow: none;
+  display: inline-block;
+  position: relative;
+}
+.feedback .blood-question::before {
+  content: attr(data-ghost);
+  position: absolute;
+  inset: 0;
+  color: rgba(112, 14, 14, .36);
+  clip-path: inset(54% 0 28% 0);
+  transform: translateX(0);
+  pointer-events: none;
+  animation: bloodSliceFault 2.8s steps(2, end) infinite;
+}
+.feedback .blood-question span {
+  opacity: 0;
+  animation: bloodCharIn .42s ease forwards;
+}
+.actions { display: flex; justify-content: center; gap: 12px; margin-top: 9px; }
+.actions button { min-width: 70px; height: 32px; font-size: 13px; }
+.trace { min-height: 13px; margin-top: 6px; color: #625c58; text-align: right; font: 10px/1.3 "Courier New", monospace; }
+.footer { border-top: 1px solid rgba(138,106,55,.2); padding-top: 9px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; color: #625d58; font-size: 10px; letter-spacing: 1px; }
+.intro {
+  position: fixed; inset: 0; z-index: 20; display: grid; place-items: center;
+  background: #050506; pointer-events: none; animation: introHide .7s ease 2.45s forwards;
+}
+.eyes { position: relative; width: min(780px, 90vw); height: 260px; opacity: 0; filter: blur(10px); animation: revealEyes 2.15s ease forwards; }
+.eye {
+  position: absolute; top: 66px; width: 290px; height: 105px; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(210,193,174,.3) 0 8%, rgba(99,26,30,.22) 10% 18%, rgba(50,47,45,.26) 22% 42%, transparent 70%);
+  box-shadow: 0 0 90px rgba(122,17,24,.16);
+}
+.eye:first-child { left: 35px; transform: rotate(4deg); }
+.eye:last-child { right: 35px; transform: rotate(-4deg); }
+.flash { position: fixed; inset: 0; opacity: 0; background: rgba(177,18,38,.52); animation: flash .2s linear 2.06s; }
+body.abnormal .panel { box-shadow: 0 18px 60px rgba(0,0,0,.3), 0 0 32px rgba(122,17,24,.2); }
+body.abnormal .actions { animation: shiver 3s linear infinite; }
+@keyframes revealEyes { 0% { opacity: 0; transform: scale(.94); } 42% { opacity: .45; } 90% { opacity: .85; transform: scale(1); } 100% { opacity: 0; } }
+@keyframes flash { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes introHide { to { opacity: 0; visibility: hidden; } }
+@keyframes shiver { 0%,96%,100% { transform: translateX(0); } 97% { transform: translateX(-1px); } 98% { transform: translateX(1px); } }
+@keyframes bloodCharIn {
+  from { opacity: 0; filter: blur(5px); }
+  to { opacity: 1; filter: blur(0); }
+}
+@keyframes bloodSliceFault {
+  0%, 88%, 100% { opacity: 0; transform: translateX(0); }
+  89% { opacity: .7; transform: translateX(-2px); }
+  90% { opacity: .45; transform: translateX(2px); }
+  91% { opacity: 0; transform: translateX(0); }
+}
+@media (max-width: 640px) {
+  .shell { min-height: 460px; padding: 12px 12px 9px; }
+  .top { grid-template-columns: 1fr; gap: 9px; }
+  .title { grid-column: 1; justify-self: center; font-size: 26px; }
+  .stats { justify-self: center; gap: 9px; font-size: 10px; }
+  .panel { padding: 20px 18px 14px; }
+  h1 { font-size: 20px; }
+}
+@media (max-width: 480px) {
+  body { overflow-y: auto; }
+  .shell { min-height: 100dvh; height: auto; padding: 10px 8px 12px; }
+  .top { gap: 6px; }
+  .title { font-size: 22px; letter-spacing: 6px; }
+  .stats { font-size: 9px; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .main { padding: 10px 0; }
+  .panel { padding: 18px 14px 14px; }
+  h1 { font-size: 18px; margin-bottom: 20px; }
+  .seal { width: 42px; height: 42px; margin-bottom: 8px; }
+  .seal::after { width: 30px; height: 30px; }
+  input { height: 40px; font-size: 15px; }
+  button { min-width: 100px; height: 36px; font-size: 14px; }
+  .primary { width: 100%; }
+  .feedback { min-height: 70px; font-size: 14px; }
+  .footer { font-size: 9px; gap: 8px; flex-direction: column; align-items: center; }
+  .actions { flex-direction: column; align-items: stretch; }
+  .actions button { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="intro" id="intro">
+  <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+  <div class="flash"></div>
+</div>
+<main class="shell">
+  <header class="top">
+    <div class="title">交易所</div>
+    <div class="stats"><span>当前在线：15</span><span>今日受理：216</span><span>撤回成功：0</span></div>
+  </header>
+  <section class="main">
+    <div class="panel">
+      <div class="seal">契</div>
+      <h1>告诉我你想要的东西。</h1>
+      <div class="form">
+        <div class="input-row" id="inputRow">
+          <span class="hash-hint">#</span>
+          <input id="wish" placeholder="输入你想得到之物" autocomplete="off">
+        </div>
+        <button class="primary" id="assess">衡量价值</button>
+      </div>
+      <div class="feedback" id="feedback"><small>等待提交。</small></div>
+      <div class="trace" id="trace"></div>
+    </div>
+  </section>
+  <footer class="footer">
+    <span>所有请求均由提交者主动发起。</span>
+    <span>系统仅负责衡量与记录。</span>
+    <span>请勿提交你并不愿失去的东西。</span>
+  </footer>
+</main>
+<script>
+(function() {
+  var intro = document.getElementById('intro');
+  var input = document.getElementById('wish');
+  var inputRow = document.getElementById('inputRow');
+  var feedback = document.getElementById('feedback');
+  var trace = document.getElementById('trace');
+  var count = Number(localStorage.getItem('exchange_request_count') || '0');
+  var peaceArmed = false;
+  var sujianweiRitualSeen = false;
+  function readSujianweiMarker(scope) {
+    try {
+      if (!scope || !scope.localStorage) return false;
+      return scope.localStorage.getItem('citymystery_sujianwei_ritual_seen') === '1' ||
+        scope.localStorage.getItem('citymystery_sujianwei_ritual_seen_v2') === '1' ||
+        !!scope.localStorage.getItem('citymystery_sujianwei_seen_event');
+    } catch(e) {
+      return false;
+    }
+  }
+  function markLocalSujianweiRitualSeen() {
+    sujianweiRitualSeen = true;
+    try {
+      localStorage.setItem('citymystery_sujianwei_ritual_seen', '1');
+      localStorage.setItem('citymystery_sujianwei_ritual_seen_v2', '1');
+      localStorage.setItem('citymystery_sujianwei_seen_event', String(Date.now()));
+    } catch(e) {}
+  }
+  function hasSeenSujianweiRitual() {
+    if (sujianweiRitualSeen) return true;
+    var seen = readSujianweiMarker(window) ||
+      readSujianweiMarker(window.parent) ||
+      readSujianweiMarker(window.top) ||
+      readSujianweiMarker(window.opener);
+    if (seen) markLocalSujianweiRitualSeen();
+    return seen;
+  }
+  function requestSujianweiRitualSeen(done) {
+    if (hasSeenSujianweiRitual()) {
+      done(true);
+      return;
+    }
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'citymystery-sujianwei-ritual-query' }, '*');
+      }
+    } catch(e) {}
+    try {
+      if (window.top && window.top !== window && window.top !== window.parent) {
+        window.top.postMessage({ type: 'citymystery-sujianwei-ritual-query' }, '*');
+      }
+    } catch(e) {}
+    try {
+      if (window.opener) {
+        window.opener.postMessage({ type: 'citymystery-sujianwei-ritual-query' }, '*');
+      }
+    } catch(e) {}
+    setTimeout(function() {
+      done(hasSeenSujianweiRitual());
+    }, 180);
+  }
+  window.addEventListener('message', function(event) {
+    var data = event.data || {};
+    if (data.type === 'citymystery-sujianwei-ritual-seen') markLocalSujianweiRitualSeen();
+  });
+  try {
+    var channel = new BroadcastChannel('citymystery');
+    channel.onmessage = function(event) {
+      var data = event.data || {};
+      if (data.type === 'citymystery-sujianwei-ritual-seen') markLocalSujianweiRitualSeen();
+    };
+  } catch(e) {}
+  if (localStorage.getItem('exchange_intro_seen') === '1') intro.style.display = 'none';
+  else localStorage.setItem('exchange_intro_seen', '1');
+  function setFeedback(html, abnormal) {
+    feedback.innerHTML = html;
+    document.body.classList.toggle('abnormal', !!abnormal);
+  }
+  function actions(onYes, onNo) {
+    var wrap = document.createElement('div');
+    wrap.className = 'actions';
+    wrap.innerHTML = '<button type="button" class="yes">是</button><button type="button" class="no">否</button>';
+    wrap.querySelector('.yes').onclick = onYes;
+    wrap.querySelector('.no').onclick = onNo;
+    feedback.appendChild(wrap);
+  }
+  function reset() {
+    document.body.classList.remove('abnormal');
+    peaceArmed = false;
+    inputRow.classList.remove('armed');
+    input.value = '';
+    input.placeholder = '输入你想得到之物';
+    setFeedback('<small>等待提交。</small>');
+    trace.textContent = count ? '已受理交易：' + count : '';
+    input.focus();
+  }
+  function reject() {
+    setFeedback('你当然可以拒绝。<small>系统已记住你的请求。</small>');
+    setTimeout(reset, 1300);
+  }
+  function accept() {
+    count += 1;
+    localStorage.setItem('exchange_request_count', String(count));
+    setFeedback('契约已生效。<small>已纳入账中。</small>');
+    trace.textContent = '已受理交易：' + count;
+  }
+  function bloodText(text) {
+    return '<span class="blood-question" data-ghost="' + text + '">' + text.split('').map(function(ch, index) {
+      return '<span style="animation-delay:' + (index * 0.24) + 's">' + ch + '</span>';
+    }).join('') + '</span>';
+  }
+  function morphBloodText(from, to, done) {
+    var text = from.split('');
+    feedback.innerHTML = '<span class="blood-question doom" data-ghost="' + to + '">' +
+      text.map(function(ch) { return '<span style="opacity:1; animation:none">' + ch + '</span>'; }).join('') +
+      '</span>';
+    var wrap = feedback.querySelector('.blood-question');
+    var spans = Array.from(wrap.querySelectorAll('span'));
+    var max = Math.max(from.length, to.length);
+    for (var i = 0; i < max; i++) {
+      (function(index) {
+        setTimeout(function() {
+          if (!spans[index]) {
+            var span = document.createElement('span');
+            span.style.opacity = '1';
+            span.style.animation = 'none';
+            wrap.appendChild(span);
+            spans[index] = span;
+          }
+          spans[index].textContent = to[index] || '';
+        }, index * 260);
+      })(i);
+    }
+    setTimeout(done, max * 260 + 700);
+  }
+  function assess() {
+    var wish = input.value.trim();
+    if (!wish) { setFeedback('<small>请求内容不得为空。</small>'); return; }
+    if (peaceArmed && wish === '大阿卡那') {
+      window.top.location.href = new URL('cache-d64c.html', window.location.href).href;
+      return;
+    }
+    if (peaceArmed && wish === '0901') {
+      morphBloodText('你拿什么交换', '你会毁掉一切', function() {
+        window.top.location.href = new URL('cache-f7b2.html', window.location.href).href;
+      });
+      return;
+    }
+    if (wish === '一切重归安宁') {
+      peaceArmed = true;
+      inputRow.classList.add('armed');
+      input.value = '';
+      input.placeholder = '输入交换之物';
+      setFeedback(bloodText('你拿什么交换'));
+      input.focus();
+      return;
+    }
+    if (peaceArmed) {
+      setFeedback('交换未被承认。<small>请重新提交代价。</small>');
+      input.select();
+      return;
+    }
+    setFeedback('正在衡量其价值……');
+    setTimeout(function() {
+      if (wish === '袁以初') {
+        setFeedback('已完成估价。<br>可支付代价：<span class="danger">你</span>。<br><small>是否继续交易？</small>', true);
+        actions(function() {
+          setFeedback('献上你的生命——', true);
+          setTimeout(function() {
+            window.top.location.href = new URL('ledger-9d24.html', window.location.href).href;
+          }, 900);
+        }, reject);
+        return;
+      }
+      if (wish === '苏见微') {
+        setFeedback('熟悉的名字……像是很久以前就被登记过。<small>是否继续追问它的代价。</small>', true);
+        actions(function() {
+          setFeedback('正在校验访问权限……', true);
+          requestSujianweiRitualSeen(function(ritualSeen) {
+            if (!ritualSeen) {
+              setFeedback('记录仍在。<small>当前访问权限不足。你尚未<strong>倒视</strong>她的仪式。</small>', true);
+              return;
+            }
+            setFeedback('访问权限已打开。', true);
+            try {
+              localStorage.setItem('citymystery_su_access_opened_event', String(Date.now()));
+            } catch(e) {}
+            try {
+              window.parent.postMessage({ type: 'citymystery-su-access-opened' }, '*');
+            } catch(e) {}
+            setTimeout(function() {
+              document.body.innerHTML = '';
+            }, 180);
+          });
+        }, reject);
+        return;
+      }
+      var costs = ['权势','宴乐','忠心','名声','骨血','城池','归附','尊位','生杀之权','旧主','座上宾','尊严'];
+      var cost = costs[Math.floor(Math.random() * costs.length)];
+      setFeedback('已完成估价。<br>你愿意用“' + cost + '”来交换吗？');
+      actions(accept, reject);
+    }, wish === '袁以初' ? 1200 : 720);
+  }
+  document.getElementById('assess').onclick = assess;
+  input.addEventListener('keydown', function(e) { if (e.key === 'Enter') assess(); });
+  trace.textContent = count ? '已受理交易：' + count : '';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>观测记录</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { height:100%; background:#fff; }
+body {
+  display:flex; justify-content:center; align-items:center;
+  font-family: "Courier New", monospace;
+  color: #222; padding: 20px;
+}
+.page {
+  width: min(600px, 100%);
+}
+h1 {
+  font-size: 14px;
+  font-weight: normal;
+  color: #444;
+  letter-spacing: 2px;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+.redact {
+  background: #222;
+  color: #222;
+  user-select: none;
+  padding: 0 4px;
+  letter-spacing: 4px;
+}
+.sub {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 24px;
+}
+.chart-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 200px;
+  padding-bottom: 24px;
+  border-left: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  margin-left: 30px;
+  position: relative;
+}
+.y-label {
+  position: absolute;
+  left: -28px;
+  bottom: 80px;
+  font-size: 11px;
+  color: #999;
+  letter-spacing: 2px;
+  writing-mode: vertical-lr;
+}
+.bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.bar {
+  width: 100%;
+  max-width: 48px;
+  background: #d4d4d4;
+  border-radius: 1px 1px 0 0;
+  position: relative;
+}
+.bar:hover { background: #bbb; }
+.val {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #999;
+}
+.x-label {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #444;
+  text-align: center;
+  font-weight: 700;
+}
+.x-label .dash { color: #ccc; font-weight: 400; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>一天中<span class="redact">██</span>测量值（受<span class="redact">██</span>影响）</h1>
+  <div class="sub">天气：晴</div>
+
+  <div class="chart-wrap">
+    <div class="y-label">cm</div>
+
+    <div class="bar-group">
+      <div class="bar" style="height:152px">
+        <span class="val">19</span>
+      </div>
+      <div class="x-label">06<span class="dash">:</span>19</div>
+    </div>
+
+    <div class="bar-group">
+      <div class="bar" style="height:120px">
+        <span class="val">15</span>
+      </div>
+      <div class="x-label">09<span class="dash">:</span>15</div>
+    </div>
+
+    <div class="bar-group">
+      <div class="bar" style="height:96px">
+        <span class="val">12</span>
+      </div>
+      <div class="x-label">11<span class="dash">:</span>12</div>
+    </div>
+
+    <div class="bar-group">
+      <div class="bar" style="height:8px;background:#999">
+        <span class="val">01</span>
+      </div>
+      <div class="x-label">12<span class="dash">:</span>01</div>
+    </div>
+
+    <div class="bar-group">
+      <div class="bar" style="height:144px">
+        <span class="val">18</span>
+      </div>
+      <div class="x-label">16<span class="dash">:</span>18</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

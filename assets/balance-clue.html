@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信号平衡分析</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%;
+  background: #20272c;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.panel {
+  width: 320px;
+  background: rgba(22, 28, 32, 0.95);
+  border: 1px solid #34424a;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+
+.title {
+  font-size: 13px;
+  color: #6f8a94;
+  text-align: center;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.subtitle {
+  font-size: 10px;
+  color: #4a5f68;
+  text-align: center;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+/* Balance scale */
+.scale-area {
+  position: relative;
+  height: 160px;
+  margin: 0 0 16px;
+}
+
+.pivot-line {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 30px;
+  background: #4a5f68;
+}
+.pivot-line::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: -4px;
+  width: 10px;
+  height: 10px;
+  background: #6f8a94;
+  border-radius: 50%;
+}
+
+.beam {
+  position: absolute;
+  bottom: 48px;
+  left: 10%;
+  width: 80%;
+  height: 4px;
+  background: #4a5f68;
+  border-radius: 2px;
+  transform-origin: center center;
+  transition: transform 0.8s ease;
+}
+.beam.balanced {
+  background: #5a9a6a;
+  box-shadow: 0 0 8px rgba(90, 154, 106, 0.4);
+}
+
+.pan {
+  position: absolute;
+  bottom: 0;
+  width: 80px;
+  text-align: center;
+  transition: transform 0.8s ease;
+}
+.pan.left {
+  left: 6%;
+}
+.pan.right {
+  right: 6%;
+}
+
+.pan-label {
+  font-size: 9px;
+  color: #5a7a84;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.pan-value {
+  font-size: 22px;
+  font-weight: bold;
+  color: #b8c8ce;
+  font-family: 'Courier New', monospace;
+}
+.pan-unit {
+  font-size: 10px;
+  color: #5a7a84;
+}
+
+.pan-string {
+  display: none;
+  margin-top: 4px;
+  padding: 6px 8px;
+  background: rgba(90, 154, 106, 0.15);
+  border: 1px solid #3a6a4a;
+  border-radius: 4px;
+  font-size: 10px;
+  color: #7aaa8a;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+/* Tilt indicator */
+.imbalance {
+  text-align: center;
+  font-size: 11px;
+  color: #6f8a94;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+.imbalance span {
+  display: inline-block;
+  transition: all 0.3s;
+}
+.imbalance span.diff {
+  color: #c8625a;
+  font-weight: bold;
+}
+.imbalance span.balanced-text {
+  color: #5a9a6a;
+}
+
+/* Slider */
+.slider-area {
+  margin: 8px 0 16px;
+}
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #5a7a84;
+  margin-bottom: 6px;
+}
+.slider-label .range {
+  color: #7a9a8a;
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #2a3a3e;
+  border-radius: 2px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #6f8a94;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #8aaab4;
+  transition: all 0.2s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: #8aaab4;
+}
+
+.value-display {
+  text-align: center;
+  font-size: 14px;
+  color: #8aaab4;
+  margin-top: 6px;
+}
+
+/* Status bar */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #2a3a3e;
+  margin-top: 4px;
+}
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.status-dot.pending { background: #c8625a; }
+.status-dot.ready { background: #5a9a6a; box-shadow: 0 0 6px rgba(90,154,106,0.6); }
+
+.status-text {
+  font-size: 10px;
+  color: #5a7a84;
+}
+
+.hint {
+  font-size: 9px;
+  color: #3a5a5e;
+}
+
+/* Reveal overlay */
+.reveal-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 28, 32, 0.97);
+  border-radius: 8px;
+  padding: 24px 20px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.reveal-overlay.show {
+  display: flex;
+  opacity: 1;
+}
+.reveal-overlay .key {
+  font-size: 10px;
+  color: #5a9a6a;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.reveal-overlay .msg {
+  font-size: 13px;
+  color: #b8c8ce;
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+.reveal-overlay .sig {
+  font-size: 9px;
+  color: #3a5a5e;
+  margin-top: 8px;
+}
+.reveal-overlay .blink {
+  animation: blink 1.2s infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+</style>
+</head>
+<body>
+
+<div class="panel" style="position:relative">
+  <div class="title">◈ 信号平衡分析 ◈</div>
+  <div class="subtitle">SIGNAL BALANCE · NODE 19</div>
+
+  <div class="scale-area">
+    <div class="pivot-line"></div>
+    <div class="beam" id="beam"></div>
+
+    <div class="pan left" id="panL">
+      <div class="pan-label">▼ 固定参数</div>
+      <div class="pan-value" id="valL">37.2</div>
+      <div class="pan-unit">Hz</div>
+      <div class="pan-string" id="leftDetail">误码率: 0.02% 信噪比: 21dB</div>
+    </div>
+
+    <div class="pan right" id="panR">
+      <div class="pan-label">▼ 可调参数</div>
+      <div class="pan-value" id="valR">37.2</div>
+      <div class="pan-unit">Hz</div>
+      <div class="pan-string" id="rightDetail">补偿衰减 · 实时校准</div>
+    </div>
+
+    <div class="reveal-overlay" id="revealOverlay">
+      <div class="key">◈ 平衡已达成 ◈</div>
+      <div class="msg">
+        「知而不行，只是未知。」<br>
+        ——王阳明<br><br>
+        <span style="color:#6f8a94;font-size:12px;">
+        信号已校准。下一节点坐标已解锁。<br>
+        去节制之地，寻找真正的平衡。
+        </span>
+      </div>
+      <div class="sig">SIG_BALANCE_CONFIRMED :: NODE → TBD</div>
+      <div class="sig blink" style="margin-top:6px;color:#5a7a84;">◆ 数据已写入本地缓存 ◆</div>
+    </div>
+  </div>
+
+  <div class="imbalance" id="imbalanceDisplay">
+    <span>偏差: </span>
+    <span id="diffDisplay" class="diff">0.0 Hz</span>
+  </div>
+
+  <div class="slider-area">
+    <div class="slider-label">
+      <span>补偿衰减</span>
+      <span class="range" id="sliderVal">37.2 Hz</span>
+    </div>
+    <input type="range" id="slider" min="0" max="100" value="50" step="0.1">
+    <div class="value-display" id="sliderLabel">37.2 Hz</div>
+  </div>
+
+  <div class="status-bar">
+    <div>
+      <span class="status-dot pending" id="statusDot"></span>
+      <span class="status-text" id="statusText">等待平衡校准</span>
+    </div>
+    <span class="hint" id="hintText">调整右侧参数匹配信号源</span>
+  </div>
+</div>
+
+<script>
+(function() {
+  var LEFT_VAL = 37.2;
+  var slider = document.getElementById('slider');
+  var valR = document.getElementById('valR');
+  var sliderVal = document.getElementById('sliderVal');
+  var sliderLabel = document.getElementById('sliderLabel');
+  var diffDisplay = document.getElementById('diffDisplay');
+  var imbalanceDisplay = document.getElementById('imbalanceDisplay');
+  var beam = document.getElementById('beam');
+  var panL = document.getElementById('panL');
+  var panR = document.getElementById('panR');
+  var statusDot = document.getElementById('statusDot');
+  var statusText = document.getElementById('statusText');
+  var hintText = document.getElementById('hintText');
+  var revealOverlay = document.getElementById('revealOverlay');
+
+  var balanced = false;
+
+  function mapSlider(val) {
+    return (val / 100 * 60 + 10).toFixed(1);
+  }
+
+  function update() {
+    var rVal = parseFloat(mapSlider(slider.value));
+    valR.textContent = rVal;
+    sliderVal.textContent = rVal + ' Hz';
+    sliderLabel.textContent = rVal + ' Hz';
+
+    var diff = rVal - LEFT_VAL;
+    var absDiff = Math.abs(diff);
+
+    // Tilt: map diff to rotation (-15 to 15 degrees)
+    var tilt = Math.max(-15, Math.min(15, diff * -3));
+    beam.style.transform = 'rotate(' + tilt + 'deg)';
+
+    // Pan position
+    var panTilt = tilt * 0.15;
+    panL.style.transform = 'translateY(' + (-panTilt) + 'px)';
+    panR.style.transform = 'translateY(' + panTilt + 'px)';
+
+    diffDisplay.textContent = (diff > 0 ? '+' : '') + diff.toFixed(1) + ' Hz';
+
+    var threshold = 0.3;
+
+    if (absDiff <= threshold && !balanced) {
+      balanced = true;
+      beam.classList.add('balanced');
+      diffDisplay.className = 'balanced-text';
+      statusDot.className = 'status-dot ready';
+      statusText.textContent = '平衡已校准 · 解密中';
+      hintText.textContent = '◈ 信号锁定 ◈';
+
+      setTimeout(function() {
+        revealOverlay.classList.add('show');
+      }, 1200);
+    } else if (absDiff > threshold && balanced) {
+      balanced = false;
+      beam.classList.remove('balanced');
+      diffDisplay.className = 'diff';
+      statusDot.className = 'status-dot pending';
+      statusText.textContent = '等待平衡校准';
+      hintText.textContent = '调整右侧参数匹配信号源';
+      revealOverlay.classList.remove('show');
+    } else if (!balanced) {
+      diffDisplay.className = absDiff <= 1.0 ? 'balanced-text' : 'diff';
+    }
+  }
+
+  slider.addEventListener('input', update);
+  update();
+})();
+</script>
+</body>
+</html>

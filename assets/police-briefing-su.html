@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>警情通报</title>
+<style>
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body {
+  background: #dfe7f0;
+  color: #1d2a35;
+  font: 15px/1.85 "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  padding: 18px;
+}
+.page {
+  width: min(920px, 100%);
+  min-height: calc(100vh - 36px);
+  margin: 0 auto;
+  background: #fffefe;
+  border: 1px solid #b9c7d4;
+  box-shadow: 0 14px 34px rgba(35, 62, 90, 0.13);
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 18px;
+  background: #f3f7fb;
+  border-bottom: 1px solid #c8d6e3;
+  color: #617386;
+  font-size: 12px;
+}
+.masthead {
+  padding: 24px 28px 19px;
+  background: linear-gradient(180deg, #174a7d, #123b68);
+  color: #fff;
+  border-bottom: 4px solid #c42424;
+}
+.unit {
+  font-size: 13px;
+  color: #c8d8e8;
+  letter-spacing: 1.5px;
+}
+h1 {
+  margin: 8px 0 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 7px;
+}
+.nav {
+  display: flex;
+  gap: 22px;
+  padding: 7px 22px;
+  background: #eef4f9;
+  border-bottom: 1px solid #c8d6e3;
+  color: #52677c;
+  font-size: 12px;
+}
+.content { padding: 26px clamp(22px, 5vw, 56px) 30px; }
+.doc-head {
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #d7e1ea;
+}
+.doc-head h2 {
+  margin: 0;
+  color: #102e4b;
+  font-size: 25px;
+  line-height: 1.45;
+  letter-spacing: 1.5px;
+}
+.meta {
+  margin-top: 9px;
+  color: #7a8998;
+  font-size: 12px;
+}
+.notice {
+  margin-top: 24px;
+  color: #2c3a45;
+  text-indent: 2em;
+  font-family: "Songti SC", "STSong", "SimSun", serif;
+  font-size: 16px;
+  line-height: 2;
+}
+.notice p { margin: 0 0 14px; }
+.case-box {
+  margin: 22px 0;
+  border: 1px solid #cfdbe6;
+  background: #f7fafc;
+}
+.case-title {
+  padding: 8px 13px;
+  background: #e8f0f7;
+  border-bottom: 1px solid #cfdbe6;
+  color: #234a70;
+  font-weight: 700;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 136px 1fr;
+}
+.term, .value {
+  padding: 9px 13px;
+  border-bottom: 1px solid #e3ebf2;
+}
+.term {
+  background: #fbfdff;
+  color: #647485;
+  font-size: 13px;
+}
+.value { color: #263746; }
+.grid .term:nth-last-child(-n+2), .grid .value:nth-last-child(-n+2) { border-bottom: 0; }
+.warning {
+  margin-top: 20px;
+  padding: 13px 15px;
+  border-left: 4px solid #c42424;
+  background: #fff7f7;
+  color: #5b3030;
+  font-size: 14px;
+  text-indent: 0;
+}
+.footer {
+  margin-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #667789;
+  font-size: 13px;
+  position: relative;
+  min-height: 132px;
+}
+.seal {
+  width: 146px;
+  height: 146px;
+  position: absolute;
+  right: 16px;
+  top: -14px;
+  transform: rotate(-7deg);
+  opacity: 0.86;
+  mix-blend-mode: multiply;
+}
+.seal img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: contrast(1.04) saturate(0.96);
+}
+@media (max-width: 680px) {
+  body { padding: 8px; }
+  .page { min-height: calc(100vh - 16px); }
+  .nav { flex-wrap: wrap; gap: 8px 16px; }
+  h1 { font-size: 24px; letter-spacing: 5px; }
+  .doc-head h2 { font-size: 22px; }
+  .notice { font-size: 15px; }
+  .grid { grid-template-columns: 104px 1fr; }
+  .footer { display: block; }
+  .seal {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin: 18px auto 0;
+  }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="top">
+    <span>公共安全信息发布平台</span>
+    <span>发布状态：已公开</span>
+  </div>
+  <header class="masthead">
+    <div class="unit">某市公安局刑事侦查支队</div>
+    <h1>警情通报</h1>
+  </header>
+  <nav class="nav">
+    <span>警务公开</span><span>案件通报</span><span>协查信息</span><span>安全提示</span><span>联系方式</span>
+  </nav>
+  <section class="content">
+    <div class="doc-head">
+      <h2>关于一起重大刑事案件的情况通报</h2>
+      <div class="meta">编号：JQ-20260703-01　发布时间：2026年7月3日 08:20</div>
+    </div>
+
+    <article class="notice">
+      <p>2026年7月3日凌晨，我局接群众报警，在一村村口发现一名女性遇害。接警后，公安机关立即组织刑侦、技术、网安等部门赶赴现场开展勘验、走访和调查取证工作。</p>
+      <p>经初步核查，死者为苏见微，女，1997年生，29岁，笔名“苏苏”，职业为悬疑推理小说作者，曾长期创作系列侦探小说。根据现场勘验及法医初步检验，死亡时间约为2026年7月2日22时前后。</p>
+      <p>案发现场存在明显人为布置痕迹。死者遗体被严重破坏，头部、耳部、双手、双足、下肢、眼球及舌头与躯干分离。现场物品摆放具有强烈仪式化特征，相关痕迹已提取送检。</p>
+      <p>目前，公安机关已将该案列为重大刑事案件侦办。结合现场情况和前期调查线索，暂不排除该案与非法组织活动、极端迷信或邪教相关行为有关。案件正在进一步侦办中。</p>
+    </article>
+
+    <section class="case-box">
+      <div class="case-title">案件基本信息</div>
+      <div class="grid">
+        <div class="term">案件性质</div><div class="value">重大刑事案件</div>
+        <div class="term">死者身份</div><div class="value">苏见微，女，1997年生，29岁，笔名“苏苏”</div>
+        <div class="term">职业信息</div><div class="value">悬疑推理小说作者，曾长期创作系列侦探小说</div>
+        <div class="term">死亡时间</div><div class="value">2026年7月2日22时左右</div>
+        <div class="term">发现地点</div><div class="value">一村村口</div>
+        <div class="term">现场特征</div><div class="value">遗体遭肢解，头部、耳部、双手、双足、下肢、眼球及舌头被分离，现场呈仪式化摆放状态</div>
+        <div class="term">侦办方向</div><div class="value">疑似非法组织活动、极端迷信或邪教相关案件</div>
+      </div>
+    </section>
+
+    <div class="warning">
+      请广大群众不传播未经证实的现场图片、视频及相关传言。如掌握案发前后异常人员活动、车辆出入、可疑聚集等线索，请及时向公安机关提供。
+    </div>
+
+    <div class="footer">
+      <div>
+        某市公安局<br>
+        2026年7月3日
+      </div>
+      <div class="seal" aria-label="某市公安局警情发布章">
+        <img src="警情发布.png" alt="">
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

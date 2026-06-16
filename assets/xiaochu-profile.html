@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小初的信息归纳</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: #eef1f4;
+  color: #2a3338;
+  font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 16px;
+}
+.dossier {
+  width: min(680px, 100%);
+  border: 1px solid #d0d8de;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+}
+.profile {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid #e3e9ed;
+}
+.profile h1 {
+  font-size: 26px;
+  color: #1f2c33;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.profile h1 span {
+  color: #7f929c;
+  font-size: 18px;
+  margin-left: 10px;
+  font-weight: 400;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 14px;
+  margin-top: 14px;
+  font-size: 14px;
+}
+.info-grid .lbl {
+  color: #6e838d;
+  letter-spacing: 1px;
+  padding: 5px 0;
+}
+.info-grid .val {
+  color: #1f2c33;
+  padding: 5px 0;
+  border-bottom: 1px solid #e8eef1;
+}
+.info-grid .lbl, .info-grid .val {
+  line-height: 1.6;
+}
+.records {
+  padding: 0 28px 24px;
+}
+.record {
+  border-left: 2px solid #bcc9d0;
+  padding: 14px 0 12px 16px;
+  margin-bottom: 4px;
+}
+.record:last-child { margin-bottom: 0; }
+.record .rtime {
+  font-size: 11px;
+  color: #889ca6;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.record .rbody {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #2a3a42;
+}
+@media (max-width: 560px) {
+  body { padding: 12px; }
+  .profile { padding: 16px; }
+  .profile h1 { font-size: 20px; }
+  .profile h1 span { font-size: 15px; }
+  .info-grid { font-size: 13px; }
+  .records { padding: 0 16px 18px; }
+  .record { padding-left: 12px; }
+}
+</style>
+</head>
+<body>
+<article class="dossier">
+  <div class="profile">
+    <h1>袁以初 <span>小初</span></h1>
+    <div class="info-grid">
+      <div class="lbl">年龄</div><div class="val">16岁</div>
+      <div class="lbl">生日</div><div class="val">2010年2月14日</div>
+      <div class="lbl">住址</div><div class="val">山东省泉城市河阳区</div>
+    </div>
+  </div>
+
+  <div class="records">
+    <div class="record">
+      <div class="rtime">2026-06-12</div>
+      <div class="rbody">根据苏小姐的定位信息，小初上一个长期停留地是茂名，到目前为止已经有9个地点，如果我预测的没错，那么应该总共有20多个地点。</div>
+    </div>
+    <div class="record">
+      <div class="rtime">2026-06-13</div>
+      <div class="rbody">今年2月份去世的小燕是小初的最好的朋友，我有理由怀疑，小燕的死是压垮她的最后一根稻草。</div>
+    </div>
+    <div class="record">
+      <div class="rtime">2026-06-14</div>
+      <div class="rbody">按照苏小姐所说，那个Yan便是怂恿小初离家出走的人，他与小初应该是用微聊以及电话联系，每次电话联系都是Yan拨打电话，小初应该被要求不得擅自回拨电话。</div>
+    </div>
+    <div class="record">
+      <div class="rtime">2026-06-16</div>
+      <div class="rbody">根据苏小姐提供的祭祀现场情况，这些祭祀物大概率与他们的特点有关，我提醒苏小姐要加倍小心。</div>
+    </div>
+  </div>
+
+</article>
+</body>
+</html>

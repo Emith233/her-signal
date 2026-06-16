@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-02 凋零</title>
+<link rel="stylesheet" href="sys-frame.css">
+</head>
+<body class="ending-e02">
+<main class="ending-shell" id="screen">
+  <section class="ending-content fade" id="titleScreen">
+    <div class="ending-id">E-02</div>
+    <h1 class="ending-title"><span class="gray">凋零</span></h1>
+  </section>
+
+  <section class="story hidden" id="storyScreen"></section>
+</main>
+
+<script>
+const titleScreen = document.getElementById('titleScreen');
+const storyScreen = document.getElementById('storyScreen');
+const lines = [
+  '关掉控制台，但是仍然有些放心不下。',
+  '你拨打了报警电话。',
+  '一个二十五岁左右的男性警官告诉你之后他们会处理。',
+  '……',
+  '两个月后，你看到一则新闻。',
+  '一名高中女生的遗体在废弃大楼的天台被发现。',
+  '活活饿死。'
+];
+const LINE_STEP = 72;
+const BUTTON_GAP = 50;
+
+function place(el, index, extra) {
+  el.style.setProperty('--line-top', ((index * LINE_STEP) + (extra || 0)) + 'px');
+}
+
+function addLine(text, className, index) {
+  const p = document.createElement('p');
+  p.textContent = text;
+  if (className) p.className = className;
+  p.classList.add('line-in');
+  place(p, index);
+  storyScreen.appendChild(p);
+  return p;
+}
+
+function addBackButton(index) {
+  const p = document.createElement('p');
+  p.className = 'center line-in';
+  place(p, index, BUTTON_GAP);
+  const btn = document.createElement('button');
+  btn.className = 'ending-back';
+  btn.type = 'button';
+  btn.textContent = '回到结局前';
+  btn.addEventListener('click', () => {
+    try { localStorage.setItem('citymystery_ending_search_trace', 'E-02'); } catch(e) {}
+    location.href = '../index.html';
+  });
+  p.appendChild(btn);
+  storyScreen.appendChild(p);
+  requestAnimationFrame(() => p.classList.add('shown'));
+}
+
+function revealLines() {
+  storyScreen.innerHTML = '';
+  const elements = lines.map((text, index) => {
+    let className = '';
+    if (index === 3) className = 'quiet center';
+    if (index === 6) className = 'final-red';
+    return addLine(text, className, index);
+  });
+  lines.forEach((text, index) => {
+    setTimeout(() => {
+      const line = elements[index];
+      line.classList.add('shown');
+      if (index === lines.length - 1) {
+        setTimeout(() => addBackButton(lines.length), 1750);
+      }
+    }, index * 1550);
+  });
+}
+
+setTimeout(() => {
+  titleScreen.classList.add('hidden');
+  storyScreen.classList.remove('hidden');
+  storyScreen.classList.add('fade');
+  revealLines();
+}, 3200);
+</script>
+</body>
+</html>

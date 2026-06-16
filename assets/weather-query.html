@@ -1,0 +1,232 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>区域天气预报查询结果</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #d4d0c8; font-family: "宋体","SimSun","MS Song","Times New Roman",serif; color: #222; }
+
+.wrap {
+  width: 900px; margin: 24px auto; background: #f0ece4;
+  border: 2px solid #888; box-shadow: 3px 3px 6px rgba(0,0,0,0.15);
+}
+
+/* 标题栏 */
+.topbar {
+  background: linear-gradient(180deg, #2a5ca8, #1a3f78);
+  color: #fff; padding: 10px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.topbar h1 { font-size: 20px; font-weight: normal; letter-spacing: 1px; }
+.topbar .date { font-size: 13px; color: #c0d0e8; }
+
+/* 导航辅助栏 */
+.navbar {
+  background: #e8e4dc; border-bottom: 1px solid #bbb;
+  padding: 4px 16px; font-size: 12px; color: #555;
+}
+.navbar a { color: #2a5ca8; text-decoration: none; margin-right: 12px; }
+.navbar a:hover { text-decoration: underline; }
+.navbar .separator { color: #aaa; margin-right: 12px; }
+
+/* 主体内容 */
+.main { padding: 16px 20px 12px; }
+.main table { width: 100%; border-collapse: collapse; }
+.main td { vertical-align: top; padding: 0; }
+
+/* 左侧面板 - 当前概况 */
+.left-panel { width: 55%; padding-right: 14px; }
+.section-box {
+  border: 1px solid #999; background: #fff;
+  margin-bottom: 12px;
+}
+.section-box .s-title {
+  background: #d8dce4; padding: 5px 10px;
+  font-size: 14px; font-weight: bold; border-bottom: 1px solid #999;
+}
+.section-box .s-body { padding: 10px 12px; font-size: 14px; line-height: 2; }
+
+/* 当前天气概况大字体 */
+.weather-now {
+  text-align: center; padding: 8px 0 4px;
+}
+.weather-now .icon-temp {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.weather-now .big-icon { font-size: 48px; color: #7a8a9a; line-height: 1; }
+.weather-now .big-temp { font-size: 42px; color: #d45; font-weight: bold; line-height: 1; }
+.weather-now .big-temp .unit { font-size: 20px; color: #888; }
+.weather-now .desc { font-size: 16px; color: #333; margin-top: 4px; }
+
+.data-grid { width: 100%; font-size: 13px; }
+.data-grid td { padding: 3px 0; vertical-align: middle; }
+.data-grid .label { color: #666; width: 70px; }
+.data-grid .value { color: #222; }
+
+/* 右侧面板 - 详细数据 */
+.right-panel { width: 45%; padding-left: 14px; border-left: 1px solid #ccc; }
+
+/* 底部日志/错误区 */
+.footer {
+  border-top: 1px solid #bbb; background: #e8e4dc;
+  padding: 10px 20px 12px;
+}
+.footer .log-title {
+  font-size: 12px; color: #555; letter-spacing: 1px;
+  border-bottom: 1px solid #bbb; padding-bottom: 4px; margin-bottom: 6px;
+}
+.footer .log-line {
+  font-size: 12px; line-height: 1.8; color: #444; font-family: "宋体",monospace;
+}
+.footer .log-line .ts { color: #888; margin-right: 8px; }
+
+.footer .error-box {
+  background: #e0dcd4; border: 1px solid #b88; border-left: 3px solid #b66;
+  padding: 10px 14px; margin-top: 8px; font-size: 12px; line-height: 1.9; color: #555;
+}
+.footer .error-box .warn-icon { color: #b66; font-weight: bold; }
+.footer .error-box .field-name { color: #944; }
+
+/* 底部版权 */
+.copyright {
+  background: #d0ccc4; border-top: 1px solid #bbb;
+  padding: 6px 20px; font-size: 11px; color: #777; text-align: center;
+}
+
+/* 行内标签 */
+.tag { font-size: 11px; color: #888; }
+
+/* 隐藏坐标线索 */
+.coord-hint { color: #aaa; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- 标题栏 -->
+  <div class="topbar">
+    <h1>区域天气预报查询结果</h1>
+    <span class="date">2026年6月10日 星期三</span>
+  </div>
+
+  <!-- 导航 -->
+  <div class="navbar">
+    <a href="#">首页</a><span class="separator">|</span>
+    <a href="#">气象监测</a><span class="separator">|</span>
+    <a href="#">预报查询</a><span class="separator">|</span>
+    <a href="#">历史数据</a><span class="separator">|</span>
+    <a href="#">卫星云图</a><span class="separator">|</span>
+    <span style="color:#999;">观测点 4409-██</span>
+  </div>
+
+  <!-- 主内容 -->
+  <div class="main">
+    <table><tr>
+
+      <!-- 左侧 -->
+      <td class="left-panel">
+
+        <!-- 当前区域 -->
+        <div class="section-box">
+          <div class="s-title">当前区域</div>
+          <div class="s-body" style="text-align:center; font-size:15px;">
+            ██市 / 未公开区域 / 观测点 4409-██
+          </div>
+        </div>
+
+        <!-- 天气概况 -->
+        <div class="section-box">
+          <div class="s-title">天气概况</div>
+          <div class="s-body">
+            <div class="weather-now">
+              <div class="icon-temp">
+                <span class="big-icon">&#x2601;</span>
+                <span class="big-temp">31<span class="unit">&deg;C</span></span>
+              </div>
+              <div class="desc">多云，有少量降雨</div>
+            </div>
+            <table class="data-grid">
+              <tr><td class="label">体感温度</td><td class="value">34&deg;C</td></tr>
+              <tr><td class="label">风速</td><td class="value">3-4级（东南风）</td></tr>
+              <tr><td class="label">湿度</td><td class="value">偏高</td></tr>
+              <tr><td class="label">能见度</td><td class="value">一般</td></tr>
+              <tr><td class="label">空气状态</td><td class="value">潮湿</td></tr>
+            </table>
+          </div>
+        </div>
+
+      </td>
+
+      <!-- 右侧 -->
+      <td class="right-panel">
+
+        <!-- 详细气象数据 -->
+        <div class="section-box">
+          <div class="s-title">详细气象数据</div>
+          <div class="s-body" style="padding:8px 12px;">
+            <table class="data-grid" style="font-size:13px;">
+              <tr><td class="label">最高气温</td><td class="value">31&deg;C</td></tr>
+              <tr><td class="label">最低气温</td><td class="value">24&deg;C</td></tr>
+              <tr><td class="label">风向</td><td class="value">东南风</td></tr>
+              <tr><td class="label">风力</td><td class="value">3-4级</td></tr>
+              <tr><td class="label">降水量</td><td class="value">0.3mm（预报）</td></tr>
+              <tr><td class="label">紫外线</td><td class="value">中等</td></tr>
+              <tr><td class="label">气压</td><td class="value">1004hPa</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- 降雨提示 -->
+        <div class="section-box">
+          <div class="s-title">降雨提示</div>
+          <div class="s-body" style="font-size:13px; line-height:2;">
+            &#x2022; 午后至傍晚可能出现短时小雨<br>
+            &#x2022; 沿海湿热气流活跃<br>
+            &#x2022; 午后局地短时降雨概率较高<br>
+            &#x2022; 未来三小时无明显强对流
+          </div>
+        </div>
+
+        <!-- 生活提示 -->
+        <div class="section-box">
+          <div class="s-title">生活提示</div>
+          <div class="s-body" style="font-size:13px; line-height:2;">
+            &#x2022; 天气闷热，外出请携带雨具<br>
+            &#x2022; 注意防暑，及时补充水分<br>
+            &#x2022; 空气湿度较高，注意除湿
+          </div>
+        </div>
+
+      </td>
+    </tr></table>
+  </div>
+
+  <!-- 底部日志 -->
+  <div class="footer">
+
+    <div class="log-title">>> 系统日志</div>
+
+    <div class="log-line"><span class="ts">[10:23:17]</span> 数据来源：区域自动气象站</div>
+    <div class="log-line"><span class="ts">[10:23:18]</span> 历史气象库匹配：粤西沿海区域</div>
+    <div class="log-line"><span class="ts">[10:23:18]</span> 经纬度字段加载失败：21.6█N / 110.9█E</div>
+    <div class="log-line"><span class="ts">[10:23:19]</span> 观测站编号：4409-██</div>
+    <div class="log-line"><span class="ts">[10:23:20]</span> 地名字段返回空值，已启用隐藏模式</div>
+
+    <div class="error-box">
+      <span class="warn-icon">&#x26A0;</span> <span class="field-name">当前地名字段已被隐藏。</span><br>
+      系统仅显示气象观测结果。<br>
+      检测到该区域在历史记录中多次出现。<br>
+      如需恢复完整地点，请输入旧编号或观测站代码。
+    </div>
+  </div>
+
+  <!-- 版权 -->
+  <div class="copyright">
+    区域公共气象服务平台 &copy; 2026 ICP备案：粤-000XXX
+  </div>
+
+</div>
+
+</body>
+</html>

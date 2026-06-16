@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智网 · 检索结果</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { min-height:100%; background:#eef1f5; }
+body {
+  font-family: "Microsoft YaHei","PingFang SC",sans-serif;
+  color: #333; font-size: 13px;
+}
+
+/* 顶栏 */
+.topbar {
+  background: linear-gradient(180deg, #133c6e 0%, #1a4a7a 100%);
+  border-bottom: 1px solid #0e2d52;
+}
+.topbar-inner {
+  max-width: 1300px; margin: 0 auto;
+  display: flex; align-items: center;
+  padding: 0 20px; height: 52px;
+}
+.topbar .logo {
+  color: #fff; font-size: 22px; font-weight: 700;
+  letter-spacing: 4px; margin-right: 28px;
+  font-family: "Microsoft YaHei","PingFang SC",sans-serif;
+}
+.topbar .logo .sub {
+  font-size: 11px; font-weight: 400;
+  color: rgba(255,255,255,.55);
+  letter-spacing: 1px; margin-left: 8px;
+}
+.search-area {
+  flex: 1; display: flex; gap: 0;
+  max-width: 600px;
+}
+.search-area .field-label {
+  background: #f0f2f5; color: #666;
+  padding: 0 12px; font-size: 12px;
+  display: flex; align-items: center;
+  border: none; width: 64px;
+  justify-content: center;
+  cursor: default; user-select: none;
+}
+.search-area input {
+  flex: 1; padding: 7px 10px;
+  border: none; font-size: 13px;
+  outline: none;
+}
+.search-area .btn-search {
+  background: #d4423a;
+  color: #fff; border: none;
+  padding: 0 20px; font-size: 13px;
+  letter-spacing: 2px; cursor: default;
+}
+.topbar .links {
+  margin-left: 20px; display: flex; gap: 14px;
+  font-size: 12px; color: rgba(255,255,255,.75);
+}
+.topbar .links a { color: rgba(255,255,255,.75); text-decoration: none; }
+
+/* 次级导航 */
+.subnav {
+  background: #eef1f5;
+  border-bottom: 1px solid #d0d5dd;
+}
+.subnav-inner {
+  max-width: 1300px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 34px;
+}
+.subnav .tabs { display: flex; gap: 0; }
+.subnav .tabs a {
+  display: inline-block; padding: 0 18px;
+  font-size: 12px; color: #555;
+  text-decoration: none; line-height: 34px;
+  border: 1px solid transparent; border-bottom: none;
+  margin-bottom: -1px;
+}
+.subnav .tabs a.active {
+  background: #fff; border-color: #d0d5dd;
+  color: #133c6e; font-weight: 600;
+}
+.subnav .year-range { font-size: 12px; color: #888; display: flex; gap: 8px; align-items: center; }
+.subnav .year-range input { width: 52px; padding: 2px 4px; border: 1px solid #ccc; font-size: 12px; }
+
+/* 主体 */
+.main {
+  max-width: 1300px; margin: 0 auto;
+  display: flex; gap: 0; padding: 0 20px;
+}
+
+/* 左侧筛选 */
+.sidebar {
+  width: 190px; flex-shrink: 0;
+  padding: 14px 0;
+}
+.sidebar .section { margin-bottom: 14px; }
+.sidebar .st {
+  font-size: 12px; font-weight: 600; color: #555;
+  padding: 4px 0; border-bottom: 1px solid #ddd;
+  margin-bottom: 6px;
+}
+.sidebar .filter-item {
+  font-size: 12px; color: #666; padding: 3px 0;
+  cursor: default; display: flex; align-items: center; gap: 5px;
+}
+.sidebar .filter-item .num { color: #aaa; font-size: 11px; }
+.sidebar .filter-item .dot { color: #133c6e; }
+
+/* 结果区 */
+.results {
+  flex: 1; min-width: 0; padding: 14px 0 14px 20px;
+}
+.result-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: #666; margin-bottom: 6px;
+  padding: 6px 10px; background: #f8f9fb; border: 1px solid #e0e3e8;
+}
+.result-bar strong { color: #c9302c; font-weight: 700; }
+.result-bar .sort { display: flex; gap: 10px; align-items: center; }
+.result-bar .sort a { color: #888; text-decoration: none; }
+.result-bar .sort a.sel { color: #133c6e; font-weight: 600; }
+.result-bar .sort .divider { color: #ddd; }
+
+.list { background: #fff; }
+.item {
+  padding: 8px 10px;
+  border-bottom: 1px dotted #e0e3e8;
+  display: flex; gap: 8px;
+}
+.item:last-child { border-bottom: none; }
+.item input[type=checkbox] {
+  margin-top: 3px; flex-shrink: 0;
+  accent-color: #133c6e;
+}
+.item .info { flex: 1; min-width: 0; }
+.item .title {
+  font-size: 14px; font-weight: 700;
+  color: #1d5a8c; margin-bottom: 3px;
+  line-height: 1.5;
+}
+.item .title .sup {
+  font-size: 10px; color: #d4423a;
+  border: 1px solid #d4423a;
+  border-radius: 2px; padding: 0 4px;
+  font-weight: 400; margin-left: 4px;
+}
+.item .meta {
+  font-size: 12px; color: #888;
+  line-height: 1.9;
+}
+.item .meta .hl { color: #c9302c; }
+.item .act {
+  margin-top: 2px; font-size: 12px; display: flex; gap: 14px;
+}
+.item .act a {
+  color: #1d5a8c; text-decoration: none;
+}
+.item .act .pdf {
+  color: #d4423a; font-weight: 600;
+}
+
+/* 分页 */
+.pagination {
+  display: flex; justify-content: center; align-items: center; gap: 4px;
+  padding: 14px 0 20px; font-size: 12px;
+}
+.pagination a {
+  display: inline-block; padding: 4px 10px;
+  border: 1px solid #d0d5dd; color: #555;
+  text-decoration: none; background: #fff;
+}
+.pagination a.active {
+  background: #133c6e; color: #fff; border-color: #133c6e;
+}
+.pagination a.disabled { color: #ccc; cursor: default; }
+.pagination .info { color: #888; margin-left: 10px; }
+
+.footer {
+  background: #eef1f5;
+  border-top: 1px solid #d0d5dd;
+  padding: 12px 20px;
+  font-size: 11px; color: #aaa;
+  text-align: center; line-height: 1.8;
+}
+@media (max-width: 768px) {
+  .main { flex-direction: column; padding: 0 10px; }
+  .sidebar { width: 100%; padding: 10px 0; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  .sidebar .section { margin-bottom: 0; flex: 1; min-width: 120px; }
+  .sidebar .st { font-size: 11px; }
+  .sidebar .filter-item { font-size: 11px; }
+  .results { padding: 10px 0; }
+  .topbar-inner { flex-wrap: wrap; height: auto; padding: 8px 12px; gap: 8px; }
+  .topbar .logo { font-size: 18px; margin-right: 0; }
+  .search-area { max-width: none; }
+  .subnav-inner { flex-wrap: wrap; height: auto; padding: 6px 10px; gap: 6px; }
+  .subnav .tabs { flex-wrap: wrap; }
+  .subnav .tabs a { font-size: 11px; padding: 0 10px; line-height: 30px; }
+  .item .title { font-size: 13px; }
+}
+@media (max-width: 480px) {
+  .topbar-inner { padding: 6px 8px; }
+  .topbar .logo { font-size: 16px; }
+  .search-area input { font-size: 12px; padding: 6px 8px; }
+  .search-area .btn-search { font-size: 12px; padding: 0 12px; }
+  .topbar .links { font-size: 11px; gap: 8px; margin-left: 0; }
+  .sidebar { gap: 6px 12px; }
+  .sidebar .section { min-width: 90px; }
+  .sidebar .filter-item { padding: 2px 0; }
+  .result-bar { flex-direction: column; gap: 4px; font-size: 11px; padding: 6px 8px; }
+  .result-bar .sort { font-size: 10px; }
+  .item { padding: 6px 6px; gap: 4px; }
+  .item .title { font-size: 12px; }
+  .item .meta { font-size: 11px; line-height: 1.7; }
+  .item .act { font-size: 11px; gap: 10px; flex-wrap: wrap; }
+  .item input[type=checkbox] { display: none; }
+  .pagination { font-size: 11px; gap: 3px; flex-wrap: wrap; }
+  .pagination a { padding: 3px 8px; font-size: 11px; }
+  .year-range { font-size: 11px; }
+  .year-range input { width: 40px; font-size: 11px; }
+  .subnav .tabs a { font-size: 10px; padding: 0 8px; }
+  .footer { font-size: 10px; padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">智网<span class="sub">知识检索</span></div>
+    <div class="search-area">
+      <span class="field-label">主题</span>
+      <input type="text" placeholder="" value="">
+      <button class="btn-search">检索</button>
+    </div>
+    <div class="links">
+      <a>首页</a>
+      <a>高级检索</a>
+      <a>帮助</a>
+    </div>
+  </div>
+</div>
+
+<div class="subnav">
+  <div class="subnav-inner">
+    <div class="tabs">
+      <a href="#" class="active">文献</a>
+      <a href="#">期刊</a>
+      <a href="#">博士</a>
+      <a href="#">硕士</a>
+      <a href="#">会议</a>
+      <a href="#">报纸</a>
+      <a href="#">成果</a>
+    </div>
+    <div class="year-range">
+      从 <input value="2020"> 到 <input value="2026">
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- 左侧筛选 -->
+  <div class="sidebar">
+    <div class="section">
+      <div class="st">学科分类</div>
+      <div class="filter-item"><span class="dot">▪</span> 中国古典文献学 <span class="num">(2)</span></div>
+      <div class="filter-item"><span class="dot">▪</span> 中国古代史 <span class="num">(1)</span></div>
+      <div class="filter-item"><span class="dot">▪</span> 区域文化研究 <span class="num">(1)</span></div>
+      <div class="filter-item"><span class="dot">▪</span> 语言文学 <span class="num">(1)</span></div>
+    </div>
+    <div class="section">
+      <div class="st">来源</div>
+      <div class="filter-item"><span class="dot">▪</span> 鲁东师范学院学报 <span class="num">(1)</span></div>
+      <div class="filter-item"><span class="dot">▪</span> 齐鲁学刊 <span class="num">(2)</span></div>
+      <div class="filter-item"><span class="dot">▪</span> 古籍整理研究学刊 <span class="num">(1)</span></div>
+      <div class="filter-item"><span class="dot">▪</span> 文史 <span class="num">(1)</span></div>
+    </div>
+    <div class="section">
+      <div class="st">年份</div>
+      <div class="filter-item"><span class="dot">▪</span> 2026 <span class="num">(1)</span></div>
+      <div class="filter-item"><span class="dot">▪</span> 2025 <span class="num">(1)</span></div>
+      <div class="filter-item"><span class="dot">▪</span> 2024 <span class="num">(2)</span></div>
+      <div class="filter-item"><span class="dot">▪</span> 2023 <span class="num">(1)</span></div>
+    </div>
+  </div>
+
+  <!-- 结果 -->
+  <div class="results">
+    <div class="result-bar">
+      <span>找到 <strong>5</strong> 条结果</span>
+      <div class="sort">
+        排序：<a class="sel">相关度</a><span class="divider">|</span><a>发表时间</a><span class="divider">|</span><a>被引</a>
+      </div>
+    </div>
+
+    <div class="list">
+      <div class="item">
+        <input type="checkbox">
+        <div class="info">
+          <div class="title">经典注疏传统中的知识传递与阐释体系研究</div>
+          <div class="meta">张明；周伟 &nbsp;|&nbsp; 鲁东师范学院学报（社会科学版）&nbsp;|&nbsp; 2026年第2期 &nbsp;|&nbsp; 页码：43-51</div>
+          <div class="act"><a class="pdf">PDF下载</a><a>摘要</a><a>引文</a></div>
+        </div>
+      </div>
+
+      <div class="item">
+        <input type="checkbox">
+        <div class="info">
+          <div class="title">汉代经师授学传统与学术谱系的形成</div>
+          <div class="meta">刘强 &nbsp;|&nbsp; 齐鲁学刊 &nbsp;|&nbsp; 2025年第5期 &nbsp;|&nbsp; 页码：102-107</div>
+          <div class="act"><a class="pdf">PDF下载</a><a>摘要</a><a>引文</a></div>
+        </div>
+      </div>
+
+      <div class="item">
+        <input type="checkbox">
+        <div class="info">
+          <div class="title">经学文献中注释体例的演变与分类</div>
+          <div class="meta">赵华 &nbsp;|&nbsp; 古籍整理研究学刊 &nbsp;|&nbsp; 2024年第3期 &nbsp;|&nbsp; 页码：67-74</div>
+          <div class="act"><a class="pdf">PDF下载</a><a>摘要</a><a>引文</a></div>
+        </div>
+      </div>
+
+      <div class="item">
+        <input type="checkbox">
+        <div class="info">
+          <div class="title">东汉学术传承中的师法与家法考</div>
+          <div class="meta">王建国 &nbsp;|&nbsp; 文史 &nbsp;|&nbsp; 2024年第1辑 &nbsp;|&nbsp; 页码：156-172</div>
+          <div class="act"><a class="pdf">PDF下载</a><a>摘要</a><a>引文</a></div>
+        </div>
+      </div>
+
+      <div class="item">
+        <input type="checkbox">
+        <div class="info">
+          <div class="title">礼学文献的整理与注疏方法研究</div>
+          <div class="meta">孙磊 &nbsp;|&nbsp; 齐鲁学刊 &nbsp;|&nbsp; 2023年第4期 &nbsp;|&nbsp; 页码：21-35</div>
+          <div class="act"><a class="pdf">PDF下载</a><a>摘要</a><a>引文</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <a class="disabled">上一页</a>
+      <a class="active">1</a>
+      <a class="disabled">下一页</a>
+      <span class="info">共1页 <span style="color:#ddd">|</span> 5条/页</span>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  智网 &nbsp;|&nbsp; 知识检索系统 &nbsp;|&nbsp; 2020-2026
+</div>
+
+</body>
+</html>

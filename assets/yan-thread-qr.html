@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>#0601 / 牵线节点</title>
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: #080c0f; color: #d2ded8; }
+body {
+  font-family: "Courier New", "Microsoft YaHei", monospace;
+  overflow: hidden;
+}
+.stage {
+  position: relative;
+  min-height: 100vh;
+  padding: 26px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(82, 111, 105, .18), transparent 42%),
+    linear-gradient(180deg, #10181c, #06090b);
+}
+.head, .foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #7f9690;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.board {
+  position: relative;
+  align-self: center;
+  justify-self: center;
+  width: min(86vmin, 620px);
+  aspect-ratio: 1;
+  border: 1px solid #2b3e43;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    rgba(14, 21, 25, .88);
+  background-size: 32px 32px;
+  box-shadow: inset 0 0 70px rgba(0,0,0,.45), 0 20px 60px rgba(0,0,0,.35);
+}
+.thread {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 42%;
+  height: 1px;
+  transform-origin: 0 0;
+  background: linear-gradient(90deg, rgba(135,166,158,.12), rgba(164,194,184,.72), rgba(135,166,158,.12));
+}
+.node {
+  position: absolute;
+  width: 82px;
+  height: 34px;
+  margin-left: -41px;
+  margin-top: -17px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #40575b;
+  background: #111b20;
+  color: #9fb9b0;
+  font-size: 12px;
+}
+.node.core {
+  width: min(34%, 210px);
+  height: auto;
+  aspect-ratio: 1;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+  border-color: #5c7678;
+  background: #e7ece9;
+  box-shadow: 0 0 0 9px rgba(255,255,255,.03), 0 0 34px rgba(159,190,181,.12);
+}
+.node.core img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  filter: contrast(1.08) saturate(.85);
+}
+.hint {
+  position: absolute;
+  left: 50%;
+  top: 7%;
+  transform: translateX(-50%);
+  width: min(86%, 460px);
+  border: 1px solid #2d4448;
+  background: rgba(8, 13, 16, .82);
+  padding: 12px 14px;
+  color: #9eb5ae;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+.scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(163,196,184,.12), transparent);
+  height: 22%;
+  animation: scan 3.6s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+@keyframes scan {
+  0% { transform: translateY(-30%); opacity: 0; }
+  25%, 72% { opacity: 1; }
+  100% { transform: translateY(410%); opacity: 0; }
+}
+@media (max-width: 720px) {
+  body { overflow: auto; }
+  .stage { min-height: 100vh; padding: 14px; }
+  .node { width: 64px; height: 28px; margin-left: -32px; margin-top: -14px; font-size: 10px; }
+  .hint { top: 5%; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+<main class="stage">
+  <header class="head">
+    <span>#0601 / 牵线节点校验</span>
+    <span>状态：等待校准</span>
+  </header>
+  <section class="board" aria-label="牵线节点二维码">
+    <div class="thread" style="transform:rotate(0deg)"></div>
+    <div class="thread" style="transform:rotate(45deg)"></div>
+    <div class="thread" style="transform:rotate(90deg)"></div>
+    <div class="thread" style="transform:rotate(135deg)"></div>
+    <div class="thread" style="transform:rotate(180deg)"></div>
+    <div class="thread" style="transform:rotate(225deg)"></div>
+    <div class="thread" style="transform:rotate(270deg)"></div>
+    <div class="thread" style="transform:rotate(315deg)"></div>
+    <div class="node" style="left:50%;top:12%;">小E</div>
+    <div class="node" style="left:80%;top:24%;">微聊</div>
+    <div class="node" style="left:88%;top:52%;">搜索</div>
+    <div class="node" style="left:76%;top:80%;">日志</div>
+    <div class="node" style="left:48%;top:88%;">小初</div>
+    <div class="node" style="left:20%;top:76%;">苏</div>
+    <div class="node" style="left:12%;top:48%;">Emith</div>
+    <div class="node" style="left:23%;top:22%;">调查者</div>
+    <div class="node core"><img src="QRCode.jpg" alt="节点校验矩阵"></div>
+    <div class="scan"></div>
+    <div class="hint">牵线节点无法直接读取。请从中央校验矩阵中取得可检索内容，再交给已经接入的搜索模块。</div>
+  </section>
+  <footer class="foot">
+    <span>提示：线不是答案，线连接答案。</span>
+    <span>校验源：#0601</span>
+  </footer>
+</main>
+</body>
+</html>

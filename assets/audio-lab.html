@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>音频实验室 · 信号分析工具</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Courier New', 'Microsoft YaHei', monospace;
+  background: #131316;
+  color: #aaa;
+  font-size: 12px;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  background: #1a1a1e;
+  border-bottom: 1px solid #2a2a30;
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #666;
+  flex-shrink: 0;
+}
+.top-bar .brand { color: #7a9aaa; font-weight: bold; letter-spacing: 1px; }
+.top-bar .file-name { color: #888; }
+
+.wave-section {
+  flex: 1;
+  min-height: 80px;
+  padding: 8px 12px 6px;
+  display: flex;
+  flex-direction: column;
+}
+.wave-label {
+  font-size: 10px;
+  color: #555;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.wave-container {
+  flex: 1;
+  min-height: 0;
+  background: #0e0e12;
+  border: 1px solid #2a2a30;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(104, 142, 132, .06), 0 0 26px rgba(0, 0, 0, .2);
+}
+.wave-container canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.wave-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #444;
+  pointer-events: none;
+}
+
+.controls {
+  flex-shrink: 0;
+  padding: 7px 12px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid #2a2a30;
+  background: #18181c;
+  flex-wrap: wrap;
+}
+.btn {
+  background: #2a2a30;
+  border: none;
+  color: #aaa;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn:hover { background: #3a3a44; color: #ddd; }
+.btn:active { background: #4a4a54; }
+.btn.active {
+  background: #3a5a3a;
+  color: #8bc88b;
+}
+.btn.load-btn {
+  background: #2a3a4a;
+  color: #8ab4d6;
+}
+.btn.load-btn:hover { background: #3a4a5a; }
+.separator {
+  width: 1px;
+  height: 20px;
+  background: #2a2a30;
+  flex-shrink: 0;
+}
+.speed-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.speed-group label {
+  font-size: 10px;
+  color: #555;
+  margin-right: 4px;
+}
+.speed-btn {
+  background: #222228;
+  border: 1px solid #2a2a30;
+  color: #777;
+  font-family: inherit;
+  font-size: 10px;
+  padding: 2px 8px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+}
+.speed-btn:hover { border-color: #4a4a54; color: #aaa; }
+.speed-btn.active {
+  background: #2a3a3a;
+  border-color: #4a7a6a;
+  color: #7ab8a8;
+}
+.progress {
+  margin-left: auto;
+  font-size: 10px;
+  color: #555;
+  font-family: 'Courier New', monospace;
+}
+.info-bar {
+  flex-shrink: 0;
+  padding: 0 12px 7px;
+  display: flex;
+  gap: 20px;
+  font-size: 10px;
+  color: #555;
+}
+.info-bar span { color: #777; }
+#fileInput, #imageInput { display: none; }
+
+.effect-tag {
+  font-size: 10px;
+  color: #5a7a6a;
+  background: #1a2a22;
+  border: 1px solid #2a4a3a;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span class="brand">AUDIO LAB</span>
+  <span class="file-name" id="fileName">未加载音频</span>
+</div>
+
+<div class="wave-section">
+  <div class="wave-label">波形 / Waveform <span id="zoomLabel" style="color:#5a7a6a;"></span></div>
+  <div class="wave-container">
+    <canvas id="waveCanvas"></canvas>
+    <div class="wave-placeholder" id="placeholder">插入音频以显示波形</div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn load-btn" id="loadBtn">+ 插入音频</button>
+  <input type="file" id="fileInput" accept="audio/*">
+  <button class="btn load-btn" id="sstvBtn">⇡ SSTV发射</button>
+  <input type="file" id="imageInput" accept="image/*">
+  <div class="separator"></div>
+  <button class="btn" id="playBtn">▶</button>
+  <button class="btn" id="stopBtn">■</button>
+  <div class="separator"></div>
+  <button class="btn" id="reverseBtn">反向</button>
+  <button class="btn" id="loopBtn">循环</button>
+  <button class="btn" id="specBtn">频谱</button>
+  <div class="separator"></div>
+  <div class="speed-group">
+    <label>速度</label>
+    <button class="speed-btn" data-speed="0.5">0.5x</button>
+    <button class="speed-btn active" data-speed="1">1x</button>
+    <button class="speed-btn" data-speed="1.5">1.5x</button>
+    <button class="speed-btn" data-speed="2">2x</button>
+  </div>
+  <div class="separator"></div>
+  <div class="speed-group">
+    <label>缩放</label>
+    <button class="speed-btn active" data-zoom="all">全部</button>
+    <button class="speed-btn" data-zoom="60">60s</button>
+    <button class="speed-btn" data-zoom="30">30s</button>
+    <button class="speed-btn" data-zoom="10">10s</button>
+  </div>
+  <span class="progress" id="progress">--:-- / --:--</span>
+</div>
+
+<div class="info-bar">
+  <div>采样率: <span id="infoSampleRate">--</span></div>
+  <div>时长: <span id="infoDuration">--</span></div>
+  <div>频道: <span id="infoChannels">--</span></div>
+  <div id="reverseIndicator" style="display:none;">● <span style="color:#cc6644;">反向播放</span></div>
+</div>
+
+<script>
+const canvas = document.getElementById('waveCanvas');
+const ctx = canvas.getContext('2d');
+const fileInput = document.getElementById('fileInput');
+const imageInput = document.getElementById('imageInput');
+const fileName = document.getElementById('fileName');
+const placeholder = document.getElementById('placeholder');
+const playBtn = document.getElementById('playBtn');
+const stopBtn = document.getElementById('stopBtn');
+const reverseBtn = document.getElementById('reverseBtn');
+const loopBtn = document.getElementById('loopBtn');
+const progress = document.getElementById('progress');
+const infoSampleRate = document.getElementById('infoSampleRate');
+const infoDuration = document.getElementById('infoDuration');
+const infoChannels = document.getElementById('infoChannels');
+const reverseIndicator = document.getElementById('reverseIndicator');
+
+let audioCtx = null;
+let audioBuffer = null;
+let source = null;
+let isPlaying = false;
+let isReversed = false;
+let isLooping = false;
+let speed = 1;
+let playStartOffset = 0;
+let playStartTime = 0;
+let duration = 0;
+let animFrame = null;
+let zoomDuration = Infinity;
+let zoomViewStart = 0;
+let viewMode = 'waveform'; // 'waveform' | 'spectrogram'
+let specCache = null; // cached spectrogram data
+const SPEC_FFT_SIZE = 2048;
+const SPEC_HOP_SIZE = 256;
+const SPEC_DISPLAY_MAX_FREQ = 5000;
+const SPEC_DB_FLOOR = -74;
+const SPEC_DB_CEIL = -18;
+const SSTV_SAMPLE_RATE = 44100;
+const SSTV_WIDTH = 320;
+const SSTV_HEIGHT = 240;
+const FREQ_BLACK = 1500;
+const FREQ_WHITE = 2300;
+const FREQ_RANGE = FREQ_WHITE - FREQ_BLACK;
+const FREQ_VIS_START = 1900;
+const FREQ_SYNC = 1200;
+const FREQ_VIS_BIT1 = 1100;
+const FREQ_VIS_BIT0 = 1300;
+
+function setLoadedBuffer(buffer, name) {
+  audioBuffer = buffer;
+  duration = audioBuffer.duration;
+  specCache = null;
+  playStartOffset = 0;
+  fileName.textContent = name;
+  placeholder.style.display = 'none';
+  infoSampleRate.textContent = audioBuffer.sampleRate + ' Hz';
+  infoDuration.textContent = duration.toFixed(1) + ' s';
+  infoChannels.textContent = audioBuffer.numberOfChannels + 'ch';
+  progress.textContent = '00:00 / ' + formatTime(duration);
+  zoomDuration = Infinity;
+  zoomViewStart = 0;
+  document.querySelectorAll('.speed-btn[data-zoom]').forEach(b => b.classList.remove('active'));
+  document.querySelector('.speed-btn[data-zoom="all"]').classList.add('active');
+  drawWaveform(audioBuffer, isReversed);
+  stopPlayback();
+}
+
+function byteToFreq(value) {
+  return FREQ_BLACK + FREQ_RANGE * value / 255;
+}
+
+function rgbToYcbcr(r, g, b) {
+  const y = 0.299 * r + 0.587 * g + 0.114 * b;
+  const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+  const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+  return [
+    Math.max(0, Math.min(255, y)),
+    Math.max(0, Math.min(255, cb)),
+    Math.max(0, Math.min(255, cr))
+  ];
+}
+
+async function loadImagePixels(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = url;
+    await img.decode();
+    const off = document.createElement('canvas');
+    off.width = SSTV_WIDTH;
+    off.height = SSTV_HEIGHT;
+    const ictx = off.getContext('2d');
+    ictx.fillStyle = '#000';
+    ictx.fillRect(0, 0, SSTV_WIDTH, SSTV_HEIGHT);
+    const scale = Math.min(SSTV_WIDTH / img.width, SSTV_HEIGHT / img.height);
+    const dw = Math.round(img.width * scale);
+    const dh = Math.round(img.height * scale);
+    const dx = Math.floor((SSTV_WIDTH - dw) / 2);
+    const dy = Math.floor((SSTV_HEIGHT - dh) / 2);
+    ictx.drawImage(img, dx, dy, dw, dh);
+    return ictx.getImageData(0, 0, SSTV_WIDTH, SSTV_HEIGHT).data;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+function encodeRobot36AudioBuffer(pixels, name) {
+  const ac = getCtx();
+  const samples = [];
+  let phase = 0;
+  const addTone = (freq, ms) => {
+    const count = Math.max(1, Math.round(SSTV_SAMPLE_RATE * ms / 1000));
+    const step = 2 * Math.PI * freq / SSTV_SAMPLE_RATE;
+    for (let i = 0; i < count; i++) {
+      samples.push(Math.sin(phase) * 0.72);
+      phase += step;
+      if (phase > Math.PI * 2) phase -= Math.PI * 2;
+    }
+  };
+  const addVis = () => {
+    addTone(FREQ_VIS_START, 300);
+    addTone(FREQ_SYNC, 10);
+    addTone(FREQ_VIS_START, 300);
+    addTone(FREQ_SYNC, 30);
+    let vis = 0x08;
+    let ones = 0;
+    for (let i = 0; i < 7; i++) {
+      const bit = vis & 1;
+      ones += bit;
+      addTone(bit ? FREQ_VIS_BIT1 : FREQ_VIS_BIT0, 30);
+      vis >>= 1;
+    }
+    addTone(ones % 2 ? FREQ_VIS_BIT1 : FREQ_VIS_BIT0, 30);
+    addTone(FREQ_SYNC, 30);
+  };
+
+  addVis();
+  for (let y = 0; y < SSTV_HEIGHT; y++) {
+    addTone(FREQ_SYNC, 9);
+    addTone(FREQ_BLACK, 3);
+    for (let x = 0; x < SSTV_WIDTH; x++) {
+      const p = (y * SSTV_WIDTH + x) * 4;
+      const [yy] = rgbToYcbcr(pixels[p], pixels[p + 1], pixels[p + 2]);
+      addTone(byteToFreq(yy), 88 / SSTV_WIDTH);
+    }
+    const channel = 2 - (y % 2); // Robot36 alternates Cr/Cb after Y.
+    addTone(channel === 2 ? FREQ_BLACK : FREQ_WHITE, 4.5);
+    addTone(FREQ_VIS_START, 1.5);
+    for (let x = 0; x < SSTV_WIDTH; x++) {
+      const p = (y * SSTV_WIDTH + x) * 4;
+      const ycc = rgbToYcbcr(pixels[p], pixels[p + 1], pixels[p + 2]);
+      addTone(byteToFreq(ycc[channel]), 44 / SSTV_WIDTH);
+    }
+  }
+
+  const buffer = ac.createBuffer(1, samples.length, SSTV_SAMPLE_RATE);
+  buffer.copyToChannel(Float32Array.from(samples), 0);
+  return { buffer, label: name + ' → SSTV Robot36' };
+}
+
+
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// 绘制波形
+function drawWaveform(buffer, reversed) {
+  if (viewMode === 'spectrogram' && buffer) {
+    drawSpectrogram(buffer, reversed);
+    return;
+  }
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const w = rect.width;
+  const h = rect.height;
+
+  ctx.fillStyle = '#0e0e12';
+  ctx.fillRect(0, 0, w, h);
+
+  // 网格
+  ctx.strokeStyle = '#181822';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < w; x += 30) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+  }
+  for (let y = 0; y < h; y += 30) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+
+  if (!buffer) return;
+
+  const data = buffer.getChannelData(0);
+  const len = data.length;
+  const sampleRate = buffer.sampleRate;
+  const totalDur = buffer.duration;
+  const centerY = h / 2;
+  const amp = h * 0.38;
+
+  // zoom window: which portion of audio to render
+  const viewStart = isFinite(zoomDuration) ? Math.max(0, zoomViewStart) : 0;
+  const viewEnd = isFinite(zoomDuration) ? Math.min(totalDur, viewStart + zoomDuration) : totalDur;
+  const viewLen = viewEnd - viewStart;
+
+  // update zoom label
+  document.getElementById('zoomLabel').textContent = isFinite(zoomDuration)
+    ? ' [' + formatTime(viewStart) + ' – ' + formatTime(viewEnd) + ']'
+    : '';
+
+  // pixel-to-sample mapping within zoom window
+  const startSample = Math.floor(viewStart * sampleRate);
+  const endSample = Math.min(len - 1, Math.floor(viewEnd * sampleRate));
+  const visibleSamples = endSample - startSample;
+  if (visibleSamples < 1) return;
+
+  const getIdx = (pxRatio) => {
+    const sampleIdx = startSample + Math.floor(pxRatio * visibleSamples);
+    if (reversed) {
+      return Math.min(len - 1, Math.max(0, endSample - (sampleIdx - startSample)));
+    }
+    return Math.min(len - 1, Math.max(0, sampleIdx));
+  };
+
+  const step = Math.max(1, Math.floor(visibleSamples / w));
+  const pixelCount = Math.ceil(w);
+
+  // 先计算每个像素列的平均值，找出最大值用于归一化
+  const avgVals = new Float32Array(pixelCount);
+  let maxAvg = 0;
+  for (let px = 0, idx = 0; px < w; px += 1, idx++) {
+    let sum = 0;
+    const baseIdx = getIdx(px / w);
+    const sMax = Math.min(step, reversed ? baseIdx + 1 : len - baseIdx);
+    for (let s = 0; s < sMax; s++) {
+      const si = baseIdx + (reversed ? -s : s);
+      if (si >= 0 && si < len) sum += Math.abs(data[si]);
+    }
+    const avg = sum / (sMax || 1);
+    avgVals[idx] = avg;
+    if (avg > maxAvg) maxAvg = avg;
+  }
+
+  const normScale = maxAvg > 0.001 ? 1 / maxAvg : 1;
+
+  // 上下包络 - use red for Uncle_Fu segment in embedded audio
+  ctx.lineWidth = 1.5;
+  // Upper envelope
+  ctx.beginPath();
+  for (let px = 0, idx = 0; px < w; px += 1, idx++) {
+    const val = Math.min(avgVals[idx] * normScale * amp * 0.85, amp);
+    ctx.strokeStyle = '#7ab89a';
+    ctx.lineTo(px, centerY - val);
+  }
+  ctx.stroke();
+
+  // Lower envelope
+  ctx.beginPath();
+  ctx.moveTo(0, centerY);
+  for (let px = 0, idx = 0; px < w; px += 1, idx++) {
+    const val = Math.min(avgVals[idx] * normScale * amp * 0.85, amp);
+    ctx.strokeStyle = '#7ab89a';
+    ctx.lineTo(px, centerY + val);
+  }
+  ctx.stroke();
+
+  // 时间刻度线（缩放时显示对应的区间标记）
+  if (isFinite(zoomDuration)) {
+    ctx.fillStyle = '#556655';
+    ctx.font = '9px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    // draw time markers every ~60px
+    const markerInterval = 60;
+    for (let px = 0; px < w; px += markerInterval) {
+      const sec = viewStart + (px / w) * zoomDuration;
+      const label = formatTime(sec);
+      ctx.fillText(label, px, h - 4);
+    }
+  }
+
+  // 反向标注
+  if (reversed) {
+    ctx.fillStyle = '#cc6644';
+    ctx.font = '10px "Courier New", monospace';
+    ctx.fillText('⏪ REVERSED', 6, 14);
+  }
+}
+
+function updateModeLabel() {
+  const label = document.querySelector('.wave-label');
+  if (label) {
+    const text = viewMode === 'spectrogram' ? '频谱 / Spectrogram ' : '波形 / Waveform ';
+    label.innerHTML = text + '<span id="zoomLabel" style="color:#5a7a6a;"></span>';
+  }
+}
+
+function drawEmpty() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const w = rect.width;
+  const h = rect.height;
+
+  ctx.fillStyle = '#0e0e12';
+  ctx.fillRect(0, 0, w, h);
+  placeholder.style.display = 'flex';
+}
+
+// 自动加载嵌入音频 (disabled)
+// --- Spectrogram ---
+function fft(input) {
+  const N = input.length;
+  if (N & (N - 1)) throw new Error('FFT size must be power of 2');
+  const bits = Math.round(Math.log2(N));
+  const real = new Float32Array(N);
+  const imag = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    let j = 0;
+    for (let b = 0; b < bits; b++) j = (j << 1) | ((i >> b) & 1);
+    real[j] = input[i];
+    imag[j] = 0;
+  }
+  for (let s = 1; s <= bits; s++) {
+    const m = 1 << s;
+    const half = m >> 1;
+    const ang = -2 * Math.PI / m;
+    const wRe = Math.cos(ang);
+    const wIm = Math.sin(ang);
+    for (let k = 0; k < N; k += m) {
+      let curRe = 1, curIm = 0;
+      for (let j = 0; j < half; j++) {
+        const tRe = curRe * real[k + j + half] - curIm * imag[k + j + half];
+        const tIm = curRe * imag[k + j + half] + curIm * real[k + j + half];
+        real[k + j + half] = real[k + j] - tRe;
+        imag[k + j + half] = imag[k + j] - tIm;
+        real[k + j] += tRe;
+        imag[k + j] += tIm;
+        const nr = curRe * wRe - curIm * wIm;
+        const ni = curRe * wIm + curIm * wRe;
+        curRe = nr; curIm = ni;
+      }
+    }
+  }
+  return { real, imag };
+}
+
+function computeSpectrogram(buffer) {
+  const data = buffer.getChannelData(0);
+  const sampleRate = buffer.sampleRate;
+  const fftSize = SPEC_FFT_SIZE;
+  const hopSize = SPEC_HOP_SIZE;
+  const hann = new Float32Array(fftSize);
+  for (let i = 0; i < fftSize; i++) hann[i] = 0.5 * (1 - Math.cos(2 * Math.PI * i / (fftSize - 1)));
+  const numFrames = Math.max(1, Math.floor((data.length - fftSize) / hopSize) + 1);
+  const numBins = fftSize / 2 + 1;
+  const maxFreq = sampleRate / 2;
+  const specData = new Float32Array(numFrames * numBins);
+  const frame = new Float32Array(fftSize);
+  let globalMax = 0;
+  for (let t = 0; t < numFrames; t++) {
+    const offset = t * hopSize;
+    for (let i = 0; i < fftSize; i++) frame[i] = (offset + i < data.length) ? data[offset + i] * hann[i] : 0;
+    const { real, imag } = fft(frame);
+    for (let f = 0; f < numBins; f++) {
+      const mag = Math.sqrt(real[f] * real[f] + imag[f] * imag[f]);
+      specData[t * numBins + f] = mag;
+      if (mag > globalMax) globalMax = mag;
+    }
+  }
+  return { data: specData, numFrames, numBins, maxFreq, globalMax };
+}
+
+function drawSpectrogram(buffer, reversed) {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const w = Math.max(1, Math.floor(rect.width));
+  const h = Math.max(1, Math.floor(rect.height));
+  canvas.width = w;
+  canvas.height = h;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#07090b';
+  ctx.fillRect(0, 0, w, h);
+
+  if (!specCache || specCache.buffer !== buffer) {
+    specCache = computeSpectrogram(buffer);
+    specCache.buffer = buffer;
+  }
+  const { data, numFrames, numBins, maxFreq, globalMax } = specCache;
+
+  const totalDur = buffer.duration;
+  const viewStart = isFinite(zoomDuration) ? Math.max(0, zoomViewStart) : 0;
+  const viewEnd = isFinite(zoomDuration) ? Math.min(totalDur, viewStart + zoomDuration) : totalDur;
+  const viewDur = viewEnd - viewStart;
+
+  document.getElementById('zoomLabel').textContent = isFinite(zoomDuration)
+    ? ' [' + formatTime(viewStart) + ' - ' + formatTime(viewEnd) + ']'
+    : '';
+
+  const displayMaxFreq = Math.min(maxFreq, SPEC_DISPLAY_MAX_FREQ);
+  const imgData = ctx.createImageData(w, h);
+  const pix = imgData.data;
+  const ref = Math.max(globalMax, 1e-6);
+
+  for (let py = 0; py < h; py++) {
+    const freq = ((h - 1 - py) / Math.max(1, h - 1)) * displayMaxFreq;
+    const freqBin = Math.floor((freq / maxFreq) * (numBins - 1));
+    const fb = Math.max(0, Math.min(numBins - 1, freqBin));
+    for (let px = 0; px < w; px++) {
+      const pxRatio = px / w;
+      const timePos = reversed
+        ? viewEnd - pxRatio * viewDur
+        : viewStart + pxRatio * viewDur;
+      const fi = Math.max(0, Math.min(numFrames - 1, Math.floor((timePos / totalDur) * numFrames)));
+      const mag = data[fi * numBins + fb];
+      const db = 20 * Math.log10(Math.max(1e-10, mag / ref));
+      let n = (db - SPEC_DB_FLOOR) / (SPEC_DB_CEIL - SPEC_DB_FLOOR);
+      n = Math.max(0, Math.min(1, n));
+      n = Math.pow(n, 0.72);
+      const i = (py * w + px) * 4;
+      if (n < 0.08) {
+        pix[i] = 4; pix[i+1] = 7; pix[i+2] = 10;
+      } else if (n < 0.25) {
+        const t = (n - 0.08) / 0.17;
+        pix[i] = Math.round(4 + t * 18);
+        pix[i+1] = Math.round(7 + t * 56);
+        pix[i+2] = Math.round(10 + t * 34);
+      } else if (n < 0.50) {
+        const t = (n - 0.25) / 0.25;
+        pix[i] = Math.round(22 + t * 38);
+        pix[i+1] = Math.round(63 + t * 112);
+        pix[i+2] = Math.round(44 + t * 58);
+      } else if (n < 0.75) {
+        const t = (n - 0.50) / 0.25;
+        pix[i] = Math.round(60 + t * 86);
+        pix[i+1] = Math.round(175 + t * 62);
+        pix[i+2] = Math.round(102 + t * 66);
+      } else {
+        const t = Math.min(1, (n - 0.75) / 0.25);
+        pix[i] = Math.round(146 + t * 98);
+        pix[i+1] = Math.round(237 + t * 18);
+        pix[i+2] = Math.round(168 + t * 48);
+      }
+      pix[i+3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = 'rgba(166, 222, 197, .08)';
+  for (let y = 0; y < h; y += Math.max(24, h / 12)) {
+    ctx.fillRect(0, Math.round(y), w, 1);
+  }
+  ctx.restore();
+
+  // frequency labels (right side)
+  ctx.fillStyle = '#6d8f7f';
+  ctx.font = '9px \'Courier New\', monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText(Math.round(displayMaxFreq / 1000) + 'kHz', w - 4, 10);
+  ctx.fillText('0', w - 4, h - 4);
+
+  if (reversed) {
+    ctx.fillStyle = '#cc6644';
+    ctx.font = '10px \'Courier New\', monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('⏪ REVERSED', 6, 14);
+  }
+}
+
+async function autoLoadEmbedded_DISABLED() {
+  if (!EMBEDDED_AUDIO_B64 || EMBEDDED_AUDIO_B64.length < 100) return;
+  try {
+    const dataUrl = 'data:audio/wav;base64,' + EMBEDDED_AUDIO_B64;
+    const response = await fetch(dataUrl);
+    const arrayBuffer = await response.arrayBuffer();
+    const ac = getCtx();
+    audioBuffer = await ac.decodeAudioData(arrayBuffer);
+    duration = audioBuffer.duration;
+    isEmbeddedAudio = true;
+    fileName.textContent = '20260602-0905.wav';
+    placeholder.style.display = 'none';
+    infoSampleRate.textContent = audioBuffer.sampleRate + ' Hz';
+    infoDuration.textContent = duration.toFixed(1) + ' s';
+    infoChannels.textContent = audioBuffer.numberOfChannels + 'ch';
+    progress.textContent = '00:00 / ' + formatTime(duration);
+    document.querySelectorAll('.speed-btn[data-zoom]').forEach(b => b.classList.remove('active'));
+    document.querySelector('.speed-btn[data-zoom="all"]').classList.add('active');
+    drawWaveform(audioBuffer, isReversed);
+  } catch(err) {
+    console.warn('Auto-load audio failed:', err);
+  }
+}
+
+// 加载音频
+document.getElementById('loadBtn').addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  fileName.textContent = '正在解码音频...';
+  placeholder.style.display = 'none';
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const ac = getCtx();
+    const decoded = await ac.decodeAudioData(arrayBuffer);
+    setLoadedBuffer(decoded, file.name);
+  } catch(err) {
+    fileName.textContent = '文件无法解码';
+  }
+});
+
+document.getElementById('sstvBtn').addEventListener('click', () => imageInput.click());
+
+imageInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  fileName.textContent = '正在发射 SSTV 信号...';
+  placeholder.style.display = 'none';
+  try {
+    const pixels = await loadImagePixels(file);
+    const { buffer, label } = encodeRobot36AudioBuffer(pixels, file.name);
+    setLoadedBuffer(buffer, label);
+  } catch(err) {
+    fileName.textContent = '图片无法发射';
+    console.warn(err);
+  } finally {
+    imageInput.value = '';
+  }
+});
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function updateProgress() {
+  if (!isPlaying || !audioBuffer) {
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    return;
+  }
+  const elapsed = (audioCtx.currentTime - playStartTime) * speed + playStartOffset;
+  const pos = Math.min(elapsed, duration);
+  progress.textContent = formatTime(pos) + ' / ' + formatTime(duration);
+
+  // zoom auto-follow: 竖线离开可视区域时重新居中
+  if (isFinite(zoomDuration) && zoomDuration < duration) {
+    if (pos < zoomViewStart || pos > zoomViewStart + zoomDuration) {
+      zoomViewStart = Math.max(0, Math.min(duration - zoomDuration, pos - zoomDuration * 0.5));
+    }
+  }
+
+  // 更新波形进度线
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const w = rect.width;
+  let px = -1;
+  if (isFinite(zoomDuration) && zoomDuration < duration) {
+    if (pos >= zoomViewStart && pos <= zoomViewStart + zoomDuration) {
+      px = ((pos - zoomViewStart) / zoomDuration) * w;
+    }
+  } else {
+    px = (pos / duration) * w;
+  }
+  drawWaveform(audioBuffer, isReversed);
+  if (px >= 0) {
+    ctx.strokeStyle = '#f0c84b';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(px, 0);
+    ctx.lineTo(px, rect.height);
+    ctx.stroke();
+  }
+
+  if (pos >= duration) {
+    if (isLooping) {
+      playStartOffset = 0;
+      if (source) { try { source.stop(); } catch(e) {} source = null; }
+      playBuffer();
+    } else {
+      stopPlayback();
+    }
+    return;
+  }
+  animFrame = requestAnimationFrame(updateProgress);
+}
+
+function playBuffer() {
+  if (!audioBuffer) return;
+  const ac = getCtx();
+  if (source) { try { source.stop(); } catch(e) {} source = null; }
+
+  source = ac.createBufferSource();
+  source.buffer = audioBuffer;
+  source.playbackRate.value = isReversed ? -speed : speed;
+  source.loop = isLooping;
+
+  source.connect(ac.destination);
+
+  const offset = isReversed ? duration - playStartOffset : playStartOffset;
+  source.start(0, Math.max(0, offset));
+  playStartTime = ac.currentTime;
+  isPlaying = true;
+  playBtn.textContent = '⏸';
+  updateProgress();
+}
+
+function stopPlayback() {
+  if (source) { try { source.stop(); } catch(e) {} source = null; }
+  isPlaying = false;
+  playBtn.textContent = '▶';
+  playStartOffset = 0;
+  if (audioBuffer) {
+    progress.textContent = '00:00 / ' + formatTime(duration);
+    drawWaveform(audioBuffer, isReversed);
+  }
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+}
+
+playBtn.addEventListener('click', () => {
+  if (!audioBuffer) return;
+  if (isPlaying) {
+    // 暂停：记录当前位置
+    const elapsed = (audioCtx.currentTime - playStartTime) * speed;
+    playStartOffset = Math.min(playStartOffset + elapsed, duration);
+    if (source) { try { source.stop(); } catch(e) {} source = null; }
+    isPlaying = false;
+    playBtn.textContent = '▶';
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    return;
+  }
+  playBuffer();
+});
+
+stopBtn.addEventListener('click', stopPlayback);
+
+reverseBtn.addEventListener('click', function() {
+  isReversed = !isReversed;
+  this.classList.toggle('active');
+  reverseIndicator.style.display = isReversed ? 'block' : 'none';
+  if (audioBuffer) drawWaveform(audioBuffer, isReversed);
+  if (isPlaying) {
+    stopPlayback();
+    playBuffer();
+  }
+});
+
+loopBtn.addEventListener('click', function() {
+  isLooping = !isLooping;
+  this.classList.toggle('active');
+  if (isPlaying && source) source.loop = isLooping;
+});
+
+// 频谱切换
+document.getElementById('specBtn').addEventListener('click', function() {
+  if (!audioBuffer) return;
+  const newMode = viewMode === 'spectrogram' ? 'waveform' : 'spectrogram';
+  viewMode = newMode;
+  this.classList.toggle('active');
+  updateModeLabel();
+  drawWaveform(audioBuffer, isReversed);
+});
+
+document.querySelectorAll('.speed-btn[data-speed]').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.speed-btn[data-speed]').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const newSpeed = parseFloat(this.dataset.speed);
+    if (isPlaying) {
+      // 快照当前位置，避免倍速切换导致竖线跳变
+      playStartOffset = Math.min(
+        (audioCtx.currentTime - playStartTime) * speed + playStartOffset,
+        duration
+      );
+      playStartTime = audioCtx.currentTime;
+      source.playbackRate.value = isReversed ? -newSpeed : newSpeed;
+    }
+    speed = newSpeed;
+  });
+});
+
+// 缩放按钮
+document.querySelectorAll('.speed-btn[data-zoom]').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.speed-btn[data-zoom]').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const val = this.dataset.zoom;
+    if (val === 'all') {
+      zoomDuration = Infinity;
+      zoomViewStart = 0;
+    } else {
+      zoomDuration = parseFloat(val);
+      // center view on current play position if playing, else keep start
+      if (isPlaying && audioBuffer) {
+        const elapsed = (audioCtx.currentTime - playStartTime) * speed + playStartOffset;
+        zoomViewStart = Math.max(0, Math.min(elapsed - zoomDuration / 2, duration - zoomDuration));
+      }
+    }
+    if (audioBuffer) drawWaveform(audioBuffer, isReversed);
+  });
+});
+
+// 点击波形跳转
+canvas.addEventListener('click', function(e) {
+  if (!audioBuffer) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const w = rect.width;
+  const ratio = Math.max(0, Math.min(1, x / w));
+  let seekPos;
+  if (isFinite(zoomDuration) && zoomDuration < duration) {
+    seekPos = zoomViewStart + ratio * zoomDuration;
+  } else {
+    seekPos = ratio * duration;
+  }
+  playStartOffset = Math.max(0, Math.min(seekPos, duration));
+  if (isPlaying) {
+    if (source) { try { source.stop(); } catch(e) {} source = null; }
+    playBuffer();
+  } else {
+    progress.textContent = formatTime(playStartOffset) + ' / ' + formatTime(duration);
+    drawWaveform(audioBuffer, isReversed);
+    // draw progress line at new position
+    const w2 = rect.width;
+    let px;
+    if (isFinite(zoomDuration) && zoomDuration < duration) {
+      px = ((playStartOffset - zoomViewStart) / zoomDuration) * w2;
+    } else {
+      px = (playStartOffset / duration) * w2;
+    }
+    ctx.strokeStyle = '#f0c84b';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(px, 0);
+    ctx.lineTo(px, rect.height);
+    ctx.stroke();
+  }
+});
+
+window.addEventListener('resize', () => {
+  if (audioBuffer) drawWaveform(audioBuffer);
+  else drawEmpty();
+});
+
+drawEmpty();
+updateModeLabel();
+</script>
+</body>
+</html>

@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>聚合搜索</title>
+<style>
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body {
+  background: #e9eef1;
+  color: #22313b;
+  font-family: "Inter", "Segoe UI", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+}
+a { color: inherit; text-decoration: none; }
+.shell { min-height: 100vh; display: flex; flex-direction: column; }
+.header {
+  height: 58px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #c9d4dc;
+  background: #f7fafb;
+}
+.brand { display: flex; align-items: center; gap: 11px; color: #253f4d; font-weight: 700; letter-spacing: 1px; }
+.mark {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #6f8b97;
+  background: #e5eef1;
+  color: #375767;
+  font-family: "Courier New", monospace;
+}
+.status { color: #778791; font-size: 12px; }
+.home {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 128px 18px 58px;
+}
+.panel {
+  width: min(840px, 100%);
+  border: 1px solid #c4d0d8;
+  background: #fff;
+  box-shadow: 0 16px 44px rgba(62, 84, 101, 0.14);
+}
+.panel-head {
+  padding: 24px 28px 18px;
+  border-bottom: 1px solid #dde5ea;
+  background: linear-gradient(180deg, #fbfdfe, #f0f5f7);
+}
+.title-block h1 { margin: 0; font-size: 30px; color: #203d4e; letter-spacing: 2px; }
+.title-block p { margin: 8px 0 0; color: #7c8a93; font-size: 14px; }
+.search-zone { padding: 26px 28px 28px; }
+form.search-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  gap: 10px;
+}
+.search-input {
+  min-width: 0;
+  height: 46px;
+  border: 1px solid #b9c8d1;
+  background: #fbfdfe;
+  color: #24333d;
+  padding: 0 14px;
+  font-size: 16px;
+  outline: none;
+}
+.search-input:focus { border-color: #628696; box-shadow: 0 0 0 3px rgba(98,134,150,0.12); }
+.search-btn, .back-btn {
+  height: 46px;
+  border: 1px solid #4e7586;
+  background: #385f70;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.search-btn:hover, .back-btn:hover { background: #2f5261; }
+.results-page { min-height: 100vh; background: #f4f7f8; }
+.topbar {
+  display: grid;
+  grid-template-columns: 118px minmax(520px, 1fr) 92px 96px;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 24px;
+  border-bottom: 1px solid #cbd6dd;
+  background: #fff;
+}
+.mini-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; color: #294757; font-size: 14px; }
+.mini-brand .mark { width: 26px; height: 26px; }
+.topbar form.search-form { grid-template-columns: minmax(0, 1fr) 82px; }
+.topbar .search-input, .topbar .search-btn { height: 42px; font-size: 15px; }
+.top-meta { justify-self: end; color: #87939a; font-size: 12px; }
+.home-btn {
+  height: 42px;
+  border: 1px solid #bdcbd3;
+  background: #fff;
+  color: #385364;
+  padding: 0 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.home-btn:hover { background: #eef4f7; }
+.content { width: min(680px, calc(100% - 48px)); margin: 22px auto 60px; }
+.result-panel {
+  border: 1px solid #d7e1e7;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(62, 84, 101, 0.08);
+}
+.result-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 15px;
+  border-bottom: 1px solid #e4ebef;
+  background: #f9fbfc;
+  color: #526470;
+  font-size: 12px;
+}
+.result-query {
+  color: #203d4e;
+  font-weight: 700;
+}
+.result-list { padding: 6px 0; }
+.result {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid #edf2f5;
+  background: #fff;
+}
+.result:last-child { border-bottom: 0; }
+.result::before {
+  content: attr(data-index);
+  color: #8b9aa4;
+  font: 11px/1 "Courier New", monospace;
+  text-align: center;
+}
+.title {
+  display: block;
+  color: #1f4f85;
+  font-size: 16px;
+  line-height: 1.45;
+  padding: 12px 15px 12px 0;
+}
+.title:hover { text-decoration: underline; }
+.empty {
+  margin-top: 18px;
+  padding: 22px;
+  border: 1px solid #dce5ea;
+  background: #fff;
+  color: #687983;
+  font-size: 14px;
+}
+.ip-footer {
+  position: fixed;
+  left: 24px;
+  bottom: 16px;
+  color: #8a969d;
+  font: 11px/1.4 "Courier New", monospace;
+  letter-spacing: 0.6px;
+}
+.collect-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 16% 10%, rgba(82, 61, 118, 0.24), transparent 31%),
+    radial-gradient(circle at 82% 4%, rgba(180, 142, 70, 0.10), transparent 30%),
+    radial-gradient(circle at 50% 95%, rgba(32, 56, 91, 0.22), transparent 44%),
+    linear-gradient(180deg, #07070d, #101522 46%, #08070c);
+  color: #eee4d0;
+  overflow-x: hidden;
+}
+.collect-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(226, 199, 139, 0.24) 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(172, 151, 205, 0.14) 1px, transparent 1.6px);
+  background-size: 116px 116px, 181px 181px;
+  background-position: 8px 20px, 54px 78px;
+  opacity: .14;
+}
+.collect-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(214, 184, 124, 0.14);
+  background: rgba(7, 8, 14, 0.74);
+  backdrop-filter: blur(14px);
+}
+.collect-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.collect-brand .mark {
+  border-color: #75633e;
+  background: #15121b;
+  color: #dec88d;
+}
+.collect-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(214, 184, 124, 0.18);
+  background: rgba(16, 18, 31, 0.58);
+  color: #c9b889;
+  font-size: 12px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.collect-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c9a85c;
+  box-shadow: 0 0 14px rgba(201, 168, 92, .42);
+}
+.collect-status span + span {
+  padding-left: 10px;
+  border-left: 1px solid rgba(214, 184, 124, 0.18);
+  color: #8f8372;
+}
+.collect-main {
+  position: relative;
+  width: min(1220px, calc(100% - 32px));
+  margin: 28px auto 60px;
+}
+.collect-gate {
+  min-height: calc(100vh - 86px);
+  display: grid;
+  place-items: center;
+  padding: 30px 16px;
+}
+.gate-panel {
+  width: min(520px, 100%);
+  padding: 28px;
+  border: 1px solid rgba(219, 188, 122, 0.22);
+  background:
+    linear-gradient(180deg, rgba(22, 20, 34, 0.94), rgba(8, 10, 18, 0.97));
+  box-shadow: 0 32px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.035);
+}
+.gate-question {
+  margin: 0;
+  color: #f1e8d8;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+.gate-hint {
+  margin-top: 10px;
+  color: #9d9177;
+  font-size: 13px;
+}
+.gate-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px;
+  gap: 10px;
+  margin-top: 22px;
+}
+.gate-input,
+.arcana-input {
+  height: 42px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(215, 181, 111, 0.32);
+  background: rgba(6, 8, 14, 0.7);
+  color: #eadfcd;
+  outline: none;
+  font-size: 15px;
+}
+.gate-input:focus,
+.arcana-input:focus {
+  border-color: rgba(222, 199, 141, 0.7);
+  box-shadow: 0 0 0 3px rgba(222, 199, 141, 0.08);
+}
+.gate-submit,
+.arcana-submit {
+  height: 42px;
+  border: 1px solid rgba(215, 181, 111, 0.36);
+  background: rgba(62, 49, 31, 0.78);
+  color: #eadab8;
+  cursor: pointer;
+}
+.gate-submit:hover,
+.arcana-submit:hover {
+  background: rgba(86, 66, 38, 0.86);
+}
+.gate-feedback {
+  min-height: 20px;
+  margin-top: 14px;
+  color: #b17874;
+  font-size: 13px;
+}
+.collect-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: end;
+  padding: 20px 22px;
+  border: 1px solid rgba(214, 184, 124, 0.16);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(16, 18, 31, 0.82), rgba(12, 13, 22, 0.72));
+  box-shadow: 0 20px 60px rgba(0,0,0,0.26);
+  backdrop-filter: blur(12px);
+}
+.collect-intro h1 {
+  margin: 0;
+  color: #f0e5cf;
+  font-family: "Songti SC", "STSong", "SimSun", serif;
+  font-size: 28px;
+  letter-spacing: 5px;
+}
+.collect-intro p {
+  margin: 7px 0 0;
+  color: #aca090;
+  font-size: 13px;
+}
+.collect-count {
+  color: #d7be85;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.card-name-hint {
+  margin-top: 12px;
+  border: 1px solid rgba(214, 184, 124, 0.14);
+  border-radius: 2px;
+  background: rgba(8, 10, 18, 0.58);
+  color: #a99d8e;
+}
+.card-name-hint summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  color: #d7c18d;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.card-name-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 14px 14px;
+}
+.card-name-list span {
+  padding: 4px 8px;
+  border: 1px solid rgba(214, 184, 124, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 248, 229, 0.04);
+  color: #bfb19a;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.card-grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(148px, 1fr));
+  gap: 24px 18px;
+}
+.tarot-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tarot-card {
+  position: relative;
+  aspect-ratio: 0.68;
+  min-height: 220px;
+  padding: 15px;
+  border: 1px solid rgba(219, 190, 125, 0.24);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(219, 190, 125, 0.14), transparent 28%),
+    linear-gradient(160deg, rgba(127, 93, 154, 0.16), transparent 30%, transparent 74%, rgba(219, 190, 125, 0.10)),
+    linear-gradient(180deg, #1a1327, #09101f);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.035), 0 18px 36px rgba(0,0,0,0.32);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform .45s ease, opacity .3s ease, filter .3s ease, box-shadow .3s ease;
+}
+.tarot-card::before {
+  content: "";
+  position: absolute;
+  inset: 11px;
+  border: 1px solid rgba(219, 190, 125, 0.18);
+  border-radius: 9px;
+}
+.tarot-card::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 52%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(222, 199, 141, 0.26);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 18px rgba(222, 199, 141, 0.018), 0 0 24px rgba(222, 199, 141, 0.06);
+}
+.card-back-node {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px 8px;
+  border: 1px solid rgba(222, 199, 141, 0.24);
+  border-radius: 999px;
+  background: rgba(5, 7, 13, 0.42);
+  color: rgba(233, 216, 176, 0.72);
+  font-size: 12px;
+  letter-spacing: .5px;
+}
+.tarot-card.locked {
+  opacity: .43;
+  filter: saturate(.6) blur(.4px);
+}
+.tarot-card.available {
+  opacity: 1;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.035), 0 0 34px rgba(202, 173, 103, 0.14), 0 18px 36px rgba(0,0,0,0.32);
+}
+.tarot-card.front,
+.tarot-card.active {
+  cursor: pointer;
+  padding: 7px;
+  background: linear-gradient(180deg, #19131f, #090b12);
+  color: #211c18;
+  box-shadow: inset 0 0 0 1px rgba(75, 55, 29, 0.26), 0 18px 38px rgba(0,0,0,0.3);
+}
+.tarot-card.just-unlocked {
+  animation: tarotFlip .75s ease both;
+}
+.tarot-card.active {
+  box-shadow: inset 0 0 0 1px rgba(75, 55, 29, 0.26), 0 0 30px rgba(222, 199, 141, .18), 0 18px 38px rgba(0,0,0,0.3);
+}
+.tarot-card.front::before,
+.tarot-card.active::before {
+  border-color: rgba(77, 55, 31, 0.28);
+}
+.tarot-card.front::after,
+.tarot-card.active::after {
+  content: "";
+  border: 0;
+  box-shadow: none;
+}
+.card-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgba(50, 38, 26, 0.76);
+  font-size: 11px;
+  letter-spacing: .5px;
+}
+.card-top span {
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(255, 248, 229, .34);
+}
+.card-art {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(219, 190, 125, 0.22);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #120e17;
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 220, 0.06);
+}
+.card-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.card-node-badge {
+  position: absolute;
+  z-index: 2;
+  top: 11px;
+  left: 11px;
+  padding: 3px 8px;
+  border: 1px solid rgba(233, 211, 154, 0.5);
+  border-radius: 999px;
+  background: rgba(10, 8, 14, 0.7);
+  color: #ead59d;
+  font-size: 11px;
+  letter-spacing: .5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.26);
+}
+.card-name {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 9px 7px;
+  border-radius: 8px;
+  background: rgba(246, 233, 201, 0.48);
+  text-align: center;
+  color: #211a14;
+  font-family: "Songti SC", "STSong", "SimSun", serif;
+  font-size: 20px;
+  line-height: 1.25;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+.card-person {
+  display: block;
+  margin-top: 7px;
+  color: #5f1f1d;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+.card-place {
+  position: relative;
+  z-index: 1;
+  margin-top: 7px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: rgba(255, 248, 229, .28);
+  text-align: center;
+  color: rgba(48, 38, 28, 0.72);
+  font-size: 12px;
+}
+.card-silence {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
+  z-index: 1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(5, 7, 13, 0.38);
+  color: rgba(228, 212, 176, .68);
+  font-size: 12px;
+  text-align: center;
+}
+.collect-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 6px;
+}
+.collect-fields {
+  display: grid;
+  gap: 6px;
+}
+.collect-input {
+  height: 32px;
+  min-width: 0;
+  padding: 0 9px;
+  border: 1px solid rgba(205, 184, 144, 0.22);
+  border-radius: 6px;
+  background: rgba(9, 10, 16, 0.68);
+  color: #eadfcd;
+  outline: none;
+  font-size: 13px;
+}
+.collect-input:focus {
+  border-color: rgba(226, 199, 139, 0.68);
+  box-shadow: 0 0 0 2px rgba(226, 199, 139, 0.1);
+}
+.collect-input:disabled {
+  color: #9a8d79;
+  background: rgba(31, 27, 22, 0.6);
+}
+.collect-submit {
+  height: 70px;
+  border: 1px solid rgba(205, 184, 144, 0.24);
+  border-radius: 6px;
+  background: rgba(42, 35, 29, 0.82);
+  color: #e5d7bd;
+  cursor: pointer;
+}
+.collect-submit:hover {
+  background: rgba(76, 61, 42, 0.95);
+}
+.collect-submit:disabled {
+  cursor: default;
+  color: #9a8d79;
+  background: rgba(36, 31, 26, 0.8);
+}
+.collect-feedback {
+  min-height: 17px;
+  color: #9f9080;
+  font-size: 12px;
+  text-align: center;
+}
+.collect-feedback.ok { color: #d7c08e; }
+.collect-feedback.bad { color: #c9827d; }
+.collect-footer {
+  margin-top: 18px;
+  color: #8d8272;
+  font-size: 12px;
+}
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(5, 6, 12, .72);
+  backdrop-filter: blur(8px);
+}
+.detail-panel {
+  width: min(1180px, 100%);
+  max-height: min(92vh, 920px);
+  display: grid;
+  grid-template-columns: minmax(360px, 700px) minmax(260px, 340px);
+  gap: 34px;
+  padding: 28px;
+  border: 1px solid rgba(222, 199, 141, .3);
+  background: linear-gradient(180deg, rgba(22, 20, 30, .96), rgba(10, 13, 22, .98));
+  box-shadow: 0 28px 90px rgba(0,0,0,.46);
+  animation: detailIn .24s ease both;
+}
+.detail-card {
+  min-height: 0;
+  height: min(82vh, 820px);
+}
+.detail-card .tarot-card {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.detail-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+}
+.detail-text h2 {
+  margin: 0;
+  color: #f0e5cd;
+  font-family: "Songti SC", "STSong", "SimSun", serif;
+  font-size: 34px;
+  letter-spacing: 3px;
+}
+.detail-person {
+  width: fit-content;
+  margin-top: 14px;
+  padding: 5px 10px;
+  border: 1px solid rgba(215, 181, 111, 0.16);
+  background: rgba(255, 248, 229, 0.035);
+  color: #c8b98f;
+  font-family: "Songti SC", "STSong", "SimSun", serif;
+  font-size: 19px;
+  letter-spacing: 3px;
+}
+.detail-blessing {
+  position: relative;
+  margin: 26px 0 0;
+  padding: 34px 18px 40px 20px;
+  border-left: 1px solid rgba(215, 181, 111, 0.36);
+  border-top: 1px solid rgba(215, 181, 111, 0.12);
+  background:
+    linear-gradient(90deg, rgba(215, 181, 111, 0.07), rgba(215, 181, 111, 0.018));
+  color: #e0d0ae;
+  font-family: "Songti SC", "STSong", "SimSun", serif;
+  font-size: 18px;
+  line-height: 1.9;
+  letter-spacing: 1px;
+  text-align: justify;
+  overflow: hidden;
+}
+.detail-blessing::before {
+  content: "牌语";
+  position: absolute;
+  left: 20px;
+  top: 10px;
+  padding: 0;
+  background: transparent;
+  color: #8f7a4d;
+  font: 12px/1 "Microsoft YaHei", "PingFang SC", sans-serif;
+  letter-spacing: 2px;
+}
+.detail-blessing::after {
+  content: attr(data-residue);
+  position: absolute;
+  right: 14px;
+  bottom: 8px;
+  color: rgba(215, 181, 111, 0.11);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: .38em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.detail-text .detail-sub {
+  margin-top: 14px;
+  color: #c8b98f;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+.detail-close {
+  margin-top: 34px;
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid rgba(215, 181, 111, 0.36);
+  background: rgba(62, 49, 31, 0.78);
+  color: #eadab8;
+  cursor: pointer;
+}
+@keyframes tarotFlip {
+  0% { transform: rotateY(0deg) scale(.98); }
+  45% { transform: rotateY(90deg) scale(1.03); }
+  100% { transform: rotateY(0deg) scale(1); }
+}
+@keyframes detailIn {
+  from { opacity: 0; transform: translateY(10px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (max-width: 760px) {
+  .header, .panel-head, .topbar { display: block; height: auto; padding: 14px; }
+  form.search-form, .topbar form.search-form { grid-template-columns: 1fr; }
+  .search-btn { width: 100%; }
+  .content { width: calc(100% - 28px); }
+  .top-meta { margin-top: 10px; }
+  .home-btn { margin-top: 10px; width: 100%; }
+  .home { padding-top: 72px; }
+  .ip-footer { position: static; margin: 20px 14px 14px; }
+  .collect-header, .collect-intro, .detail-panel { display: block; }
+  .collect-status, .collect-count { margin-top: 10px; text-align: left; }
+  .collect-status { display: flex; width: fit-content; }
+  .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .detail-card { height: min(68vh, 620px); margin-bottom: 18px; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function() {
+  var app = document.getElementById('app');
+  var params = new URLSearchParams(location.search);
+  var q = params.get('q') || '';
+  function markSujianweiRitualSeen() {
+    try {
+      localStorage.setItem('citymystery_sujianwei_ritual_seen', '1');
+      localStorage.setItem('citymystery_sujianwei_ritual_seen_v2', '1');
+      localStorage.setItem('citymystery_sujianwei_seen_event', String(Date.now()));
+    } catch(e) {}
+    try {
+      if (window.opener) window.opener.postMessage({ type: 'citymystery-sujianwei-ritual-seen' }, '*');
+    } catch(e) {}
+    try {
+      if (window.parent && window.parent !== window) window.parent.postMessage({ type: 'citymystery-sujianwei-ritual-seen' }, '*');
+    } catch(e) {}
+    try {
+      new BroadcastChannel('citymystery').postMessage({ type: 'citymystery-sujianwei-ritual-seen' });
+    } catch(e) {}
+  }
+  function isCollectRoute() {
+    var currentParams = new URLSearchParams(location.search);
+    return location.pathname.replace(/\/+$/, '').endsWith('/collect') ||
+      location.hash === '#/collect' ||
+      currentParams.get('path') === '/collect' ||
+      currentParams.has('collect');
+  }
+  function isSujianweiRoute() {
+    var currentParams = new URLSearchParams(location.search);
+    var pathname = location.pathname.replace(/\/+$/, '');
+    var hashPath = location.hash.replace(/^#/, '').replace(/\/+$/, '');
+    var paramPath = String(currentParams.get('path') || '').replace(/\/+$/, '');
+    return pathname.endsWith('/sujianwei') ||
+      hashPath === '/sujianwei' ||
+      hashPath === 'sujianwei' ||
+      hashPath.endsWith('/sujianwei') ||
+      paramPath === '/sujianwei' ||
+      paramPath === 'sujianwei' ||
+      paramPath.endsWith('/sujianwei') ||
+      currentParams.has('sujianwei');
+  }
+  var nodeOrder = [7, 12, 19, 2, 20, 11, 4, 21, 8, 14, 9, 1, 10, 16, 15, 18, 5, 17, 13, 3, 6, 0];
+  var lastFlippedNode = null;
+  var tarotNameHints = ['愚者', '魔术师', '女祭司', '女皇', '皇帝', '教皇', '恋人', '战车', '力量', '隐者', '命运之轮', '正义', '倒吊人', '死神', '节制', '恶魔', '高塔', '星星', '月亮', '太阳', '审判', '世界'];
+  var tarotCards = [
+    { id: 0, cardName: '愚者', arcanaName: '正位愚者', answer: '袁以初', aliases: [], nearMiss: ['小初'], nearMissHint: '牌面认得她，但不承认这个称呼。', isPersonAnswer: true, specialHint: '', place: '平南市新步区', description: '开端、坠落、自由与未完成的选择。她站在故事的边缘，也站在所有代价的中心。', nextHint: '门没有关闭，只是换了锁。' },
+    { id: 1, cardName: '审判', arcanaName: '正位审判', answer: '秋瑾', aliases: [], isPersonAnswer: true, specialHint: '', place: '绍兴', description: '审判象征唤醒、牺牲与迟来的回声。旧报、雨声与未写完的供词，都在等待一次重新听见。', nextHint: '沉默之处，仍有鼓声从地下传来。' },
+    { id: 2, cardName: '命运之轮', arcanaName: '正位命运之轮', answer: '刘秀', aliases: ['光武帝', '汉光武帝'], isPersonAnswer: true, specialHint: '', place: '枣阳', description: '命运之轮转动时，人像被推到不可思议的位置。所谓转机，有时只是风暴中短暂露出的轴心。', nextHint: '下一处影子已经落在旧名之上。' },
+    { id: 3, cardName: '死神', arcanaName: '正位死神', answer: '朱温', aliases: ['朱全忠', '梁太祖'], isPersonAnswer: true, specialHint: '', place: '砀山', description: '死神并不只指终结，也指旧秩序被粗暴地切断。村口的记录没有真正结束，只是换了一种形状留存。', nextHint: '若结局过早降临，回声会先抵达搜索之处。' },
+    { id: 4, cardName: '星星', arcanaName: '正位星星', answer: '王贞仪', aliases: [], isPersonAnswer: true, specialHint: '', place: '南京', description: '星星指向理性、观测与微弱却稳定的光。越暗的天空，越需要有人相信计算仍然有效。', nextHint: '纸页上的微光，不一定来自灯。' },
+    { id: 5, cardName: '教皇', arcanaName: '正位教皇', answer: '郑玄', aliases: ['郑康成'], isPersonAnswer: true, specialHint: '', place: '峡山', description: '教皇象征典籍、训诂与传授。字被拆开时，古老的方向也被悄悄放回原位。', nextHint: '若要靠近庙门，先看字如何分身。' },
+    { id: 6, cardName: '魔术师', arcanaName: '正位魔术师', answer: '偃师', aliases: [], nearMiss: ['偃'], nearMissHint: '牌面认得他，但不承认这个称呼。', isPersonAnswer: true, specialHint: '', place: '北京', description: '魔术师掌握线、手与舞台。他让人以为自己在选择，其实每一步都可能早已被摆好。', nextHint: '牵线的人，也留下了自己的线头。' },
+    { id: 7, cardName: '月亮', arcanaName: '正位月亮', answer: '李贺', aliases: ['诗鬼'], isPersonAnswer: true, specialHint: '', place: '宜阳', description: '月亮象征幻象、梦境与不可直视的恐惧。第一张显影的牌，往往最像误认。', nextHint: '夜色不会给出答案，只会给出轮廓。' },
+    { id: 8, cardName: '力量', arcanaName: '正位力量', answer: '冼夫人', aliases: ['谯国夫人'], isPersonAnswer: true, specialHint: '', place: '茂名', description: '力量不是喧哗的胜利，而是能在混乱中安住人心。奖杯显现时，名字才真正落下。', nextHint: '胜利者拿到的，不一定只是奖杯。' },
+    { id: 9, cardName: '太阳', arcanaName: '正位太阳', answer: '汪华', aliases: [], isPersonAnswer: true, specialHint: '', place: '绩溪', description: '太阳照临乡里，也照见巡境的道路。民间的灯火常把一个名字保存得比碑刻更久。', nextHint: '鼓乐行过桥头，光会落在旧称里。' },
+    { id: 10, cardName: '倒吊人', arcanaName: '正位倒吊人', answer: '司马迁', aliases: ['太史公'], isPersonAnswer: true, specialHint: '', place: '韩城', description: '倒吊人象征悬置、忍受与换一种角度看世界。被迫停在痛苦里的人，也可能把时间写成道路。', nextHint: '有些声音需要倒过来听，有些命运需要反着看。' },
+    { id: 11, cardName: '战车', arcanaName: '正位战车', answer: '霍去病', aliases: [], isPersonAnswer: true, specialHint: '', place: '临汾', description: '战车向前，带着少年、速度和不回头的锋芒。赛道只是外壳，真正的冲锋藏在旧史里。', nextHint: '车轮过处，尘土会替名字作证。' },
+    { id: 12, cardName: '正义', arcanaName: '正位正义', answer: '包拯', aliases: ['包公', '包青天'], isPersonAnswer: true, specialHint: '', place: '肥东', description: '正义不总是明亮的，它也可能藏在讲义边角、制度缝隙与无人署名的判断中。', nextHint: '天平不说名字，却知道谁曾执掌它。' },
+    { id: 13, cardName: '女皇', arcanaName: '正位女皇', answer: '武则天', aliases: ['武曌'], isPersonAnswer: true, specialHint: '', place: '文水', description: '女皇象征权力、生成与自我命名。名字被写下时，旧秩序也被迫承认另一种中心。', nextHint: '镜中之人不再等候加冕。' },
+    { id: 14, cardName: '恋人', arcanaName: '正位恋人', answer: '卓文君', aliases: [], isPersonAnswer: true, specialHint: '', place: '邛崃', description: '恋人不是简单的相遇，而是选择、离开与重新确认自身。琴声有时比誓言更早抵达。', nextHint: '一封旧帖之后，仍有人在等回音。' },
+    { id: 15, cardName: '世界', arcanaName: '正位世界', answer: '郑和', aliases: [], isPersonAnswer: true, specialHint: '', place: '昆明', description: '世界象征完成、远行与边界的展开。地图停在某处，海风却从更远的地方吹回。', nextHint: '第七次不是终点，只是绕回来的门。' },
+    { id: 16, cardName: '女祭司', arcanaName: '正位女祭司', answer: '班昭', aliases: ['曹大家'], isPersonAnswer: true, specialHint: '', place: '咸阳', description: '女祭司守着书页、沉默和未被立刻看见的知识。目录错位时，真正的文字浮在白处。', nextHint: '翻到不该在那里的页。' },
+    { id: 17, cardName: '皇帝', arcanaName: '正位皇帝', answer: '嬴政', aliases: ['秦始皇', '始皇帝'], isPersonAnswer: true, specialHint: '', place: '邯郸', description: '皇帝象征秩序、统合与不可回避的中心。地点不必被说出，线索会让它自己显形。', nextHint: '三个人名，足够推开一扇旧门。' },
+    { id: 18, cardName: '恶魔', arcanaName: '正位恶魔', answer: '董卓', aliases: [], isPersonAnswer: true, specialHint: '', place: '定西', description: '恶魔象征欲望、交易和被锁住的选择。它礼貌地允许拒绝，却从不真正放手。', nextHint: '若代价不是物，便看是谁被写进账中。' },
+    { id: 19, cardName: '节制', arcanaName: '正位节制', answer: '王阳明', aliases: ['王守仁'], isPersonAnswer: true, specialHint: '', place: '余姚', description: '节制象征调和、心性与内外之间的平衡。声音经过破损后，仍能留下某种心上的方向。', nextHint: '水与火之间，仍有一线可渡。' },
+    { id: 20, cardName: '高塔', arcanaName: '正位高塔', answer: '贾府', aliases: [], isPersonAnswer: false, specialHint: '此牌并非人物', place: '南京', description: '高塔象征崩塌、傲慢结构的破裂与旧梦的坠落。它不等待一个人名，而等待一座屋宇的倒下。', nextHint: '若它不是人，便去寻找容器、屋宇与旧梦。' },
+    { id: 21, cardName: '隐者', arcanaName: '正位隐者', answer: '陶渊明', aliases: ['陶潜'], isPersonAnswer: true, specialHint: '', place: '柴桑', description: '隐者藏在人群与日常之后，灯亮起时才显出边缘。真正的介绍，不会在你追问时出现。', nextHint: '停下来，才会有人回应。' }
+  ];
+  var tarotImageByNode = {
+    0: '00 塔罗牌/袁以初-愚者.png',
+    1: '00 塔罗牌/秋瑾-审判.png',
+    2: '00 塔罗牌/刘秀-命运之轮.png',
+    3: '00 塔罗牌/朱温-死亡.png',
+    4: '00 塔罗牌/王贞仪-星星.png',
+    5: '00 塔罗牌/郑玄-教皇.png',
+    6: '00 塔罗牌/偃师-魔术师.png',
+    7: '00 塔罗牌/李贺-月亮.png',
+    8: '00 塔罗牌/冼夫人-力量.png',
+    9: '00 塔罗牌/汪华-太阳.png',
+    10: '00 塔罗牌/司马迁-倒吊人.png',
+    11: '00 塔罗牌/霍去病-战车.png',
+    12: '00 塔罗牌/包拯-正义.png',
+    13: '00 塔罗牌/武则天-女皇.png',
+    14: '00 塔罗牌/卓文君-恋人.png',
+    15: '00 塔罗牌/郑和-世界.png',
+    16: '00 塔罗牌/班昭-女祭司.png',
+    17: '00 塔罗牌/秦始皇-皇帝.png',
+    18: '00 塔罗牌/董卓-恶魔.png',
+    19: '00 塔罗牌/王阳明-节制.png',
+    20: '00 塔罗牌/贾府-高塔.png',
+    21: '00 塔罗牌/陶渊明-隐者.png'
+  };
+  var tarotResidueByNode = {
+    0: 'ABYSS',
+    1: 'ECLIPSE',
+    2: 'WISTERIA',
+    3: 'ORDER',
+    4: 'RELIC',
+    5: 'TRUTH',
+    6: 'WRIT',
+    7: 'INKWASH',
+    8: 'NAME',
+    9: 'VAPOR',
+    10: 'ORACLE',
+    11: 'EMBLEM',
+    12: 'FLORA',
+    13: 'INCUBI',
+    14: 'HIDDEN',
+    15: 'SATORI',
+    16: 'ASHEN',
+    17: 'TRACING',
+    18: 'ASTRAL',
+    19: 'LIMBO',
+    20: 'RING',
+    21: 'ECHOES'
+  };
+  var tarotBlessingByNode = {
+    0: '众人推举的自由。',
+    1: '身不得，男儿列，心却比，男儿烈！',
+    2: '吾理天下，亦欲以柔道行之。',
+    3: '天子，兵强马壮者为之。',
+    4: '足行万里书万卷，尝拟雄心胜丈夫。',
+    5: '德行立于己志。',
+    6: '臣之所造，能倡者也。',
+    7: '石脉水流泉滴沙，鬼灯如漆点松花。',
+    8: '我事三代主，唯用一好心。',
+    9: '一片丹心悬日月，千秋正气壮山河。',
+    10: '人固有一死，或重于泰山，或轻于鸿毛。',
+    11: '匈奴未灭，何以家为？',
+    12: '清心为治本，直道是身谋。',
+    13: '天下光宅，海内雍熙。',
+    14: '愿得一心人，白头不相离。',
+    15: '莫不争先呈献。',
+    16: '谦让恭敬，先人后己。',
+    17: '六合之内，皇帝之土。',
+    18: '吾为天下计，岂惜小民哉！',
+    19: '知之真切笃实处即是行，行之明觉精察处即是知。',
+    20: '假作真时真亦假，无为有处有还无。',
+    21: '归去来兮，田园将芜胡不归？'
+  };
+  tarotCards.forEach(function(card) {
+    card.imageFront = tarotImageByNode[card.id] || '';
+    card.residueWord = tarotResidueByNode[card.id] || '';
+    card.blessing = tarotBlessingByNode[card.id] || '';
+  });
+  var results = {
+    '小初': [
+      {
+        title: '小初的信息归纳',
+        href: 'xiaochu-profile.html'
+      },
+      {
+        title: '高中女生离家后失联，家属发布寻人启事',
+        href: 'xiaochu-missing-news.html'
+      }
+    ],
+    '苏见微': [
+      {
+        title: '关于一起重大刑事案件的情况通报',
+        href: 'police-briefing-su.html'
+      },
+      {
+        title: '豆板作者页：苏见微',
+        href: 'douban-author-su.html'
+      }
+    ],
+    '偃': [
+      {
+        title: '偃师_白度百科',
+        href: 'baidu-baike-yanshi.html'
+      }
+    ],
+    'PK': [
+      {
+        title: '缓存文件读取提示',
+        href: 'pk-unzip-hint.html'
+      }
+    ],
+    'THEREMAININGLOGS': [
+      {
+        title: 'log',
+        href: 'emith-log-04.html'
+      },
+      {
+        title: '苏的调查日志 C2-04',
+        href: 'c2-04.html'
+      }
+    ]
+  };
+  var aliases = {
+    '苏苏': '苏见微',
+    '苏见微': '苏见微',
+    '袁以初': '小初',
+    '小初': '小初',
+    '偃': '偃',
+    '偃师': '偃'
+  };
+
+  function normalizeQuery(value) {
+    var key = String(value || '').trim();
+    var compact = key.replace(/\s+/g, '').toUpperCase();
+    if (compact === 'THEREMAININGLOGS') return compact;
+    return aliases[key] || key;
+  }
+
+  function isSujianweiInput(value) {
+    var key = String(value || '').trim().replace(/\/+$/, '');
+    return key === '/sujianwei' ||
+      key === 'sujianwei' ||
+      key.toLowerCase() === '/sujianwei' ||
+      key.toLowerCase() === 'sujianwei';
+  }
+
+  function esc(text) {
+    return String(text).replace(/[&<>"']/g, function(ch) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+
+  function searchUrl(value) {
+    var trimmed = value.trim();
+    if (isSujianweiInput(trimmed)) return 'emith-search.html?path=/sujianwei';
+    return 'emith-search.html?q=' + encodeURIComponent(trimmed);
+  }
+
+  function brand(mini) {
+    return '<a class="' + (mini ? 'mini-brand' : 'brand') + '" href="emith-search.html"><span class="mark">Σ</span><span>聚合搜索</span></a>';
+  }
+
+  function formHtml(value) {
+    return '<form class="search-form" id="searchForm">' +
+      '<input class="search-input" id="searchInput" value="' + esc(value || '') + '" autocomplete="off" placeholder="输入内容">' +
+      '<button class="search-btn" type="submit">搜索</button>' +
+      '</form>';
+  }
+
+  function bindForm() {
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var value = document.getElementById('searchInput').value.trim();
+      if (!value) return;
+      location.href = searchUrl(value);
+    });
+  }
+
+  function normalizeAnswer(value) {
+    return String(value || '').trim().replace(/\s+/g, '').replace(/[·・.]/g, '').toLowerCase();
+  }
+
+  var TAROT_GATE_KEY = 'citymystery_tarot_gate_v2';
+  var TAROT_COLLECT_KEY = 'citymystery_tarot_collect_v2';
+  var TAROT_UNLOCK_ALL_FOR_TEST = false;
+
+  function getCollectGateStage() {
+    if (TAROT_UNLOCK_ALL_FOR_TEST) return 2;
+    try { return Number(localStorage.getItem(TAROT_GATE_KEY) || '0'); } catch(e) { return 0; }
+  }
+
+  function setCollectGateStage(stage) {
+    try { localStorage.setItem(TAROT_GATE_KEY, String(stage)); } catch(e) {}
+  }
+
+  function getCollectedCards() {
+    if (TAROT_UNLOCK_ALL_FOR_TEST) return nodeOrder.slice();
+    try {
+      var raw = localStorage.getItem(TAROT_COLLECT_KEY);
+      var list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list.map(Number) : [];
+    } catch(e) {
+      return [];
+    }
+  }
+
+  function saveCollectedCards(list) {
+    try { localStorage.setItem(TAROT_COLLECT_KEY, JSON.stringify(list)); } catch(e) {}
+  }
+
+  function isCorrectTarotAnswer(card, value) {
+    var answer = normalizeAnswer(value);
+    return [card.answer].concat(card.aliases || []).some(function(item) {
+      return normalizeAnswer(item) === answer;
+    });
+  }
+
+  function isCorrectCardFace(card, value) {
+    var answer = normalizeAnswer(value).replace(/^正位/, '');
+    var names = [card.cardName, card.arcanaName.replace(/^正位/, '')].concat(card.cardAliases || []);
+    return names.some(function(item) {
+      return normalizeAnswer(item).replace(/^正位/, '') === answer;
+    });
+  }
+
+  function isNearMissName(card, value) {
+    var answer = normalizeAnswer(value);
+    return (card.nearMiss || []).some(function(item) {
+      return normalizeAnswer(item) === answer;
+    });
+  }
+
+  function getCardById(id) {
+    return tarotCards.find(function(card) { return card.id === Number(id); });
+  }
+
+  function cardImageHtml(card) {
+    if (!card.imageFront) {
+      return '<div class="card-art"></div>';
+    }
+    return '<div class="card-art"><img src="' + esc(card.imageFront) + '" alt="' + esc(card.answer + ' - ' + card.cardName) + '"></div>';
+  }
+
+  function cardFaceHtml(card, className) {
+    return '<div class="tarot-card ' + className + '" data-node="' + card.id + '">' +
+      '<div class="card-node-badge">#' + String(card.id).padStart(2, '0') + '</div>' +
+      cardImageHtml(card) +
+    '</div>';
+  }
+
+  function renderCollectGate(stage) {
+    var question = stage === 0 ? '这些地点与什么相关？' : '具体来说，是塔罗牌的什么牌？';
+    var hint = stage === 0 ? '三个字' : '四个字';
+    app.innerHTML = '<main class="collect-page">' +
+      '<header class="collect-header"><a class="collect-brand" href="emith-search.html"><span class="mark">Σ</span><span>聚合搜索</span></a><div class="collect-status">隐藏索引</div></header>' +
+      '<section class="collect-gate"><div class="gate-panel">' +
+        '<p class="gate-question">' + question + '</p>' +
+        '<div class="gate-hint">' + hint + '</div>' +
+        '<form class="gate-form" id="collectGateForm">' +
+          '<input class="gate-input" id="collectGateInput" autocomplete="off">' +
+          '<button class="gate-submit" type="submit">确认</button>' +
+        '</form>' +
+        '<div class="gate-feedback" id="collectGateFeedback"></div>' +
+      '</div></section>' +
+    '</main>';
+    document.getElementById('collectGateForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var value = normalizeAnswer(document.getElementById('collectGateInput').value);
+      var ok = stage === 0 ? value === normalizeAnswer('塔罗牌') : (value === normalizeAnswer('大阿卡那') || value === normalizeAnswer('大阿卡纳'));
+      if (ok) {
+        setCollectGateStage(stage + 1);
+        renderCollect();
+      } else {
+        document.getElementById('collectGateFeedback').textContent = '门没有打开。';
+        document.getElementById('collectGateInput').select();
+      }
+    });
+    setTimeout(function() { document.getElementById('collectGateInput').focus(); }, 80);
+  }
+
+  function bindCollectForms() {
+    document.querySelectorAll('.collect-form').forEach(function(form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var node = Number(form.dataset.node);
+        var card = getCardById(node);
+        if (!card) return;
+        var nameInput = form.querySelector('.collect-input-name');
+        var faceInput = form.querySelector('.collect-input-face');
+        var feedback = form.parentElement.querySelector('.collect-feedback');
+        var nameOk = isCorrectTarotAnswer(card, nameInput.value);
+        var faceOk = isCorrectCardFace(card, faceInput.value);
+        if (nameOk && faceOk) {
+          var collected = getCollectedCards();
+          if (!collected.includes(node)) collected.push(node);
+          saveCollectedCards(collected);
+          lastFlippedNode = node;
+          renderCollect();
+        } else {
+          if (isNearMissName(card, nameInput.value)) {
+            feedback.textContent = card.nearMissHint || '牌面认得此人，但不承认这个称呼。';
+          } else {
+            var messages = ['其中一处没有回应。', '名字与牌面没有重合。', '这张牌还没有承认它们。'];
+            feedback.textContent = messages[Math.floor(Math.random() * messages.length)];
+          }
+          feedback.className = 'collect-feedback bad';
+          nameInput.select();
+        }
+      });
+    });
+    document.querySelectorAll('.tarot-card.front, .tarot-card.active').forEach(function(cardEl) {
+      cardEl.addEventListener('click', function() {
+        var card = getCardById(cardEl.dataset.node);
+        if (card) showCardDetail(card);
+      });
+    });
+    document.querySelectorAll('.tarot-card.locked, .tarot-card.available').forEach(function(cardEl) {
+      cardEl.addEventListener('click', function() {
+        var slot = cardEl.closest('.tarot-slot');
+        var feedback = slot ? slot.querySelector('.collect-feedback') : null;
+        if (feedback) {
+          feedback.textContent = '牌面沉默。';
+          feedback.className = 'collect-feedback';
+        }
+      });
+    });
+  }
+
+  function showCardDetail(card) {
+    var old = document.querySelector('.detail-overlay');
+    if (old) old.remove();
+    var overlay = document.createElement('div');
+    overlay.className = 'detail-overlay';
+    overlay.innerHTML = '<section class="detail-panel">' +
+      '<div class="detail-card">' + cardFaceHtml(card, 'front active') + '</div>' +
+      '<div class="detail-text">' +
+        '<h2>' + esc(card.cardName) + '</h2>' +
+        '<div class="detail-person">' + esc(card.answer) + '</div>' +
+        (card.blessing ? '<div class="detail-blessing" data-residue="' + esc(card.residueWord) + '">「' + esc(card.blessing) + '」</div>' : '') +
+        '<button class="detail-close" type="button">收起</button>' +
+      '</div>' +
+    '</section>';
+    document.body.appendChild(overlay);
+    overlay.querySelector('.detail-close').addEventListener('click', function() { overlay.remove(); });
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) overlay.remove();
+    });
+  }
+
+  function renderCollect() {
+    var stage = getCollectGateStage();
+    if (stage < 2) {
+      renderCollectGate(stage);
+      return;
+    }
+    var collected = getCollectedCards();
+    var collectedSet = new Set(collected);
+    app.innerHTML = '<main class="collect-page">' +
+      '<header class="collect-header">' +
+        '<a class="collect-brand" href="emith-search.html"><span class="mark">Σ</span><span>聚合搜索</span></a>' +
+        '<div class="collect-status"><span>牌阵索引</span><span>已展开</span></div>' +
+      '</header>' +
+      '<section class="collect-main">' +
+        '<div class="collect-intro"><div><h1>牌阵已展开</h1><p>所有牌面都在等待名字。</p></div>' +
+        '<div class="collect-count">已收集 ' + collected.length + ' / 22</div></div>' +
+        '<details class="card-name-hint"><summary>牌名索引</summary><div class="card-name-list">' +
+          tarotNameHints.map(function(name) { return '<span>' + esc(name) + '</span>'; }).join('') +
+        '</div></details>' +
+        '<div class="card-grid">' +
+          nodeOrder.map(function(node) {
+            var card = getCardById(node);
+            var isCollected = collectedSet.has(card.id);
+            var cardClass = isCollected ? 'front' : 'available';
+            if (lastFlippedNode === card.id) cardClass += ' just-unlocked';
+            return '<article class="tarot-slot">' +
+              '<div class="tarot-card ' + cardClass + '" data-node="' + card.id + '">' +
+                (isCollected ?
+                  '<div class="card-node-badge">#' + String(card.id).padStart(2, '0') + '</div>' + cardImageHtml(card) :
+                  '<div class="card-back-node">#' + String(card.id).padStart(2, '0') + '</div><div class="card-silence">' + (card.specialHint ? esc(card.specialHint) : '等待称呼') + '</div>'
+                ) +
+              '</div>' +
+              '<form class="collect-form" data-node="' + card.id + '">' +
+                '<div class="collect-fields">' +
+                  '<input class="collect-input collect-input-name" autocomplete="off" value="' + (isCollected ? esc(card.answer) : '') + '" placeholder="名称" ' + (isCollected ? 'disabled' : '') + '>' +
+                  '<input class="collect-input collect-input-face" autocomplete="off" value="' + (isCollected ? esc(card.cardName) : '') + '" placeholder="牌面" ' + (isCollected ? 'disabled' : '') + '>' +
+                '</div>' +
+                '<button class="collect-submit" type="submit" ' + (isCollected ? 'disabled' : '') + '>' + (isCollected ? '已' : '验') + '</button>' +
+              '</form>' +
+              '<div class="collect-feedback ' + (isCollected ? 'ok' : '') + '">' + (isCollected ? '已翻开' : '') + '</div>' +
+            '</article>';
+          }).join('') +
+        '</div>' +
+      '</section>' +
+    '</main>';
+    bindCollectForms();
+    lastFlippedNode = null;
+  }
+
+  function renderHome() {
+    app.innerHTML = '<main class="shell">' +
+      '<header class="header">' + brand(false) + '<div class="status">SEARCH MODULE ONLINE · CACHE ONLY</div></header>' +
+      '<section class="home"><div class="panel">' +
+      '<div class="panel-head"><div class="title-block"><h1>聚合搜索</h1><p>汇集信息的检索接口。</p></div></div>' +
+      '<div class="search-zone">' + formHtml('') + '</div></div></section><div class="ip-footer">上次访问 IP：218.23.4.1</div></main>';
+    bindForm();
+  }
+
+  function renderResults(query) {
+    var normalized = normalizeQuery(query);
+    var list = results[normalized] || [];
+    app.innerHTML = '<main class="results-page">' +
+      '<div class="topbar">' + brand(true) + formHtml(query) + '<button class="home-btn" id="homeBtn">回到首页</button><div class="top-meta">CACHE INDEX / 0.03s</div></div>' +
+      '<section class="content">' +
+      (list.length ? '<div class="result-panel"><div class="result-head"><span>匹配内容：<span class="result-query">' + esc(query) + '</span></span><span>' + list.length + ' 条记录 · 0.03 秒</span></div><div class="result-list">' +
+      list.map(function(item, index) {
+        return '<article class="result" data-index="' + String(index + 1).padStart(2, '0') + '"><div>' +
+          '<a class="title" href="' + esc(item.href) + '" target="_blank">' + esc(item.title) + '</a>' +
+        '</div></article>';
+      }).join('') + '</div></div>' : '<div class="empty">没有找到与“' + esc(query) + '”完全匹配的缓存结果。</div>') +
+      '</section><div class="ip-footer">上次访问 IP：218.23.4.1</div></main>';
+    bindForm();
+    document.getElementById('homeBtn').addEventListener('click', function() {
+      location.href = 'emith-search.html';
+    });
+  }
+
+  function renderCurrentRoute() {
+    var currentParams = new URLSearchParams(location.search);
+    var currentQ = currentParams.get('q') || '';
+    if (isSujianweiRoute() || isSujianweiInput(currentQ)) {
+      markSujianweiRitualSeen();
+      location.replace('profile-sjw-74.html');
+    }
+    else if (isCollectRoute()) renderCollect();
+    else if (currentQ) renderResults(currentQ);
+    else renderHome();
+  }
+
+  window.addEventListener('hashchange', renderCurrentRoute);
+  window.addEventListener('popstate', renderCurrentRoute);
+  renderCurrentRoute();
+})();
+</script>
+</body>
+</html>

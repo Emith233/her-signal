@@ -1,0 +1,171 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>加密文档 · C2-03</title>
+<style type="text/css">
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #171d21; font-family: 'American Typewriter','Courier New','Courier',monospace; }
+body { display: flex; flex-direction: column; color: #c8d0c8; }
+
+.top {
+  background: #1e262b; border-bottom: 1px solid #2d383e; padding: 10px 20px;
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.top .id { font-size: 12px; color: #7a9a8a; letter-spacing: 1px; }
+.top .badge { font-size: 11px; color: #6a7a6a; border: 1px solid #3a4a3a; padding: 2px 10px; letter-spacing: 1px; }
+
+/* 密码层 */
+.pw-layer {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  background: #171d21;
+}
+.pw-layer .panel {
+  background: #1e262b; border: 1px solid #2d383e; border-radius: 6px;
+  padding: 36px 40px; text-align: center; min-width: 300px;
+}
+.pw-layer .icon { color: #4a5a5a; font-size: 28px; margin-bottom: 12px; }
+.pw-layer .prompt { font-size: 12px; color: #7a8a7a; letter-spacing: 1px; margin-bottom: 20px; }
+.pw-layer .row {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: #13191d; border: 1px solid #2d383e; border-radius: 4px;
+  padding: 8px 14px; margin: 0 auto; width: fit-content;
+}
+.pw-layer .row .label { color: #5a6a5a; font-size: 11px; letter-spacing: 1px; }
+.pw-layer .row input {
+  background: transparent; border: none; color: #b8c8b8;
+  font-family: 'Courier New', monospace; font-size: 14px; outline: none;
+  letter-spacing: 6px; width: 100px; padding: 0;
+}
+.pw-layer .error {
+  font-size: 11px; color: #b56a6a; min-height: 1.4em; margin-top: 14px;
+  visibility: hidden; letter-spacing: 1px;
+}
+.pw-layer .error.show { visibility: visible; }
+.pw-layer button {
+  margin-top: 18px; background: transparent; border: 1px solid #3a4a4a;
+  color: #7a9a8a; padding: 8px 30px; font-family: 'Courier New',monospace;
+  font-size: 12px; cursor: pointer; letter-spacing: 2px; transition: all 0.25s;
+  border-radius: 3px;
+}
+.pw-layer button:hover { border-color: #6a9a7a; color: #8ac8a0; background: rgba(100,160,120,0.06); }
+
+/* 文档层 */
+.doc-layer { display: none; flex: 1; flex-direction: column; min-height: 0; }
+.doc-layer.active { display: flex; }
+.doc-layer .body {
+  flex: 1; overflow-y: auto; padding: 34px clamp(28px, 6vw, 76px); line-height: 1.82;
+  font-family: "Songti SC","Noto Serif CJK SC","STSong",SimSun,serif;
+  font-size: 16px; color: #d1d8d1; background: #171d21;
+}
+.doc-layer .body .log-date {
+  color: #6a8a7a; font-size: 14px; letter-spacing: 1px;
+  border-bottom: 1px solid #2a3830; padding-bottom: 12px; margin-bottom: 24px;
+}
+.doc-layer .body .log-entry { max-width: 780px; margin: 0 auto; text-indent: 0; }
+.doc-layer .bot {
+  background: #1e262b; border-top: 1px solid #2d383e;
+  padding: 8px 20px; display: flex; justify-content: space-between;
+  font-size: 11px; color: #5a6a5a; flex-shrink: 0;
+}
+.doc-layer .bot .writer { color: #6a8a7a; }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span class="id">C2-03</span>
+  <span class="badge">ENCRYPTED</span>
+</div>
+
+<div class="pw-layer" id="pwLayer">
+  <div class="panel">
+    <div class="icon">◇</div>
+    <div class="prompt">此文档已加密</div>
+    <div class="row">
+      <span class="label">KEY</span>
+      <input type="password" id="pwInput" maxlength="10" autofocus>
+    </div>
+    <div class="error" id="pwError">密码错误</div>
+    <button id="btnUnlock">UNLOCK</button>
+  </div>
+</div>
+
+<div class="doc-layer" id="docLayer">
+  <div class="body" id="docBody">
+<div class="log-entry">
+不得不说，南京确实是个好地方，一不留神就多待了几日。<br>
+可惜还是没有找到她。<br>
+这一路追过来，车费和住宿的开销实在不小。若是没有资助实在吃不消！<br>
+<br>
+另外我发现，之前去过的那几个地方，好像每个都有<span style="color:#f0e68c;font-weight:bold;">很重要的历史名人</span>。<br>
+南京的关联究竟是什么，我还没想明白，但其他地方的大概已经理清楚了。<br>
+也许这就是这些地点之间的共通之处吧。<br>
+<br>
+另外还有个很奇怪的事，按目前她的行程来看，似乎一直在绕路，为什么她没有选择最近的途径呢？<br>
+而且如果现在的定位没有错的话，就有更诡异的事了……
+</div>
+  </div>
+  <div class="bot">
+    <span class="writer">记录人：苏</span>
+    <span>2026年6月11日</span>
+  </div>
+</div>
+
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var ver = params.get('v') || '';
+  var session = params.get('s') || '';
+  var archiveId = params.get('archive') === '1' ? params.get('id') : '';
+  var PREFIX = 'doc_unlocked_c203';
+  var RESET_STAMP = localStorage.getItem('citymystery_reset_stamp') || '0';
+  var KEY = 'doc_unlocked_c203_v' + ver + '_s' + (session || RESET_STAMP);
+
+  function unlock() {
+    document.getElementById('pwLayer').style.display = 'none';
+    document.getElementById('docLayer').classList.add('active');
+    try { localStorage.setItem(KEY, '1'); } catch(e) {}
+    markArchiveViewed('c203');
+  }
+
+  function markArchiveViewed(id) {
+    try {
+      var viewed = JSON.parse(localStorage.getItem('citymystery_viewed_logs') || '[]');
+      if (viewed.indexOf(id) === -1) viewed.push(id);
+      localStorage.setItem('citymystery_viewed_logs', JSON.stringify(viewed));
+      parent.postMessage({ type: 'citymystery-log-viewed', id: id }, '*');
+    } catch(e) {}
+  }
+
+  if (navigator.cookieEnabled) {
+    try {
+      if (hasUnlocked()) { unlock(); }
+    } catch(e) {}
+  }
+
+  function hasUnlocked() {
+    if (archiveId === 'c203' && session) return true;
+    return localStorage.getItem(KEY) === '1';
+  }
+
+  document.getElementById('btnUnlock').addEventListener('click', checkPw);
+  document.getElementById('pwInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkPw();
+  });
+
+  function checkPw() {
+    var input = document.getElementById('pwInput');
+    var error = document.getElementById('pwError');
+    if (input.value === 'su0404') {
+      unlock();
+    } else {
+      error.textContent = 'ACCESS DENIED';
+      error.classList.add('show');
+      input.value = ''; input.focus();
+    }
+  }
+})();
+</script>
+
+</body>
+</html>

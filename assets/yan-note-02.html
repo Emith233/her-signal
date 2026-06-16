@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>txt.piz-gnp</title>
+<style>
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #d9d9d9;
+  color: #151515;
+}
+body {
+  font-family: "American Typewriter", "Courier", "Courier New", "Songti SC", "STSong", "SimSun", monospace;
+  overflow: hidden;
+}
+.window {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f3f3f3;
+}
+.bar {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border-bottom: 1px solid #b8b8b8;
+  background: linear-gradient(#f8f8f8, #dedede);
+  color: #333;
+  font: 12px "Microsoft YaHei", sans-serif;
+  user-select: none;
+}
+.icon {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #8f8f8f;
+  background:
+    linear-gradient(90deg, transparent 48%, #b9b9b9 48%, #b9b9b9 52%, transparent 52%),
+    repeating-linear-gradient(#fff, #fff 2px, #d8d8d8 2px, #d8d8d8 3px);
+}
+.doc {
+  flex: 1;
+  margin: 18px;
+  padding: 26px 30px;
+  background: #fbfaf3;
+  border: 1px solid #b9b2a5;
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 0 0 1px rgba(122,103,78,.08) inset,
+    0 12px 30px rgba(0,0,0,.14);
+  position: relative;
+  overflow: hidden;
+}
+.doc::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 14%, rgba(95,72,39,.05), transparent 22%),
+    radial-gradient(circle at 82% 68%, rgba(95,72,39,.04), transparent 26%),
+    linear-gradient(90deg, rgba(0,0,0,.025) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(0,0,0,.018) 1px, transparent 1px),
+    repeating-linear-gradient(0deg, rgba(80,60,40,.025), rgba(80,60,40,.025) 1px, transparent 1px, transparent 5px);
+  background-size: auto, auto, 16px 16px, 16px 16px, auto;
+  opacity: .42;
+}
+#text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: "American Typewriter", "Courier", "Courier New", "Songti SC", "STSong", "SimSun", monospace;
+  font-size: clamp(15px, 1.42vw, 17px);
+  line-height: 1.82;
+  letter-spacing: .035em;
+  font-weight: 500;
+  color: #211b15;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  text-shadow:
+    .35px 0 rgba(33,27,21,.34),
+    0 .45px rgba(78,55,31,.16);
+  filter: contrast(1.05);
+}
+#typed .key {
+  display: inline;
+  animation: keyStrike .16s steps(1, end);
+}
+.caret {
+  display: inline-block;
+  width: .48em;
+  height: 1.04em;
+  margin-left: 2px;
+  transform: translateY(.18em);
+  background: #241c14;
+  animation: blink .72s step-end infinite;
+}
+.watching {
+  position: absolute;
+  right: 20px;
+  bottom: 12px;
+  z-index: 1;
+  color: rgba(0,0,0,.16);
+  font: 11px "Courier New", monospace;
+  letter-spacing: .18em;
+  user-select: none;
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+@keyframes keyStrike {
+  0% {
+    color: #080604;
+    text-shadow:
+      .7px 0 rgba(0,0,0,.42),
+      -.3px 0 rgba(80,40,20,.22);
+  }
+  100% {
+    color: inherit;
+    text-shadow: inherit;
+  }
+}
+@media (max-width: 720px) {
+  .doc { margin: 12px; padding: 18px 16px; }
+  #text { font-size: 15px; line-height: 1.72; }
+}
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="bar"><span class="icon"></span><span>txt.piz-gnp - 文本文档</span></div>
+  <main class="doc">
+    <pre id="text"><span id="typed"></span><span class="caret" id="caret"></span></pre>
+    <div class="watching">NODE 06 / WATCHING</div>
+  </main>
+</div>
+<script>
+const output = document.getElementById('typed');
+const caret = document.getElementById('caret');
+let started = false;
+const params = new URLSearchParams(location.search);
+
+const sequence = [
+  '啊抱歉 吓到你了吗？\n',
+  '刚刚那个是我写在代码里的一只手的png文件\n',
+  '欢迎来到节点06！！！！！\n',
+  '我是',
+  { pause: 820 },
+  '偃\n',
+  '\n',
+  '来到这里说明你已经找到了之前所有节点的位置\n',
+  '恭喜！！！！！\n',
+  '那么接下来你只要把这个节点位置找到 就可以找回小初啦！\n',
+  '这个节点的位置我就藏在最开始你看到的第一张图片里喔\n',
+  '你说你没发现什么？\n',
+  '那是因为 你需要把他下载下来处理处理哦～'
+];
+
+function plainText() {
+  return sequence.map(part => typeof part === 'string' ? part : '').join('');
+}
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function typeChunk(text) {
+  for (const ch of text) {
+    const key = document.createElement('span');
+    key.className = 'key';
+    key.textContent = ch;
+    output.appendChild(key);
+    await wait(ch === '\n' ? 260 : 78 + Math.random() * 58);
+  }
+}
+
+async function startTyping() {
+  if (started) return;
+  started = true;
+  await wait(260);
+  for (const part of sequence) {
+    if (typeof part === 'string') {
+      await typeChunk(part);
+    } else {
+      await wait(part.pause);
+    }
+  }
+  caret.style.display = 'none';
+  window.parent.postMessage({ type: 'yan-note-complete' }, '*');
+}
+
+window.addEventListener('message', event => {
+  const data = event.data || {};
+  if (data.type === 'yan-note-start') startTyping();
+});
+
+window.parent.postMessage({ type: 'yan-note-ready' }, '*');
+
+if (params.get('instant') === '1') {
+  started = true;
+  output.textContent = plainText();
+  caret.style.display = 'none';
+}
+
+// Direct opening fallback for testing.
+setTimeout(() => {
+  if (window.parent === window && params.get('instant') !== '1') startTyping();
+}, 900);
+</script>
+</body>
+</html>

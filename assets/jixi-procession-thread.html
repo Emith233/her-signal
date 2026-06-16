@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>驴友驿站 - 人文古迹版 - 绩溪春季古会巡行随记</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#e8e4d8; color:#333; font:13px/1.6 Tahoma,Verdana,"Microsoft YaHei",sans-serif; }
+.top-ad { padding:10px 0; background:linear-gradient(135deg,#2d4a1e,#3d6a2e); border-bottom:1px solid #4a7a3a; color:#888; font-size:11px; letter-spacing:1px; text-align:center; }
+.top-ad span { color:#f0d060; }
+.topbar { display:flex; justify-content:space-between; padding:5px 20px; background:#4a6a3a; border-bottom:1px solid #3a5a2a; color:#ccc; font-size:12px; }
+.topbar a,.footer a { margin-left:12px; color:#c0d8a0; text-decoration:none; }
+.header { display:flex; position:relative; align-items:center; gap:24px; padding:18px 20px 14px; background:#5a8a4a; border-bottom:3px solid #4a7a3a; }
+.logo { color:#fff; font-size:24px; font-weight:bold; text-shadow:1px 1px 2px rgba(0,0,0,.3); }
+.logo small { margin-left:8px; color:#c0e0a0; font-size:11px; font-weight:normal; }
+.search-box { display:flex; gap:4px; margin-left:auto; }
+.search-box input { width:180px; padding:4px 8px; background:#f0ede4; border:1px solid #4a7a3a; font-size:12px; }
+.search-box button { padding:4px 12px; background:#4a7a3a; border:0; color:#fff; cursor:pointer; font-size:12px; }
+.search-result { display:none; position:absolute; z-index:20; top:58px; right:20px; width:420px; background:#fffdf8; border:1px solid #b8b09e; box-shadow:0 4px 12px rgba(60,50,35,.24); color:#555; }
+.search-result.show { display:block; }
+.sr-head { padding:7px 10px; background:#f0ece0; border-bottom:1px solid #d4cec0; color:#888; font-size:11px; }
+.sr-item { display:block; padding:10px 12px; color:#4a6a3a; line-height:1.65; text-decoration:none; }
+.sr-empty { padding:12px; color:#999; font-size:12px; }
+.navbar { padding:6px 20px; background:#f5f2e8; border-bottom:1px solid #d4cec0; font-size:12px; }
+.navbar a { padding:2px 10px; border-right:1px solid #d4cec0; color:#4a6a3a; text-decoration:none; }
+.breadcrumb { padding:8px 20px; background:#f0ece0; border-bottom:1px solid #d4cec0; color:#888; font-size:12px; }
+.breadcrumb a,.post-meta a { color:#4a6a3a; text-decoration:none; }
+.board-header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:#f0ece0; border-bottom:1px solid #d4cec0; }
+.board-name { color:#4a6a3a; font-size:16px; font-weight:bold; }
+.board-desc,.page-info { color:#888; font-size:12px; }
+.main { display:flex; max-width:1100px; margin:0 auto; padding:12px 0; gap:14px; }
+.content { min-width:0; flex:1; }
+.post-header,.post-main,.reply,.panel { background:#faf8f2; border:1px solid #d4cec0; }
+.post-header { padding:14px 16px; margin-bottom:10px; }
+.post-header h1 { margin-bottom:6px; color:#222; font-size:18px; }
+.post-meta { color:#999; font-size:12px; }
+.post-main,.reply { margin-bottom:8px; }
+.post-head,.reply-head { display:flex; justify-content:space-between; padding:7px 16px; background:#f0ece0; border-bottom:1px solid #d4cec0; color:#888; font-size:12px; }
+.floor { color:#c00; font-weight:bold; }
+.post-body,.reply-body { display:flex; gap:14px; padding:13px 16px; }
+.user-info { width:110px; flex-shrink:0; text-align:center; }
+.avatar { display:flex; align-items:center; justify-content:center; width:46px; height:46px; margin:0 auto 5px; border-radius:50%; background:#d4cec0; color:#888; font-size:15px; }
+.uname { color:#4a6a3a; font-size:12px; font-weight:bold; }
+.utitle,.uinfo { margin-top:3px; color:#aaa; font-size:11px; line-height:1.5; }
+.post-content,.reply-content { min-width:0; flex:1; color:#444; font-size:13px; line-height:1.85; }
+.post-content p,.reply-content p { margin-bottom:7px; }
+.quote { margin:5px 0 7px; padding:6px 10px; background:#f0ece0; border-left:2px solid #bbb; color:#888; font-size:12px; }
+.post-foot,.reply-foot { display:flex; justify-content:space-between; padding:4px 16px; background:#f5f2e8; border-top:1px solid #d4cec0; color:#999; font-size:11px; }
+.post-foot a,.reply-foot a { margin-left:10px; color:#4a6a3a; text-decoration:none; }
+.pagination { padding:14px 0; text-align:center; }
+.pagination a { display:inline-block; padding:4px 10px; background:#4a6a3a; border:1px solid #4a6a3a; color:#fff; text-decoration:none; }
+.sidebar { width:260px; flex-shrink:0; }
+.panel { margin-bottom:10px; }
+.panel h3 { padding:6px 12px; background:#4a6a3a; color:#fff; font-size:12px; letter-spacing:1px; }
+.panel-body { padding:10px 12px; color:#888; font-size:12px; line-height:2; }
+.panel-body a { display:block; overflow:hidden; color:#4a6a3a; text-decoration:none; text-overflow:ellipsis; white-space:nowrap; }
+.panel-body span { color:#333; }
+.hot-tag { display:inline-block; margin-right:4px; padding:0 4px; background:#c00; color:#fff !important; font-size:10px; }
+.bottom-ad { margin-top:10px; padding:14px; background:#f0ece0; border-top:1px solid #d4cec0; border-bottom:1px solid #d4cec0; color:#aaa; font-size:11px; text-align:center; }
+.footer { margin-top:10px; padding:16px; background:#4a6a3a; border-top:3px solid #3a5a2a; color:#888; font-size:11px; text-align:center; }
+@media(max-width:760px) { .main{display:block;padding:8px}.sidebar{width:auto}.header{padding:14px 12px}.logo{font-size:20px}.search-box input{width:155px}.search-result{right:12px;width:min(420px,calc(100vw - 24px))}.board-header{padding:10px 12px}.page-info{display:none}.post-body,.reply-body{display:block;padding:11px 12px}.user-info{display:flex;width:auto;align-items:center;gap:7px;margin-bottom:8px;text-align:left}.avatar{width:34px;height:34px;margin:0}.utitle,.uinfo{display:none} }
+</style>
+</head>
+<body>
+<div class="top-ad"><span>[广告]</span> 驴友驿站 · 爱旅行爱生活 | 注册送 50 元旅行优惠券</div>
+<div class="topbar"><div>欢迎您，<a href="#">游客</a><a href="#">登录</a><a href="#">注册</a></div><div><a href="#">收藏本页</a><a href="#">RSS</a><a href="#">帮助</a></div></div>
+<div class="header">
+  <div class="logo">驴友驿站 <small>Travelers' Inn</small></div>
+  <div class="search-box"><input id="siteSearch" type="text" placeholder="搜索游记、攻略、目的地..."><button type="button" onclick="searchSite()">搜索</button></div>
+  <div class="search-result" id="searchResult"></div>
+</div>
+<div class="navbar"><a href="#">首页</a><a href="#">自驾旅行</a><a href="#">徒步穿越</a><a href="#">人文古迹</a><a href="#">自然风光</a><a href="#">摄影天地</a><a href="#">装备交流</a><a href="#">结伴同行</a><a href="#">论坛事务</a></div>
+<div class="breadcrumb"><a href="#">驴友驿站</a> &raquo; <a href="#">人文古迹</a> &raquo; <a href="#">民俗见闻</a> &raquo; 绩溪春季古会巡行随记</div>
+<div class="board-header"><div><div class="board-name">人文古迹</div><div class="board-desc">历史遗址 / 古建筑 / 地方民俗 / 文化之旅</div></div><div class="page-info">帖数: 4,733　主题: 562　今日: 21</div></div>
+<div class="main">
+  <div class="content">
+    <div class="post-header"><h1>绩溪春季古会巡行随记</h1><div class="post-meta">发表在 <a href="#">民俗见闻</a>　|　楼主 <a href="#">徽州慢行</a>　|　2026-03-26 20:18　|　回复 10　|　阅读 527</div></div>
+    <div class="post-main">
+      <div class="post-head"><span><span class="floor">#1</span> 楼主</span><span>发表于 2026-03-26 20:18</span></div>
+      <div class="post-body"><div class="user-info"><div class="avatar">徽</div><div><div class="uname">徽州慢行</div><div class="utitle">注册驴友</div><div class="uinfo">帖 68<br>积分 341</div></div></div><div class="post-content">
+        <p>前阵子去绩溪看古村，正好赶上一场春季古会。原本只想在村里随便走走，结果被鼓乐和抬轿队伍吸引过去，跟着巡行走了大半程。</p>
+        <p>队伍经过石桥、牌楼和戏台，最后回到宗祠。一路上有红绸、木牌、香案和灯笼，老人小孩都跟在后面，气氛很热闹，但仪程又挺规整。</p>
+        <p>我印象最深的是入祠前那一段。巡行队伍从宗祠的东北方向过来，再往祠前汇入。旁边一位老人说，这么走不是随便安排的，方位本身有个旧说法，好像带着某种寓意。可惜当时锣鼓太响，我只听了个大概。</p>
+        <p>以前看民俗活动只顾着拍照，这次才觉得路线、时辰和方位可能都有讲究。有没有熟悉当地习俗的朋友，知道老人说的是什么？</p>
+      </div></div>
+      <div class="post-foot"><span><a href="#">引用</a><a href="#">回复</a><a href="#">报告</a></span><span><a href="#">顶部</a></span></div>
+    </div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#2</span></span><span>发表于 2026-03-26 20:46</span></div><div class="reply-body"><div class="user-info"><div class="avatar">山</div><div class="uname">山里喝茶</div></div><div class="reply-content"><p>这种古会每个村走法都不太一样，有的是按老路走，有的是为了避开新修的马路。楼主赶上的规模算大的了。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 4</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#3</span></span><span>发表于 2026-03-26 21:03</span></div><div class="reply-body"><div class="user-info"><div class="avatar">桥</div><div class="uname">桥边拍照</div></div><div class="reply-content"><p>去年去的时候没碰上巡行，只看了古桥和宗祠。绩溪一带很适合慢慢逛，别赶行程。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 2</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#4</span></span><span>发表于 2026-03-26 21:29</span></div><div class="reply-body"><div class="user-info"><div class="avatar">茶</div><div class="uname">茶岭旧客</div></div><div class="reply-content"><p>东北方在旧说里确实有讲究。不同地方讲法未必完全一样，不过一般会和山、门、止这些意思联系起来。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 11</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#5</span></span><span>发表于 2026-03-26 21:47</span></div><div class="reply-body"><div class="user-info"><div class="avatar">路</div><div class="uname">皖南小路</div></div><div class="reply-content"><p>宗祠附近停车方便吗？清明前后想带家里老人去，不知道周末会不会堵。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 0</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#6</span></span><span>发表于 2026-03-26 22:05</span></div><div class="reply-body"><div class="user-info"><div class="avatar">徽</div><div class="uname">徽州慢行</div></div><div class="reply-content"><p>停车场离村口不远，不过巡行当天人比较多，最好早点去。村里石板路多，老人穿舒服一点的鞋。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 3</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#7</span></span><span>发表于 2026-03-26 22:38</span></div><div class="reply-body"><div class="user-info"><div class="avatar">海</div><div class="uname">海边住客</div></div><div class="reply-content"><p>说起来挺巧，我现在住的地方也是两个字。把第一个字拆开看，正好就跟这个东北方的寓意有关：我们这里也有人开玩笑，说是“东北”夹“东北”。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 1</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#8</span></span><span>发表于 2026-03-26 22:54</span></div><div class="reply-body"><div class="user-info"><div class="avatar">齐</div><div class="uname">齐鲁骑行</div></div><div class="reply-content"><div class="quote">引用 海边住客：我们这里也有人开玩笑，说是“东北”夹“东北”。</div><p>我知道你住哪里了，原来是山东老乡啊。这个说法以前还真没注意过。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 5</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#9</span></span><span>发表于 2026-03-27 08:12</span></div><div class="reply-body"><div class="user-info"><div class="avatar">糕</div><div class="uname">米糕加糖</div></div><div class="reply-content"><p>古会那几天附近有卖米糕和笋干的，味道不错。看完巡行可以顺路去吃点当地小吃。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 2</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#10</span></span><span>发表于 2026-03-27 09:36</span></div><div class="reply-body"><div class="user-info"><div class="avatar">星</div><div class="uname">背包客阿星</div></div><div class="reply-content"><p>这种活动最好提前查一下会期，不一定每年都在完全相同的日子。古村本身也值得逛，宗祠、牌坊和桥都可以慢慢看。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 6</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#11</span></span><span>发表于 2026-03-27 11:18</span></div><div class="reply-body"><div class="user-info"><div class="avatar">徽</div><div class="uname">徽州慢行</div></div><div class="reply-content"><p>谢谢大家。原来方位确实有旧说法，难怪当时队伍特意绕了一段。我下次再去会留意一下村里的路线图。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 1</span></div></div>
+    <div class="pagination"><a href="#">1</a></div>
+  </div>
+  <aside class="sidebar">
+    <div class="panel"><h3>版块统计</h3><div class="panel-body">主题: <span>562</span><br>帖子: <span>4,733</span><br>今日发帖: <span>21</span><br>在线人数: <span>43</span></div></div>
+    <div class="panel"><h3>热门帖子</h3><div class="panel-body"><a href="#"><span class="hot-tag">热</span> 徽州古村两日慢游记录</a><a href="#"><span class="hot-tag">热</span> 春季踏青路线汇总</a><a href="#">皖南自驾停车经验分享</a><a href="#">古村牌坊拍照机位推荐</a><a href="#">第一次参加地方古会</a><a href="#">适合带老人走的路线</a></div></div>
+    <div class="panel"><h3>本周活跃</h3><div class="panel-body">1. 背包客阿星 (47帖)<br>2. 山里喝茶 (33帖)<br>3. 徽州慢行 (26帖)<br>4. 单车环游 (22帖)<br>5. 城南旧事 (18帖)</div></div>
+  </aside>
+</div>
+<div class="bottom-ad"><span style="color:#c00;">[广告]</span> 春季古村摄影小团　|　轻徒步、慢旅行、地方风物记录</div>
+<div class="footer"><p><a href="#">关于我们</a> | <a href="#">联系我们</a> | <a href="#">版权声明</a> | <a href="#">隐私条款</a></p><p style="margin-top:6px;">Travelers' Inn &copy; 2026 驴友驿站 | Powered by Emith</p></div>
+<script>
+function searchSite() {
+  var query = document.getElementById('siteSearch').value.trim();
+  var result = document.getElementById('searchResult');
+  if (query === '绩溪春季古会巡行随记') {
+    result.innerHTML = '<div class="sr-head">站内搜索：找到 1 条相关主题</div><a class="sr-item" href="jixi-procession-thread.html">绩溪春季古会巡行随记<small>徽州慢行 · 2026-03-26 20:18 · 人文古迹 / 民俗见闻</small></a>';
+  } else {
+    result.innerHTML = '<div class="sr-head">站内搜索</div><div class="sr-empty">没有找到相关主题，请尝试更完整的关键词。</div>';
+  }
+  result.classList.add('show');
+}
+document.getElementById('siteSearch').addEventListener('keydown', function(e) { if (e.key === 'Enter') searchSite(); });
+</script>
+</body>
+</html>

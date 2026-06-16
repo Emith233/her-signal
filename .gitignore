@@ -1,0 +1,16 @@
+# AI 语音模型（不要上传）
+MOSS-TTS-Nano/
+VoxCPM-0.5B/
+VoxCPM2_model/
+qwen3-tts-apple-silicon/
+
+# Python 虚拟环境
+venv/
+.venv/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 输出文件
+outputs/

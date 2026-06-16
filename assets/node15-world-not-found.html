@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 - World Not Found</title>
+<style>
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: #f5f6f7; color: #34383d; font-family: Arial, "Microsoft YaHei", sans-serif; }
+body { display: flex; align-items: center; justify-content: center; padding: 28px; }
+.page { width: min(760px,100%); border-top: 3px solid #5f7384; background: #fff; padding: 48px 52px; box-shadow: 0 10px 32px rgba(42,54,62,.08); }
+h1 { margin: 0 0 20px; color: #27333c; font-size: 36px; font-weight: 500; letter-spacing: 0; }
+.redacted { position: relative; display: inline-block; color: #27333c; user-select: text; }
+.redacted::after { content:""; position:absolute; inset:-3px -5px; background:#25292c; pointer-events:none; }
+p { margin: 8px 0; color: #68747c; font-size: 15px; line-height: 1.9; }
+.tip { margin-top: 34px; border-left: 3px solid #8ea2b0; background: #f7f9fa; padding: 13px 16px; color: #65747e; font-size: 13px; }
+.path { margin-top: 18px; color: #a8b0b5; font-family: "Courier New", monospace; font-size: 12px; }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>404 - <span class="redacted">World</span> Not Found</h1>
+  <p>以字母之开端迎接金色之黎明。</p>
+  <div class="tip">请尝试在搜索引擎中打开。</div>
+  <div class="path">resource endpoint: /collect</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前往新步</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; }
+body {
+  background: #000;
+  color: #e8e8e8;
+  font-family: "Songti SC", SimSun, serif;
+  overflow: hidden;
+}
+.gate {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(640px, calc(100vw - 34px));
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+  text-align: center;
+  animation: fadeIn 1.2s ease both;
+}
+.lines {
+  display: grid;
+  gap: 12px;
+  color: #b9b9b9;
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: 1px;
+}
+.lines strong {
+  color: #f2f2f2;
+  font-size: 23px;
+  font-weight: 400;
+  letter-spacing: 3px;
+}
+.status {
+  margin-top: 8px;
+  display: grid;
+  gap: 5px;
+  color: #777;
+  font: 12px/1.8 "Microsoft YaHei", "PingFang SC", sans-serif;
+  letter-spacing: 1px;
+}
+.field {
+  width: min(460px, 100%);
+  display: grid;
+  grid-template-columns: auto minmax(120px, 1fr);
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
+  padding: 14px 0;
+  color: #9a9a9a;
+  font: 14px/1.6 "Microsoft YaHei", "PingFang SC", sans-serif;
+  letter-spacing: 1px;
+}
+.field input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #333;
+  outline: none;
+  background: transparent;
+  color: #ddd;
+  padding: 7px 2px;
+  text-align: center;
+  font: 15px/1.4 "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+.field input::placeholder { color: #444; }
+.actions,
+.choice-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+button {
+  border: 1px solid #3d3d3d;
+  background: transparent;
+  color: #d6d6d6;
+  padding: 10px 24px;
+  cursor: pointer;
+  font: 14px/1 "Microsoft YaHei", "PingFang SC", sans-serif;
+  letter-spacing: 1px;
+}
+button:hover { border-color: #777; color: #fff; }
+.hint,
+.flash {
+  min-height: 20px;
+  color: #555;
+  font: 12px/1.8 "Microsoft YaHei", "PingFang SC", sans-serif;
+  letter-spacing: 1px;
+}
+.choice {
+  display: none;
+  gap: 22px;
+  justify-items: center;
+  animation: fadeIn 1s ease both;
+}
+.choice.show { display: grid; }
+.choice h1 {
+  font-size: clamp(24px, 5vw, 34px);
+  font-weight: 400;
+  letter-spacing: 3px;
+}
+.choice p {
+  color: #777;
+  font: 13px/1.8 "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+@keyframes fadeIn {
+  from { opacity: 0; filter: blur(4px); }
+  to { opacity: 1; filter: blur(0); }
+}
+@media (max-width: 560px) {
+  body { overflow: hidden; }
+  .gate { width: calc(100vw - 28px); }
+  .field { grid-template-columns: 1fr; gap: 4px; }
+  .actions, .choice-actions { flex-direction: column; align-items: stretch; width: 100%; }
+  button { width: 100%; }
+}
+@media (max-width: 480px) {
+  body { overflow-y: auto; height: 100dvh; }
+  .gate { gap: 20px; }
+  .lines { font-size: 14px; gap: 8px; }
+  .lines strong { font-size: 20px; }
+  .status { font-size: 11px; }
+  .field { padding: 10px 0; font-size: 13px; }
+  .field input { font-size: 14px; padding: 6px 2px; }
+  button { padding: 12px 20px; font-size: 14px; min-height: 44px; }
+  .choice h1 { font-size: clamp(20px, 6vw, 28px); }
+  .choice p { font-size: 12px; }
+}
+</style>
+</head>
+<body>
+<main class="gate">
+  <section class="lines" id="routePanel">
+    <p>定位点已确认。</p>
+    <p><strong>平南市新步区</strong></p>
+    <div class="status">
+      <span>一些言语从首端联结而出。</span>
+      <span>如果你记得，请写下它。</span>
+      <span>若什么也没有想起，就继续。</span>
+    </div>
+  </section>
+
+  <label class="field" id="offsetField">
+    <span>你是否想起了什么</span>
+    <input id="offsetInput" type="text" autocomplete="off" placeholder="写下残留">
+  </label>
+
+  <div class="actions" id="routeActions">
+    <button id="goBtn" type="button">继续</button>
+  </div>
+  <div class="flash" id="flash"></div>
+
+  <section class="choice" id="choicePanel">
+    <h1>是否前往平南市新步区</h1>
+    <p>没有可被确认的记忆。定位器缓存仍指向此处。</p>
+    <div class="choice-actions">
+      <button type="button" id="acceptBtn">前往</button>
+      <button type="button" id="abandonBtn">放弃</button>
+    </div>
+  </section>
+</main>
+
+<script>
+const input = document.getElementById('offsetInput');
+const flash = document.getElementById('flash');
+const goBtn = document.getElementById('goBtn');
+const choicePanel = document.getElementById('choicePanel');
+const routePanel = document.getElementById('routePanel');
+const offsetField = document.getElementById('offsetField');
+const routeActions = document.getElementById('routeActions');
+
+function showChoice() {
+  const remembered = input.value.replace(/\s+/g, '').toLowerCase();
+  if (remembered === 'awaitthenewfool') {
+    location.href = 'cache-c08e.html';
+    return;
+  }
+  flash.textContent = input.value.trim() ? '没有可被确认的记忆。' : '';
+  routePanel.style.display = 'none';
+  offsetField.style.display = 'none';
+  routeActions.style.display = 'none';
+  choicePanel.classList.add('show');
+}
+
+goBtn.addEventListener('click', showChoice);
+input.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') showChoice();
+});
+document.getElementById('acceptBtn').addEventListener('click', function() {
+  location.href = 'cache-a91f.html';
+});
+document.getElementById('abandonBtn').addEventListener('click', function() {
+  location.href = 'cache-b42d.html';
+});
+</script>
+</body>
+</html>

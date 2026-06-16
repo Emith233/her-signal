@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>荷马鲜花订单查询系统</title>
+<style>
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; background: #f5f7f7; color: #314047; font-family: Arial, "Microsoft YaHei", sans-serif; }
+.top { height: 62px; border-bottom: 1px solid #dfe6e5; background:#fff; display:flex; align-items:center; padding:0 34px; }
+.brand { color:#47655f; font-size:18px; font-weight:600; }
+.brand small { margin-left:14px; color:#9aa8a5; font-size:12px; font-weight:400; }
+.wrap { width:min(900px,calc(100% - 36px)); margin:40px auto; }
+.panel { border:1px solid #dfe7e5; background:#fff; padding:30px; box-shadow:0 8px 26px rgba(65,85,83,.06); }
+h1 { margin:0; color:#3c5652; font-size:22px; font-weight:600; }
+.sub { margin-top:8px; color:#9aa7a5; font-size:13px; }
+.query { display:flex; gap:10px; margin-top:28px; }
+input { flex:1; height:42px; border:1px solid #cbd8d6; padding:0 13px; color:#425452; font-size:14px; outline:none; }
+input:focus { border-color:#7ba49c; box-shadow:0 0 0 3px rgba(123,164,156,.12); }
+button { width:108px; border:0; background:#638e86; color:#fff; cursor:pointer; font-size:14px; }
+button:hover { background:#507d75; }
+.error { display:none; margin-top:14px; color:#c46c78; font-size:13px; }
+.result { display:none; margin-top:30px; border-top:1px solid #e5ebe9; padding-top:24px; }
+.result.show, .error.show { display:block; }
+.result-title { color:#54746e; font-size:15px; font-weight:600; }
+.status { display:inline-block; margin-left:9px; border:1px solid #b9d7e2; background:#f2faff; padding:2px 8px; color:#5d91a3; font-size:11px; }
+table { width:100%; margin-top:15px; border-collapse:collapse; font-size:14px; }
+td { border:1px solid #e1e8e6; padding:13px 15px; }
+td:first-child { width:150px; background:#f8faf9; color:#879692; }
+.foot { margin-top:18px; color:#b5bfbd; font-size:11px; }
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">荷马鲜花订单查询系统 <small>FLOWER ORDER SERVICE</small></div></header>
+<main class="wrap">
+  <section class="panel">
+    <h1>订单查询</h1>
+    <div class="sub">输入订单编号以读取订单流转记录。</div>
+    <div class="query">
+      <input id="orderInput" placeholder="请输入订单编号" autocomplete="off">
+      <button id="queryBtn">查询</button>
+    </div>
+    <div class="error" id="error">未查询到对应记录，请核对订单编号。</div>
+    <div class="result" id="result">
+      <div class="result-title">物流记录 <span class="status">线下流转</span></div>
+      <table>
+        <tr><td>订单编号</td><td>DN-06260031</td></tr>
+        <tr><td>品类</td><td>洋桔梗</td></tr>
+        <tr><td>订单状态</td><td>线下出单</td></tr>
+        <tr><td>始发市场</td><td>斗南</td></tr>
+      </table>
+      <div class="foot">记录同步状态：已归档　·　冷链信息：无公开数据</div>
+    </div>
+  </section>
+</main>
+<script>
+const input=document.getElementById('orderInput'), result=document.getElementById('result'), error=document.getElementById('error');
+function query(){ const ok=input.value.trim().toUpperCase()==='DN-06260031'; result.classList.toggle('show',ok); error.classList.toggle('show',!ok); }
+document.getElementById('queryBtn').onclick=query;
+input.addEventListener('keydown',e=>{if(e.key==='Enter')query();});
+</script>
+</body>
+</html>

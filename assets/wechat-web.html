@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微聊 · Web</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif; font-size:14px; background:#eef1f2; user-select:none; }
+
+/* ===== 整体布局 ===== */
+.wx-container {
+  width:min(1180px, calc(100% - 36px)); height:calc(100% - 36px); display:flex;
+  margin:18px auto; background:#fff; border:1px solid #d9dede;
+  box-shadow:0 12px 36px rgba(42,55,55,0.12);
+}
+
+/* ===== 左侧面板 ===== */
+.wx-side {
+  width:288px; min-width:288px; background:#f6f8f8; color:#4b5758;
+  display:flex; flex-direction:column; border-right:1px solid #dfe4e4;
+}
+
+/* 顶栏 */
+.wx-side .header {
+  background:#fff; padding:14px 16px; display:flex; align-items:center; gap:10px; flex-shrink:0;
+  border-bottom:1px solid #e5e9e9;
+}
+.wx-side .header .logo {
+  width:24px; height:24px; background:#07c160; border-radius:4px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:bold; font-size:14px;
+}
+.wx-side .header .title { font-size:16px; color:#354142; flex:1; font-weight:500; }
+.wx-side .header .icons { display:flex; gap:4px; }
+.wx-side .header .icons button {
+  width:30px; height:30px; border:none; background:transparent; border-radius:4px;
+  color:#8b9999; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.wx-side .header .icons button:hover { background:#f0f5f4; color:#3c6a62; }
+.account-strip {
+  padding:7px 12px;
+  border-bottom:1px solid #e5e9e9;
+  background:#fbfcfc;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
+.account-strip .account-pill {
+  flex:1;
+  min-width:0;
+  color:#60706f;
+  font-size:12px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.account-strip .account-avatar {
+  width:24px;
+  height:24px;
+  border-radius:4px;
+  background-size:cover;
+  background-position:center;
+  flex-shrink:0;
+}
+.account-strip .switch-account {
+  border:1px solid #d9e3e1;
+  background:#fff;
+  color:#49645f;
+  border-radius:4px;
+  padding:4px 9px;
+  cursor:pointer;
+  font-size:12px;
+}
+.account-strip .switch-account:hover { border-color:#a8c5bf; background:#f2f8f6; color:#235d52; }
+
+/* 搜索 */
+.wx-side .search { padding:8px 12px; flex-shrink:0; }
+.wx-side .search input {
+  width:100%; background:#edf1f1; border:1px solid #e1e7e6; border-radius:4px;
+  padding:7px 10px; color:#526061; font-size:12px; outline:none;
+}
+.wx-side .search input::placeholder { color:#9daaaa; }
+
+/* 聊天列表 */
+.wx-side .chat-list { flex:1; overflow-y:auto; }
+.wx-side .chat-list::-webkit-scrollbar { width:4px; }
+.wx-side .chat-list::-webkit-scrollbar-thumb { background:#cbd5d4; border-radius:2px; }
+
+.wx-chat-item {
+  display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; border-bottom:1px solid #edf0f0;
+  transition:background 0.1s;
+}
+.wx-chat-item:hover { background:#eef4f3; }
+.wx-chat-item.active { background:#dceee9; }
+.wx-chat-item .avatar {
+  width:42px; height:42px; border-radius:4px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:16px; font-weight:500;
+}
+.wx-chat-item .info { flex:1; min-width:0; }
+.wx-chat-item .info .top { display:flex; align-items:center; gap:6px; }
+.wx-chat-item .info .name { font-size:14px; color:#405051; }
+.wx-chat-item .info .time { font-size:11px; color:#b0baba; margin-left:auto; white-space:nowrap; }
+.wx-chat-item .info .preview { font-size:12px; color:#8f9c9c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+
+/* ===== 主聊天区 ===== */
+.wx-main {
+  flex:1; display:flex; flex-direction:column; min-width:0; background:#f4f7f6;
+}
+
+/* 聊天顶栏 */
+.wx-main .chat-header {
+  background:#fff; padding:14px 20px; border-bottom:1px solid #e1e6e5; flex-shrink:0;
+  display:flex; align-items:center; gap:8px;
+}
+.wx-main .chat-header .name { font-size:15px; color:#333; font-weight:500; }
+.wx-main .chat-header .hint { font-size:11px; color:#999; }
+.wx-main .chat-header .spacer { flex:1; }
+
+/* 聊天消息区 */
+.wx-main .chat-body {
+  flex:1; overflow-y:auto; padding:20px 30px; display:flex; flex-direction:column; gap:18px;
+  background:#f4f7f6;
+}
+.wx-empty-chat {
+  margin:auto;
+  color:#a9b4b3;
+  font-size:13px;
+  letter-spacing:1px;
+  text-align:center;
+  line-height:1.9;
+}
+.wx-main .chat-body::-webkit-scrollbar { width:5px; }
+.wx-main .chat-body::-webkit-scrollbar-thumb { background:#c0c0c0; border-radius:3px; }
+
+.wx-msg {
+  max-width:min(68%, 560px); display:flex; gap:8px; align-items:flex-start;
+}
+.wx-msg.in { align-self:flex-start; }
+.wx-msg.out { align-self:flex-end; max-width:min(70%, 600px); }
+
+.wx-msg .avatar {
+  width:36px; height:36px; border-radius:4px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px;
+}
+.wx-msg .bubble {
+  max-width:34em;
+  padding:9px 14px; font-size:14px; line-height:1.7; word-break:break-word; overflow-wrap:anywhere;
+  position:relative; box-shadow:0 1px 2px rgba(0,0,0,0.04);
+  text-align:left;
+}
+.wx-msg.in .bubble {
+  background:#fff; color:#333; border-radius:0 6px 6px 6px;
+}
+.wx-msg.out .avatar {
+  background-size: cover;
+  background-position: center;
+}
+.wx-msg.out .bubble {
+  background:#95ec69; color:#333; border-radius:6px 0 6px 6px;
+}
+.wx-time-sep {
+  text-align:center; font-size:12px; color:#b0b0b0; padding:8px 0 4px; line-height:1;
+}
+
+/* 输入区 */
+.wx-main .chat-input {
+  background:#fff; border-top:1px solid #e1e6e5; padding:10px 20px; flex-shrink:0;
+  display:flex; align-items:flex-end; gap:10px;
+}
+.wx-main .chat-input .toolbar {
+  display:flex; gap:4px; align-items:center;
+}
+.wx-main .chat-input .toolbar button {
+  width:30px; height:30px; border:none; background:transparent; border-radius:4px;
+  font-size:18px; cursor:pointer; color:#666; display:flex; align-items:center; justify-content:center;
+}
+.wx-main .chat-input .toolbar button:hover { background:#e0e0e0; }
+.wx-main .chat-input textarea {
+  flex:1; min-width:0; border:none; background:#fff; border-radius:4px;
+  padding:9px 12px; font-size:14px; color:#333; outline:none; resize:none;
+  font-family:inherit; line-height:1.5; min-height:36px; max-height:80px;
+}
+.wx-main .chat-input textarea::placeholder { color:#aaa; }
+.wx-main .chat-input .send-btn {
+  background:#07c160; border:none; color:#fff; padding:8px 22px; border-radius:4px;
+  cursor:pointer; font-size:13px; white-space:nowrap;
+}
+.wx-main .chat-input .send-btn:hover { background:#06ad56; }
+.wx-main .chat-input .send-btn:disabled { background:#b0b0b0; cursor:default; }
+
+/* ===== 通讯录 ===== */
+.wx-contacts { display:none; flex:1; flex-direction:column; background:#f0f0f0; }
+.wx-contacts.show { display:flex; }
+
+.wx-contacts .search-bar {
+  background:#f0f0f0; padding:8px 16px; border-bottom:1px solid #ddd; flex-shrink:0;
+}
+.wx-contacts .search-bar input {
+  width:100%; background:#fff; border:none; border-radius:4px;
+  padding:7px 12px; font-size:13px; color:#333; outline:none;
+}
+.wx-contacts .search-bar input::placeholder { color:#aaa; }
+
+.wx-contacts .list-wrap {
+  flex:1; overflow-y:auto; background:#fff;
+}
+.wx-contact-empty {
+  padding:72px 20px;
+  color:#a8b2b1;
+  font-size:13px;
+  letter-spacing:1px;
+  text-align:center;
+}
+
+.wx-contact-item {
+  display:flex; align-items:center; gap:12px; padding:12px 16px; cursor:pointer;
+  border-bottom:1px solid #f0f0f0; transition:background 0.1s;
+}
+.wx-contact-item:hover { background:#f8f8f8; }
+.wx-contact-item .avatar {
+  width:40px; height:40px; border-radius:4px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px;
+}
+.wx-contact-item .info { flex:1; min-width:0; }
+.wx-contact-item .info .name { font-size:14px; color:#333; }
+.wx-contact-item .info .desc { font-size:12px; color:#999; margin-top:2px; }
+.wx-contact-item .add-btn {
+  background:#07c160; border:none; color:#fff; padding:4px 14px; border-radius:3px;
+  cursor:pointer; font-size:12px; white-space:nowrap;
+}
+.wx-contact-item .add-btn:hover { background:#06ad56; }
+.wx-contact-item .add-btn.done { background:#e0e0e0; color:#999; cursor:default; }
+
+/* ===== 通讯录顶栏 ===== */
+.wx-contact-header {
+  background:#f0f0f0; padding:14px 20px; border-bottom:1px solid #ddd; flex-shrink:0;
+  display:flex; align-items:center; gap:8px;
+}
+.wx-contact-header .title { font-size:15px; color:#333; font-weight:500; flex:1; }
+.wx-contact-header .back-btn {
+  border:none; background:none; font-size:14px; color:#07c160; cursor:pointer; padding:4px 8px;
+}
+
+/* ===== 联系人详情 ===== */
+.wx-detail {
+  display:none; flex-direction:column; background:#f5f5f5;
+  width:320px; min-width:320px;
+}
+.wx-detail.show { display:flex; }
+
+.wx-detail .profile {
+  text-align:center; padding:40px 20px 24px; background:#fff; border-bottom:1px solid #eee;
+}
+.wx-detail .profile .avatar {
+  width:64px; height:64px; border-radius:4px; margin:0 auto 12px;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px;
+}
+.wx-detail .profile .name { font-size:18px; color:#333; font-weight:500; }
+.wx-detail .profile .status { font-size:13px; color:#999; margin-top:4px; }
+
+.wx-detail .actions {
+  background:#fff; margin-top:10px; border-top:1px solid #eee; border-bottom:1px solid #eee;
+}
+.wx-detail .actions .act {
+  padding:14px 20px; font-size:15px; color:#333; cursor:pointer; border-bottom:1px solid #f0f0f0;
+  display:flex; align-items:center; gap:10px;
+}
+.wx-detail .actions .act:hover { background:#f8f8f8; }
+.wx-detail .actions .act .icon { font-size:18px; width:24px; text-align:center; }
+
+/* ===== 弹窗 ===== */
+.wx-modal-overlay {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,0.45); align-items:center; justify-content:center;
+}
+.wx-modal-overlay.show { display:flex; }
+
+.wx-modal {
+  background:#fff; border-radius:8px; width:380px; max-width:90%; padding:28px 30px 20px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.12);
+}
+.wx-modal h3 { font-size:16px; color:#333; margin-bottom:16px; font-weight:500; }
+.wx-modal input {
+  width:100%; background:#f8f8f8; border:1px solid #ddd; border-radius:4px;
+  padding:9px 12px; font-size:14px; color:#333; outline:none;
+}
+.wx-modal input:focus { border-color:#07c160; }
+.wx-modal .modal-btns { display:flex; gap:10px; justify-content:flex-end; margin-top:18px; }
+.wx-modal .modal-btns button {
+  padding:7px 20px; border-radius:4px; cursor:pointer; font-size:13px; border:none;
+}
+.wx-modal .modal-btns .cancel { background:#f0f0f0; color:#666; }
+.wx-modal .modal-btns .cancel:hover { background:#e0e0e0; }
+.wx-modal .modal-btns .confirm { background:#07c160; color:#fff; }
+.wx-modal .modal-btns .confirm:hover { background:#06ad56; }
+.account-list { display:grid; gap:8px; margin-top:6px; }
+.account-card {
+  width:100%;
+  border:1px solid #e4e9e8;
+  background:#fbfcfc;
+  border-radius:6px;
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  text-align:left;
+  cursor:pointer;
+  color:#3f4f4f;
+}
+.account-card:hover { border-color:#b9d2cc; background:#f4faf8; }
+.account-card.active { border-color:#07c160; background:#edf8f3; }
+.account-card.locked { color:#9da8a7; }
+.account-card .mark {
+  width:42px;
+  height:42px;
+  border-radius:4px;
+  background:#dce5e3;
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  color:#fff;
+  font-size:0;
+}
+.account-card .mark.placeholder {
+  background-image:none !important;
+  background:#edf3f1;
+  border:1px dashed #b7c8c4;
+  color:#8aa09b;
+  font-size:22px;
+}
+.account-card.locked .mark { filter:grayscale(.35); opacity:.62; }
+.account-card .meta {
+  flex:1;
+  min-width:0;
+  display:grid;
+  gap:5px;
+}
+.account-card .name {
+  display:block;
+  font-size:15px;
+  line-height:1.25;
+  color:#344342;
+}
+.account-card .desc {
+  display:block;
+  font-size:12px;
+  line-height:1.25;
+  color:#94a09f;
+}
+.account-error { min-height:18px; margin-top:8px; color:#d2685e; font-size:12px; }
+
+/* ===== 响应式 ===== */
+@media (max-width:720px) {
+  .wx-side { width:200px; min-width:200px; }
+  .wx-msg { max-width:75%; }
+  .wx-main .chat-body { padding:14px 16px; }
+}
+@media (max-width:480px) {
+  .wx-side { width:60px; min-width:60px; }
+  .wx-side .header .title { display:none; }
+  .wx-side .search { display:none; }
+  .wx-chat-item .info { display:none; }
+  .wx-msg { max-width:85%; }
+  .wx-main .chat-input { padding:8px 10px; }
+  .wx-main .chat-input .send-btn { padding:8px 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wx-container">
+
+  <!-- 左侧面板 -->
+  <div class="wx-side">
+    <div class="header">
+      <div class="logo">微</div>
+      <span class="title">微聊</span>
+      <div class="icons">
+        <button onclick="switchPanel('chat')" title="聊天">◇</button>
+        <button onclick="switchPanel('contacts')" title="通讯录">♧</button>
+        <button onclick="openAccountModal()" title="切换账号">⇄</button>
+        <button onclick="toggleMenu()" title="更多">⋯</button>
+      </div>
+    </div>
+    <div class="account-strip">
+      <span class="account-avatar" id="currentAccountAvatar"></span>
+      <span class="account-pill" id="currentAccountLabel">当前：初始账号</span>
+      <button class="switch-account" type="button" onclick="openAccountModal()">切换</button>
+    </div>
+    <div class="search">
+      <input type="text" id="wxSearch" placeholder="搜索" oninput="filterChats(this.value)">
+    </div>
+    <div class="chat-list" id="wxChatList">
+      <div class="wx-chat-item" data-id="kefu" onclick="selectChat('kefu')">
+        <div class="avatar" style="background:#7a8c96;"></div>
+        <div class="info">
+          <div class="top"><span class="name">信息服务客服中心</span><span class="time"></span></div>
+          <div class="preview">您好，请提供您的用户编号</div>
+        </div>
+      </div>
+      <div class="wx-chat-item" data-id="file" onclick="selectChat('file')">
+        <div class="avatar" style="background:#4d8c72;"></div>
+        <div class="info">
+          <div class="top"><span class="name">文件传输助手</span><span class="time"></span></div>
+          <div class="preview">暂无消息</div>
+        </div>
+      </div>
+      <div class="wx-chat-item" data-id="system" onclick="selectChat('system')">
+        <div class="avatar" style="background:#6f7f91;"></div>
+        <div class="info">
+          <div class="top"><span class="name">系统通知</span><span class="time"></span></div>
+          <div class="preview">欢迎使用微聊</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主聊天区 -->
+  <div class="wx-main" id="wxMain">
+    <div class="chat-header">
+      <span class="name" id="wxChatName" style="cursor:pointer;" onclick="showCurrentDetail()">未选择聊天</span>
+      <span class="hint" id="wxChatStatus"></span>
+      <span class="spacer"></span>
+      <span style="font-size:11px;color:#bbb;">微聊 Web</span>
+    </div>
+    <div class="chat-body" id="wxChatBody">
+      <div class="wx-empty-chat">请选择左侧会话</div>
+    </div>
+    <div class="chat-input">
+      <div class="toolbar">
+        <button title="表情">☺</button>
+        <button title="附件">＋</button>
+      </div>
+      <textarea id="wxMsgInput" rows="1" placeholder="输入消息..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendWxMsg();}"></textarea>
+      <button class="send-btn" id="wxSendBtn" onclick="sendWxMsg()">发送</button>
+    </div>
+  </div>
+
+  <!-- 通讯录 -->
+  <div class="wx-contacts" id="wxContacts">
+    <div class="wx-contact-header">
+      <button class="back-btn" onclick="switchPanel('chat')">‹ 返回</button>
+      <span class="title">搜索账号</span>
+    </div>
+    <div class="search-bar">
+      <input type="text" placeholder="搜索" oninput="filterContacts(this.value)" style="padding:10px 14px;font-size:14px;">
+    </div>
+    <div class="list-wrap" id="wxContactList">
+      <div class="wx-contact-empty">暂无联系人</div>
+    </div>
+  </div>
+
+  <!-- 联系人详情 -->
+  <div class="wx-detail" id="wxDetail">
+    <div class="wx-contact-header">
+      <button class="back-btn" onclick="closeDetail()">‹ 通讯录</button>
+      <span class="title">详细资料</span>
+    </div>
+    <div class="profile">
+      <div class="avatar" id="detailAvatar" style="background:#07c160;">服</div>
+      <div class="name" id="detailName">信息服务客服中心</div>
+      <div class="status" id="detailStatus">在线</div>
+    </div>
+    <div class="actions">
+      <div class="act" onclick="switchToChat()"><span class="icon">◇</span> 发消息</div>
+      <div class="act" onclick="showMoments()"><span class="icon">☷</span> 朋友圈</div>
+      <div class="act" onclick="showVoiceCall()"><span class="icon">⌕</span> 语音通话</div>
+      <div class="act" onclick="showVoiceCall()"><span class="icon">▣</span> 视频通话</div>
+    </div>
+  </div>
+</div>
+
+<!-- 朋友圈弹窗 -->
+<div class="wx-modal-overlay" id="momentsModal" style="background:rgba(0,0,0,0.55);">
+  <div style="width:480px;max-width:92%;height:84vh;background:#f7f7f7;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;position:relative;">
+    <button onclick="document.getElementById('momentsModal').classList.remove('show')" style="position:absolute;top:16px;right:16px;background:rgba(0,0,0,0.3);border:none;color:#fff;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>
+    <div style="flex:1;overflow-y:auto;" id="momentsContent"></div>
+  </div>
+</div>
+
+<!-- 菜单弹窗 -->
+<div class="wx-modal-overlay" id="menuModal">
+  <div class="wx-modal" style="width:300px;text-align:center;">
+    <h3>微聊 Web</h3>
+    <p style="font-size:13px;color:#999;margin-bottom:16px;line-height:1.8;">
+      微聊 Web 版 · 版本 2.0.1<br>本服务由信息服务中心提供
+    </p>
+    <div class="modal-btns" style="justify-content:center;">
+      <button class="cancel" onclick="closeMenu()">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 切换账号弹窗 -->
+<div class="wx-modal-overlay" id="accountModal">
+  <div class="wx-modal" style="width:420px;">
+    <h3>切换账号</h3>
+    <div class="account-list" id="accountList"></div>
+    <div id="accountLoginBox" style="display:none;margin-top:14px;border-top:1px solid #edf0f0;padding-top:14px;">
+      <input type="text" id="accountInput" placeholder="账号" autocomplete="off" style="margin-bottom:8px;">
+      <input type="password" id="passwordInput" placeholder="密码" autocomplete="off" onkeydown="if(event.key==='Enter')confirmAccountLogin()">
+      <div class="account-error" id="accountError"></div>
+      <div class="modal-btns">
+        <button class="cancel" onclick="hideAccountLogin()">取消</button>
+        <button class="confirm" onclick="confirmAccountLogin()">登录</button>
+      </div>
+    </div>
+    <div class="modal-btns" id="accountModalBtns">
+      <button class="cancel" onclick="closeAccountModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 添加好友弹窗 -->
+<div class="wx-modal-overlay" id="addFriendModal">
+  <div class="wx-modal">
+    <h3 id="addFriendTitle">添加好友</h3>
+    <input type="text" id="addFriendInput" placeholder="输入验证消息..." onkeydown="if(event.key==='Enter')confirmAddFriend()">
+    <div class="modal-btns">
+      <button class="cancel" onclick="closeAddFriend()">取消</button>
+      <button class="confirm" onclick="confirmAddFriend()">发送</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ACCOUNT_STATE_KEY = 'wechat_account_state_v1';
+const SECONDARY_ACCOUNT = {
+  id: 'secondary',
+  account: 'Emith',
+  password: 'emith00112234',
+  label: 'Emith'
+};
+let accountState = {
+  current: 'initial',
+  secondaryUnlocked: false,
+  secondaryLabel: SECONDARY_ACCOUNT.label
+};
+let currentChat = null;
+let currentDetailContactId = null;
+const STORY_START_TS = new Date('2026-07-06T00:00:00+08:00').getTime();
+const STORY_REAL_START_KEY = 'citymystery_story_real_start';
+
+function getStoryNow() {
+  let realStart = Number(localStorage.getItem(STORY_REAL_START_KEY) || '0');
+  if (!realStart) {
+    realStart = Date.now();
+    try { localStorage.setItem(STORY_REAL_START_KEY, String(realStart)); } catch(e) {}
+  }
+  return new Date(STORY_START_TS + Math.max(0, Date.now() - realStart));
+}
+
+function currentTime() {
+  const now = getStoryNow();
+  return String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+function formatSidebarTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  const now = getStoryNow();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today - 86400000);
+  const md = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  if (md.getTime() === today.getTime()) {
+    return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  } else if (md.getTime() === yesterday.getTime()) {
+    return '昨天';
+  } else if (now.getTime() - md.getTime() < 7 * 86400000) {
+    return ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+  } else {
+    return (d.getMonth()+1)+'/'+d.getDate();
+  }
+}
+function refreshSidebarTime(id) {
+  const el = document.querySelector(`.wx-chat-item[data-id="${id}"] .time`);
+  if (!el || !chatData[id]) return;
+  const msgs = chatData[id].messages;
+  const last = [...msgs].reverse().find(m => m.ts);
+  el.textContent = last ? formatSidebarTime(last.ts) : '';
+}
+const openedTs = getStoryNow().getTime();
+const openedTime = currentTime();
+const IMAGE_CACHE_VERSION = '20260614-img-all-1';
+
+function imgUrl(url) {
+  if (!url || url.startsWith('#') || url.startsWith('data:') || /^https?:\/\//i.test(url)) return url;
+  return url + (url.includes('?') ? '&' : '?') + 'v=' + IMAGE_CACHE_VERSION;
+}
+
+function bgImage(url) {
+  return 'background-image:url(' + imgUrl(url) + ');background-size:cover;background-position:center';
+}
+
+function accountStorageKey(base) {
+  return base + '_' + accountState.current;
+}
+
+loadAccountState();
+
+function loadAccountState() {
+  const saved = localStorage.getItem(ACCOUNT_STATE_KEY);
+  if (!saved) return;
+  try {
+    const data = JSON.parse(saved);
+    accountState.current = data.current === 'secondary' ? 'secondary' : 'initial';
+    accountState.secondaryUnlocked = !!data.secondaryUnlocked;
+    accountState.secondaryLabel = data.secondaryLabel || SECONDARY_ACCOUNT.label;
+    if (accountState.current === 'secondary' && !accountState.secondaryUnlocked) accountState.current = 'initial';
+  } catch(e) {}
+}
+
+function saveAccountState() {
+  localStorage.setItem(ACCOUNT_STATE_KEY, JSON.stringify(accountState));
+}
+
+function accountLabel() {
+  return accountState.current === 'secondary' ? accountState.secondaryLabel : '初始账号';
+}
+
+function outgoingAvatar() {
+  return accountState.current === 'secondary' ? 'Emith头像.jpg' : '玩家头像.png';
+}
+
+function outgoingAvatarStyle() {
+  return bgImage(outgoingAvatar());
+}
+
+function updateAccountUI() {
+  const label = document.getElementById('currentAccountLabel');
+  if (label) label.textContent = '当前：' + accountLabel();
+  const avatar = document.getElementById('currentAccountAvatar');
+  if (avatar) avatar.style.backgroundImage = 'url(' + imgUrl(outgoingAvatar()) + ')';
+}
+
+function refreshStaticImages() {
+  ['kefu', 'file', 'system'].forEach(id => {
+    const item = document.querySelector(`.wx-chat-item[data-id="${id}"] .avatar`);
+    if (item && chatData[id] && !chatData[id].avatar.startsWith('#')) {
+      item.style.cssText = bgImage(chatData[id].avatar);
+    }
+  });
+}
+
+function clearSelectedChat() {
+  currentChat = null;
+  currentDetailContactId = null;
+  document.querySelectorAll('.wx-chat-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('wxChatName').textContent = '未选择聊天';
+  document.getElementById('wxChatStatus').textContent = '';
+  document.getElementById('wxChatBody').innerHTML = '<div class="wx-empty-chat">请选择左侧会话</div>';
+  document.getElementById('wxDetail').classList.remove('show');
+  document.getElementById('wxContacts').classList.remove('show');
+  document.getElementById('wxMain').style.display = '';
+}
+
+function renderAccountList() {
+  const list = document.getElementById('accountList');
+  if (!list) return;
+  const secondaryDesc = accountState.secondaryUnlocked ? '已登录，可切换' : '需要添加账号后使用';
+  list.innerHTML = `
+    <button class="account-card${accountState.current === 'initial' ? ' active' : ''}" type="button" onclick="switchAccountTo('initial')">
+      <span class="mark" style="background-image:url(${imgUrl('玩家头像.png')});"></span>
+      <span class="meta"><span class="name">初始账号</span><span class="desc">当前设备默认账号</span></span>
+    </button>
+    <button class="account-card${accountState.current === 'secondary' ? ' active' : ''}${accountState.secondaryUnlocked ? '' : ' locked'}" type="button" onclick="${accountState.secondaryUnlocked ? "switchAccountTo('secondary')" : "showAccountLogin()"}">
+      <span class="mark${accountState.secondaryUnlocked ? '' : ' placeholder'}" ${accountState.secondaryUnlocked ? `style="background-image:url(${imgUrl('Emith头像.jpg')});"` : ''}>+</span>
+      <span class="meta"><span class="name">${accountState.secondaryUnlocked ? accountState.secondaryLabel : '添加账号'}</span><span class="desc">${secondaryDesc}</span></span>
+    </button>
+  `;
+}
+
+function openAccountModal() {
+  renderAccountList();
+  hideAccountLogin();
+  document.getElementById('accountModal').classList.add('show');
+}
+
+function closeAccountModal() {
+  document.getElementById('accountModal').classList.remove('show');
+}
+
+function showAccountLogin() {
+  document.getElementById('accountLoginBox').style.display = '';
+  document.getElementById('accountModalBtns').style.display = 'none';
+  document.getElementById('accountInput').value = '';
+  document.getElementById('passwordInput').value = '';
+  document.getElementById('accountError').textContent = '';
+  setTimeout(() => document.getElementById('accountInput').focus(), 30);
+}
+
+function hideAccountLogin() {
+  const box = document.getElementById('accountLoginBox');
+  if (box) box.style.display = 'none';
+  const btns = document.getElementById('accountModalBtns');
+  if (btns) btns.style.display = '';
+}
+
+function confirmAccountLogin() {
+  const acc = document.getElementById('accountInput').value.trim();
+  const pwd = document.getElementById('passwordInput').value;
+  const error = document.getElementById('accountError');
+  if (acc === SECONDARY_ACCOUNT.account && pwd === SECONDARY_ACCOUNT.password) {
+    accountState.secondaryUnlocked = true;
+    accountState.secondaryLabel = acc;
+    switchAccountTo('secondary', true);
+    hideAccountLogin();
+    closeAccountModal();
+    return;
+  }
+  error.textContent = '账号或密码不正确';
+}
+
+function switchAccountTo(id, silent) {
+  if (id === 'secondary' && !accountState.secondaryUnlocked) {
+    showAccountLogin();
+    return;
+  }
+  accountState.current = id === 'secondary' ? 'secondary' : 'initial';
+  saveAccountState();
+  updateAccountUI();
+  if (!silent) closeAccountModal();
+  setTimeout(() => location.reload(), 0);
+}
+
+function formatTimeSeparator(ts) {
+  const d = new Date(ts);
+  const now = getStoryNow();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today - 86400000);
+  const md = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const hhmm = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  if (md.getTime() === today.getTime()) return hhmm;
+  if (md.getTime() === yesterday.getTime()) return '昨天 ' + hhmm;
+  if (d.getFullYear() === now.getFullYear()) return (d.getMonth()+1)+'月'+d.getDate()+'日 '+hhmm;
+  return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 '+hhmm;
+}
+
+const chatData = {
+  kefu: {
+    name: '信息服务客服中心',
+    status: '在线',
+    avatar: '客服.png',
+    letter: '',
+    messages: [
+      { type: 'in', text: '您好，请提供您的用户编号或账号，我们将为您查询初始密钥。', time: openedTime, ts: openedTs }
+    ]
+  },
+  file: {
+    name: '文件传输助手',
+    status: '在线',
+    avatar: '文件传输助手.jpg',
+    letter: '',
+    messages: [
+      { type: 'in', text: '你可以在这里发送文件、图片、链接。', time: openedTime, ts: openedTs }
+    ]
+  },
+  system: {
+    name: '系统通知',
+    status: '',
+    avatar: '系统通知.jpg',
+    letter: '',
+    messages: [
+      { type: 'in', text: '欢迎使用微聊 Web 版。', time: openedTime, ts: openedTs },
+      { type: 'in', text: '您的账号暂未绑定手机号，部分功能受限。', time: openedTime, ts: openedTs },
+    ]
+  },
+  susu: {
+    name: '苏苏',
+    status: '离线',
+    avatar: '苏苏.jpg',
+    letter: '',
+    messages: []
+  },
+  chilai: {
+    name: '迟来的晴天',
+    status: '离线',
+    avatar: '荷花头像.jpg',
+    letter: '',
+    messages: []
+  },
+  guyue: {
+    name: '小胡加把劲',
+    status: '离线',
+    avatar: '小胡.png',
+    letter: '胡',
+    messages: []
+  },
+  njdaily: {
+    name: '南报记者小周',
+    status: '离线',
+    avatar: '记者头像.png',
+    letter: '',
+    messages: []
+  }
+};
+
+function fixedTs(value) {
+  return new Date(value + '+08:00').getTime();
+}
+
+function seedEmithAccount() {
+  chatData.susu.messages = [
+    { type: 'out', text: '我是Emith，请问您在找一位失踪的女生吗？', ts: fixedTs('2026-06-11T20:08:00'), sep: '第一次联系' },
+    { type: 'notice', text: '你已添加了苏苏，以上是打招呼的消息。', ts: fixedTs('2026-06-11T20:09:00') },
+    { type: 'in', text: '你好！请问你是知道什么吗', ts: fixedTs('2026-06-11T20:11:00') },
+    { type: 'out', text: '你好你好', ts: fixedTs('2026-06-11T20:12:00') },
+    { type: 'out', text: '也不是知道什么，只是正好我也在找一个女生，所以想找你对对消息', ts: fixedTs('2026-06-11T20:12:28') },
+    { type: 'in', text: '哦哦好的，你是想知道什么？', ts: fixedTs('2026-06-11T20:13:10') },
+    { type: 'out', text: '是这样的，最近一段时间我感觉自己有点人格分裂，总是感觉时间在跳跃，所以对自己进行了监听，结果听到了“小初”这样一个名字，你要找的失踪的女生叫这个名字吗？', ts: fixedTs('2026-06-11T20:14:40') },
+    { type: 'in', text: 'emm其实我根本不知道她叫什么哈哈哈', ts: fixedTs('2026-06-11T20:16:00') },
+    { type: 'in', text: '哦对，我其实可以定位到她的位置，我可以查下她出发前是在哪里', ts: fixedTs('2026-06-11T20:16:36') },
+    { type: 'out', text: '啊？你可以定位到吗！', ts: fixedTs('2026-06-11T20:17:02') },
+    { type: 'in', text: '查到了！在山东省泉城市河阳区', ts: fixedTs('2026-06-11T20:19:20') },
+    { type: 'in', text: '对，我可以定位到，因为有人给了我一个定位装置，，，不过这个定位有延期，所以我每次都赶不上……', ts: fixedTs('2026-06-11T20:20:04') },
+    { type: 'out', text: '啊那应该是对上的，你要找的那个女生就叫小初', ts: fixedTs('2026-06-11T20:21:00') },
+    { type: 'out', text: '另外，有人给你定位装置吗？这也太奇怪了吧！', ts: fixedTs('2026-06-11T20:21:24') },
+    { type: 'in', text: '对，我也这么觉得，但我觉得那人真的找对人了，我还蛮吃这套的哈哈哈', ts: fixedTs('2026-06-11T20:22:30') },
+    { type: 'in', text: '所以你说你听到了小初这个名字，还有什么人格分裂啥的，虽然没太懂，但是你也要找小初吗？', ts: fixedTs('2026-06-11T20:23:02') },
+    { type: 'out', text: '对，我想解决我身上的这个麻烦，现在只有这么一个突破口……', ts: fixedTs('2026-06-11T20:23:46') },
+    { type: 'out', text: '苏小姐对吧？方便接电话吗，我想详细聊下那个定位的事', ts: fixedTs('2026-06-11T20:24:10') },
+    { type: 'in', text: '现在吗？', ts: fixedTs('2026-06-11T20:24:48') },
+    { type: 'in', text: '稍等一下稍等一下，我马上到酒店，等会我给你打过去', ts: fixedTs('2026-06-11T20:25:16') },
+    { type: 'out', text: '通话时长 12:04ᯅ', ts: fixedTs('2026-06-11T20:42:30'), sep: '通话结束后' },
+    { type: 'out', text: '目前的定位位置我已经记下了，之后我会再跟你联系，看看能不能把定位的信号连接到我的电脑上，之后可以同步传给我', ts: fixedTs('2026-06-11T20:43:10') },
+    { type: 'out', text: '到时候我再联系你', ts: fixedTs('2026-06-11T20:43:30') },
+    { type: 'out', text: '今天麻烦你啦', ts: fixedTs('2026-06-11T20:43:48') },
+    { type: 'in', text: '不麻烦不麻烦，别客气～', ts: fixedTs('2026-06-11T20:44:24') },
+    { type: 'in', text: '之后有关小初的消息，都可以告诉我，我也很好奇的哈哈哈', ts: fixedTs('2026-06-11T20:45:02') },
+    { type: 'out', text: '那当然', ts: fixedTs('2026-06-11T20:45:30') },
+    { type: 'out', text: '苏小姐，抱歉大晚上打扰', ts: fixedTs('2026-06-14T22:18:00'), sep: '第二次联系' },
+    { type: 'out', text: '现在方便通话吗？我想试试能不能接受定位装置的信号，顺便讲下最近调查小初获得的信息', ts: fixedTs('2026-06-14T22:18:35') },
+    { type: 'in', text: '当然当然！', ts: fixedTs('2026-06-14T22:23:20') },
+    { type: 'out', text: '通话时长 21:12ᯅ', ts: fixedTs('2026-06-14T22:46:10'), sep: '通话结束后' },
+    { type: 'in', text: '小初这孩子也不容易啊，，，', ts: fixedTs('2026-06-14T22:47:00') },
+    { type: 'out', text: '是的是的', ts: fixedTs('2026-06-14T22:47:28') },
+    { type: 'out', text: '定位成功接到系统上了，之后就会自动传输位置了', ts: fixedTs('2026-06-14T22:48:04') },
+    { type: 'in', text: 'Emith老师，你是不是已经有点头绪了？', ts: fixedTs('2026-06-14T22:48:42') },
+    { type: 'out', text: '还不好说，不过就算我知道了，我也不太放心直接在这里告诉你，毕竟我也算了解Yan的情况了……', ts: fixedTs('2026-06-14T22:49:40') },
+    { type: 'in', text: '担心我跟Yan是一伙的？', ts: fixedTs('2026-06-14T22:50:26') },
+    { type: 'out', text: '不，但是我的身体和意识有时候可能跟Yan是一伙的……', ts: fixedTs('2026-06-14T22:51:03') },
+    { type: 'in', text: '哦～我明白你的意思了', ts: fixedTs('2026-06-14T22:51:38') },
+    { type: 'in', text: '以后尽量电话聊这个，或者换个平台聊，比如用微信什么的', ts: fixedTs('2026-06-14T22:52:10') },
+    { type: 'out', text: '是的是的，以防万一可以先加下你的微信', ts: fixedTs('2026-06-14T22:52:42') },
+    { type: 'in', text: '好啊好啊哈哈哈哈', ts: fixedTs('2026-06-14T22:53:18') },
+    { type: 'in', text: '但是呢，可不能直接告诉你我的账号', ts: fixedTs('2026-06-14T22:53:44') },
+    { type: 'out', text: '为啥', ts: fixedTs('2026-06-14T22:54:02') },
+    { type: 'in', text: '这不是防止被Yan看到嘛', ts: fixedTs('2026-06-14T22:54:28') },
+    { type: 'in', text: '不过其实我的账号名都很有逻辑的，比如微聊是我的姓加上我的生日', ts: fixedTs('2026-06-14T22:55:00') },
+    { type: 'in', text: '微信呢，就是我最喜欢的角色加上她的诞生日哈哈哈', ts: fixedTs('2026-06-14T22:55:32') },
+    { type: 'out', text: '好的苏小姐，我明白了', ts: fixedTs('2026-06-14T22:56:04') },
+    { type: 'in', text: 'Emith老师，有些情况想跟你通一下', ts: fixedTs('2026-06-16T15:18:00'), sep: '后来的消息' },
+    { type: 'in', text: '是这样我刚离开茂名，在茂名的冼太庙我看到有人供奉了一段缰绳，我觉得一定是小初干的', ts: fixedTs('2026-06-16T15:18:46') },
+    { type: 'out', text: '不好意思不好意思，刚看到', ts: fixedTs('2026-06-16T15:59:10'), sep: '约四十分钟后' },
+    { type: 'out', text: '缰绳吗……应该是祭祀的仪式所需要的', ts: fixedTs('2026-06-16T15:59:44') },
+    { type: 'out', text: '我了解了，总之之后的祭祀可能会越发困难', ts: fixedTs('2026-06-16T16:00:18') },
+    { type: 'out', text: '你也要保护好自己，苏小姐', ts: fixedTs('2026-06-16T16:00:52') },
+    { type: 'out', text: 'Yan联系你肯定是有目的的，一定要把自己的安危放在首位', ts: fixedTs('2026-06-16T16:01:18') },
+    { type: 'in', text: '我了解我了解', ts: fixedTs('2026-06-16T16:02:06') },
+    { type: 'in', text: '放心吧，我最惜命啦！', ts: fixedTs('2026-06-16T16:02:30') },
+    { type: 'in', text: 'Emith老师，好久没联系了', ts: fixedTs('2026-06-21T15:34:00'), sep: '一段时间后' },
+    { type: 'in', text: '我刚刚到绍兴，在绩溪还是没有什么收获', ts: fixedTs('2026-06-21T15:34:34') },
+    { type: 'in', text: '其实我有点心慌，要不然就现在退出也好，，，不过我还是担心小初', ts: fixedTs('2026-06-21T15:35:08') },
+    { type: 'out', text: '目前来看情况还好 你不要太担心', ts: fixedTs('2026-06-21T15:40:12'), sep: '稍后' },
+    { type: 'out', text: '先继续跟着吧！', ts: fixedTs('2026-06-21T15:40:36') },
+    { type: 'in', text: '好，，，我也是这么想的，我想着一定要追上小初', ts: fixedTs('2026-06-21T15:41:20') },
+    { type: 'out', text: '相信你喔', ts: fixedTs('2026-06-21T15:41:48') },
+    { type: 'in', text: 'Emith老师，我下午获得了一些小初的消息，虽然没有很重要，但还是蛮开心的', ts: fixedTs('2026-06-25T15:12:00'), sep: '又过了几天' },
+    { type: 'in', text: '我感觉我又多了解了一点小初', ts: fixedTs('2026-06-25T15:12:28') },
+    { type: 'in', text: '我之前还想着是不是应该早点放手比较好，但是一听到小初的蛛丝马迹，我还是相当激动哈哈哈', ts: fixedTs('2026-06-25T15:13:02') },
+    { type: 'in', text: '其实这次联系你主要是想着，这么长时间过去了，不知道你那边有没有小初的新消息', ts: fixedTs('2026-06-25T15:13:38') },
+    { type: 'in', text: '你还在吗？', ts: fixedTs('2026-06-25T16:32:00'), sep: '过了一会儿' },
+    { type: 'in', text: 'Emith老师？', ts: fixedTs('2026-06-25T21:48:00'), sep: '很久以后' },
+    { type: 'in', text: '，，，果然还是这样嘛', ts: fixedTs('2026-06-25T21:48:42') },
+    { type: 'in', text: '没事我会继续追下去的！', ts: fixedTs('2026-06-25T21:49:18') },
+    { type: 'in', text: '相信我', ts: fixedTs('2026-06-25T21:49:44') },
+    { type: 'in', text: '我应该马上就能追上小初了，找时候一定有办法帮你', ts: fixedTs('2026-07-01T21:06:00'), sep: '最后一次联系' },
+    { type: 'in', text: '祝我好运吧！', ts: fixedTs('2026-07-01T21:06:32') }
+  ];
+}
+
+if (accountState.current === 'secondary') seedEmithAccount();
+
+// Sidebar entries added dynamically (beyond default kefu/file/system)
+let sidebarExtraChats = [];
+
+function saveSidebar() {
+  // Save full order of all chat items in the sidebar
+  const items = document.querySelectorAll('#wxChatList .wx-chat-item');
+  const order = Array.from(items).map(el => el.dataset.id);
+  localStorage.setItem(accountStorageKey('wechat_sidebar'), JSON.stringify(order));
+}
+
+function restoreSidebar() {
+  const saved = localStorage.getItem(accountStorageKey('wechat_sidebar'));
+  if (!saved) return;
+  try {
+    const order = JSON.parse(saved);
+    const list = document.getElementById('wxChatList');
+    order.forEach(id => {
+      const item = document.querySelector(`.wx-chat-item[data-id="${id}"]`);
+      if (item) list.appendChild(item); // move to end in saved order
+    });
+    // Track extra chats (non-default)
+    sidebarExtraChats = order.filter(id => !['kefu','file','system'].includes(id));
+  } catch(e) {}
+}
+
+// Save/load chat messages
+function saveChatData() {
+  const data = {};
+  for (const id in chatData) {
+    const msgs = chatData[id].messages;
+    // Preview: use last non-warn message
+    const lastMsg = [...msgs].reverse().find(m => m.type !== 'warn' && m.type !== 'notice');
+    data[id] = {
+      messages: msgs,
+      preview: lastMsg ? lastMsg.text.substring(0, 18) + (lastMsg.text.length > 18 ? '...' : '') : ''
+    };
+  }
+  data._contacts = contactsData.map(c => ({ id: c.id, friendStatus: c.friendStatus }));
+  localStorage.setItem(accountStorageKey('wechat_messages'), JSON.stringify(data));
+  saveSidebar();
+}
+
+function addSidebarChat(id) {
+  if (document.querySelector(`.wx-chat-item[data-id="${id}"]`)) return;
+  if (!chatData[id]) return;
+  if (!sidebarExtraChats.includes(id)) sidebarExtraChats.push(id);
+  const list = document.getElementById('wxChatList');
+  const item = document.createElement('div');
+  item.className = 'wx-chat-item';
+  item.dataset.id = id;
+  item.onclick = function(){ selectChat(id); };
+  const av = chatData[id].avatar;
+  const avStyle = av.startsWith('#') ? 'background:'+av : bgImage(av);
+  item.innerHTML = `
+    <div class="avatar" style="${avStyle};">${av.startsWith('#') ? chatData[id].letter : ''}</div>
+    <div class="info">
+      <div class="top"><span class="name">${chatData[id].name}</span><span class="time"></span></div>
+      <div class="preview">${(()=>{const lm=[...chatData[id].messages].reverse().find(m=>m.type!=='warn'&&m.type!=='notice');return lm?lm.text.substring(0,18)+(lm.text.length>18?'...':''):'暂无消息';})()}</div>
+    </div>
+  `;
+  list.appendChild(item);
+  refreshSidebarTime(id);
+  saveSidebar();
+  saveChatData();
+}
+
+function loadChatData() {
+  const saved = localStorage.getItem(accountStorageKey('wechat_messages'));
+  if (!saved) return;
+  try {
+    const data = JSON.parse(saved);
+    for (const id in data) {
+      if (id === '_contacts') {
+        data._contacts.forEach(sc => {
+          const c = contactsData.find(c => c.id === sc.id);
+          if (c) c.friendStatus = sc.friendStatus;
+        });
+        continue;
+      }
+      if (chatData[id]) {
+        chatData[id].messages = data[id].messages;
+        const preview = document.querySelector(`.wx-chat-item[data-id="${id}"] .preview`);
+        if (preview && data[id].preview) preview.textContent = data[id].preview;
+      }
+    }
+    // Restore sidebar entries
+    const savedOrder = JSON.parse(localStorage.getItem(accountStorageKey('wechat_sidebar')) || '[]');
+    sidebarExtraChats = savedOrder.filter(id => !['kefu','file','system'].includes(id));
+    const clist = document.getElementById('wxChatList');
+    // Create DOM for extra chats that don't exist yet
+    savedOrder.forEach(id => {
+      if (!chatData[id] || document.querySelector(`.wx-chat-item[data-id="${id}"]`)) return;
+      const item = document.createElement('div');
+      item.className = 'wx-chat-item';
+      item.dataset.id = id;
+      item.onclick = function(){ selectChat(id); };
+      const msgs = chatData[id].messages;
+      const lastMsg = [...msgs].reverse().find(m => m.type !== 'warn' && m.type !== 'notice');
+      const preview = lastMsg ? lastMsg.text.substring(0,18)+(lastMsg.text.length>18?'...':'') : '暂无消息';
+      const av2 = chatData[id].avatar;
+      const avStyle2 = av2.startsWith('#') ? 'background:'+av2 : bgImage(av2);
+      item.innerHTML = `
+        <div class="avatar" style="${avStyle2};">${av2.startsWith('#') ? chatData[id].letter : ''}</div>
+        <div class="info">
+          <div class="top"><span class="name">${chatData[id].name}</span><span class="time"></span></div>
+          <div class="preview">${preview}</div>
+        </div>
+      `;
+      clist.appendChild(item);
+      refreshSidebarTime(id);
+    });
+    // Reorder to match saved order
+    savedOrder.forEach(id => {
+      const item = document.querySelector(`.wx-chat-item[data-id="${id}"]`);
+      if (item) clist.appendChild(item);
+    });
+  } catch(e) {}
+}
+
+// Contacts data
+const contactsData = [
+  { id: 'susu', name: '苏苏', account: 'su0404', status: '离线', avatar: '苏苏.jpg', letter: '', friendStatus: 'none' },
+  { id: 'chilai', name: '迟来的晴天', account: 'HKFD1314', status: '离线', avatar: '荷花头像.jpg', letter: '', friendStatus: 'none' },
+  { id: 'guyue', name: '小胡加把劲', account: 'GZ-1002', status: '离线', avatar: '小胡.png', letter: '', friendStatus: 'none' },
+  { id: 'njdaily', name: '南报记者小周', account: 'NJdaily_4812', status: '离线', avatar: '记者头像.png', letter: '', friendStatus: 'none' }
+];
+
+function enforceEmithContacts() {
+  if (accountState.current !== 'secondary') return;
+  const susu = contactsData.find(c => c.id === 'susu');
+  if (susu) susu.friendStatus = 'added';
+}
+
+enforceEmithContacts();
+
+function renderContacts(filter) {
+  const list = document.getElementById('wxContactList');
+  const q = (filter || '').toLowerCase();
+  if (!q) {
+    list.innerHTML = '<div class="wx-contact-empty">在上方搜索框输入账号<br>查找并添加好友</div>';
+    return;
+  }
+  const matches = contactsData.filter(c => {
+    return c.account.toLowerCase() === q;
+  });
+  if (matches.length === 0) {
+    list.innerHTML = '<div class="wx-contact-empty">暂无联系人</div>';
+    return;
+  }
+  list.innerHTML = matches.map(c => `
+    <div class="wx-contact-item" data-name="${c.name}" data-account="${c.account}" onclick="showContactDetail('${c.id}')">
+      <div class="avatar" style="${c.avatar.startsWith('#') ? 'background:'+c.avatar : bgImage(c.avatar)};">${c.avatar.startsWith('#') ? c.letter : ''}</div>
+      <div class="info">
+        <div class="name">${c.name}</div>
+        <div class="desc">账号：${c.account} · ${c.status}</div>
+      </div>
+      <button class="add-btn${c.friendStatus !== 'none' ? ' done' : ''}" data-id="${c.id}" onclick="event.stopPropagation();toggleAddFriend(this, '${c.id}')">${c.friendStatus === 'none' ? '添加' : c.friendStatus === 'pending' ? '等待验证' : '已添加'}</button>
+    </div>
+  `).join('');
+}
+
+function toggleAddFriend(btn, id) {
+  if (btn.classList.contains('done')) return;
+  const contact = contactsData.find(c => c.id === id);
+  if (!contact || contact.friendStatus !== 'none') return;
+  document.getElementById('addFriendInput').value = '';
+  document.getElementById('addFriendModal').classList.add('show');
+  document.getElementById('addFriendModal').dataset.targetId = id;
+}
+
+function showCurrentDetail() {
+  if (currentDetailContactId) showContactDetail(currentDetailContactId);
+}
+
+function showContactDetail(id) {
+  currentDetailContactId = id;
+  const contact = contactsData.find(c => c.id === id);
+  if (!contact) return;
+  const detailAv = document.getElementById('detailAvatar');
+  if (contact.avatar.startsWith('#')) {
+    detailAv.style.background = contact.avatar;
+    detailAv.style.backgroundImage = '';
+    detailAv.textContent = contact.letter;
+  } else {
+    detailAv.style.background = '';
+    detailAv.style.backgroundImage = 'url(' + imgUrl(contact.avatar) + ')';
+    detailAv.style.backgroundSize = 'cover';
+    detailAv.style.backgroundPosition = 'center';
+    detailAv.textContent = '';
+  }
+  document.getElementById('detailName').textContent = contact.name;
+  document.getElementById('detailStatus').textContent = contact.status || '';
+  document.getElementById('wxDetail').classList.add('show');
+}
+
+const kefuReplies = [
+  '请稍等，正在查询您的账号信息……',
+  '抱歉，我们未能找到匹配的记录。请确认账号是否正确。',
+  '已转交技术部门处理，请耐心等待。',
+  '如需紧急处理，请在当前窗口提交工单申请初始密钥。',
+  '您是在哪个节点遇到问题的？请提供编号以便我们核实。',
+  '系统显示您的账号存在异常活动，已记录日志。',
+  '我们已记录您的请求，工单编号 #2026-0216-08。',
+];
+
+function selectChat(id) {
+  if (id === currentChat && document.getElementById('wxMain').style.display !== 'none') return;
+  currentChat = id;
+  document.querySelectorAll('.wx-chat-item').forEach(el => el.classList.remove('active'));
+  const item = document.querySelector(`.wx-chat-item[data-id="${id}"]`);
+  if (item) item.classList.add('active');
+
+  const data = chatData[id];
+  if (!data) {
+    clearSelectedChat();
+    return;
+  }
+  document.getElementById('wxChatName').textContent = data.name;
+  document.getElementById('wxChatStatus').textContent = data.status || '';
+  // Track contact detail for chat header click
+  currentDetailContactId = contactsData.find(c => c.id === id) ? id : null;
+
+  const body = document.getElementById('wxChatBody');
+  body.innerHTML = '';
+  let lastRealTs = 0;
+  data.messages.forEach(m => {
+    // Time separator: show when there's a 5+ minute gap
+    if (m.ts && m.type !== 'warn' && m.type !== 'notice' && (lastRealTs === 0 || m.ts - lastRealTs > 300000)) {
+      const sep = document.createElement('div');
+      sep.className = 'wx-time-sep';
+      sep.textContent = m.sep || formatTimeSeparator(m.ts);
+      body.appendChild(sep);
+      lastRealTs = m.ts;
+    }
+    if (m.type === 'warn' || m.type === 'notice') {
+      const warnDiv = document.createElement('div');
+      warnDiv.style.cssText = m.type === 'notice'
+        ? 'text-align:center;font-size:12px;color:#9aa4a3;padding:4px 0;'
+        : 'text-align:center;font-size:12px;color:#e8706a;padding:4px 0;';
+      warnDiv.textContent = m.text;
+      body.appendChild(warnDiv);
+      return;
+    }
+    const isIn = m.type === 'in';
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `wx-msg ${m.type}`;
+    const avatarStyle = isIn ? (data.avatar.startsWith('#') ? `background:${data.avatar}` : bgImage(data.avatar)) : outgoingAvatarStyle();
+    msgDiv.innerHTML = isIn ? `
+      <div class="avatar" style="${avatarStyle};">${data.avatar.startsWith('#') ? data.letter : ''}</div>
+      <div class="bubble">${m.text}</div>
+    ` : `
+      <div class="bubble">${m.text}</div>
+      <div class="avatar" style="${avatarStyle};"></div>
+    `;
+    body.appendChild(msgDiv);
+  });
+  body.scrollTop = body.scrollHeight;
+
+  document.getElementById('wxMain').style.display = '';
+  document.getElementById('wxDetail').classList.remove('show');
+  document.getElementById('wxContacts').classList.remove('show');
+}
+
+function sendWxMsg() {
+  if (!currentChat || !chatData[currentChat]) {
+    alert('请先选择一个会话。');
+    return;
+  }
+  const input = document.getElementById('wxMsgInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  const body = document.getElementById('wxChatBody');
+  const data = chatData[currentChat];
+  const timeStr = currentTime();
+  const nowTs = getStoryNow().getTime();
+
+  // Check if we need a time separator
+  const prevReal = [...data.messages].reverse().find(m => m.ts && m.type !== 'warn');
+  const needSep = !prevReal || nowTs - prevReal.ts > 300000;
+
+  // Save message first
+  data.messages.push({ type: 'out', text, time: timeStr, ts: nowTs });
+  saveChatData();
+  moveChatToTop(currentChat);
+
+  if (needSep) {
+    const sep = document.createElement('div');
+    sep.className = 'wx-time-sep';
+    sep.textContent = formatTimeSeparator(nowTs);
+    body.appendChild(sep);
+  }
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'wx-msg out';
+  msgDiv.innerHTML = `<div class="bubble">${text}</div><div class="avatar" style="${outgoingAvatarStyle()}"></div>`;
+  body.appendChild(msgDiv);
+  body.scrollTop = body.scrollHeight;
+
+  // Then check friendship — message goes through first, warning shown after
+  const friendCheck = contactsData.find(c => c.id === currentChat);
+  if (friendCheck && friendCheck.friendStatus !== 'added') {
+    // Save warning as a persistent message
+    data.messages.push({ type: 'warn', text: '⚠ 还不是对方好友，请先添加好友', ts: getStoryNow().getTime() });
+    saveChatData();
+    const errDiv = document.createElement('div');
+    errDiv.style.cssText = 'text-align:center;font-size:12px;color:#e8706a;padding:4px 0;';
+    errDiv.textContent = '⚠ 还不是对方好友，请先添加好友';
+    body.appendChild(errDiv);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  // Update chat list preview and time
+  const preview = document.querySelector(`.wx-chat-item[data-id="${currentChat}"] .preview`);
+  if (preview) preview.textContent = text.substring(0, 18) + (text.length > 18 ? '...' : '');
+  refreshSidebarTime(currentChat);
+
+  // Auto reply from kefu
+  if (currentChat === 'kefu') {
+    document.getElementById('wxSendBtn').disabled = true;
+    const delay = 600 + Math.random() * 2000;
+    setTimeout(() => {
+      const reply = document.createElement('div');
+      reply.className = 'wx-msg in';
+      const rtimeStr = currentTime();
+      const isKeyReply = text === '02#56741';
+      const replyText = isKeyReply
+        ? '已找到您的账号记录。初始私人密钥为：<b>1qaz2wsx</b>，请妥善保管。'
+        : '抱歉，我们未能找到匹配的记录。请确认账号是否正确。';
+      const plainText = isKeyReply ? '已找到您的账号记录。初始私人密钥为：1qaz2wsx，请妥善保管。' : replyText;
+      // Save reply
+      chatData.kefu.messages.push({ type: 'in', text: replyText, time: rtimeStr, ts: getStoryNow().getTime() });
+      saveChatData();
+      moveChatToTop('kefu');
+      const kav = chatData.kefu.avatar;
+      const kavStyle = kav.startsWith('#') ? 'background:'+kav : bgImage(kav);
+      reply.innerHTML = `<div class="avatar" style="${kavStyle};"></div><div class="bubble">${replyText}</div>`;
+      body.appendChild(reply);
+      body.scrollTop = body.scrollHeight;
+
+      const kefuPreview = document.querySelector('.wx-chat-item[data-id="kefu"] .preview');
+      if (kefuPreview) kefuPreview.textContent = plainText.substring(0, 18) + (plainText.length > 18 ? '...' : '');
+
+      document.getElementById('wxSendBtn').disabled = false;
+    }, delay);
+  }
+}
+
+function switchPanel(panel) {
+  const main = document.getElementById('wxMain');
+  const contacts = document.getElementById('wxContacts');
+  const detail = document.getElementById('wxDetail');
+
+  if (panel === 'chat') {
+    main.style.display = '';
+    contacts.classList.remove('show');
+    detail.classList.remove('show');
+    if (!currentChat) clearSelectedChat();
+  } else if (panel === 'contacts') {
+    main.style.display = 'none';
+    contacts.classList.add('show');
+    detail.classList.remove('show');
+    renderContacts('');
+  }
+}
+
+function moveChatToTop(id) {
+  const item = document.querySelector(`.wx-chat-item[data-id="${id}"]`);
+  const list = document.getElementById('wxChatList');
+  if (item && list.firstChild !== item) {
+    list.prepend(item);
+    saveSidebar();
+  }
+}
+
+function filterChats(q) {
+  document.querySelectorAll('.wx-chat-item').forEach(el => {
+    const name = el.querySelector('.name').textContent;
+    el.style.display = name.includes(q) ? '' : 'none';
+  });
+}
+
+function filterContacts(q) {
+  renderContacts(q);
+}
+
+function closeDetail() {
+  document.getElementById('wxDetail').classList.remove('show');
+}
+
+function switchToChat() {
+  if (currentDetailContactId && chatData[currentDetailContactId]) {
+    const cid = currentDetailContactId;
+    addSidebarChat(cid);
+    selectChat(cid);
+    return;
+  }
+  selectChat('kefu');
+}
+
+function closeAddFriend() {
+  document.getElementById('addFriendModal').classList.remove('show');
+}
+
+function confirmAddFriend() {
+  const modal = document.getElementById('addFriendModal');
+  const id = modal.dataset.targetId;
+  const contact = contactsData.find(c => c.id === id);
+  if (!contact || contact.friendStatus !== 'none') { closeAddFriend(); return; }
+  contact.friendStatus = 'pending';
+  closeAddFriend();
+  const searchInput = document.querySelector('.wx-contacts .search-bar input');
+  renderContacts(searchInput ? searchInput.value : '');
+  if (!chatData.system) return;
+  chatData.system.messages.push({
+    type: 'in',
+    text: '好友申请已发送，等待' + contact.name + '验证。',
+    time: currentTime(),
+    ts: getStoryNow().getTime()
+  });
+  saveChatData();
+}
+
+function showVoiceCall() {
+  alert('当前无法连接语音服务。\n请稍后再试。');
+}
+
+const momentsData = [
+  { user: '南报记者小周', avatar: '记者头像.png', text: '一些发生在日本的诡异故事，大家看个乐呵就好！', time: '2026-06-01 21:18', link: { title: '南京游客讲述日本大桥事故旧闻：灰尘中显现的亮眼与论坛传言', desc: '南报网 · 社会观察', url: 'nanbao-japan-doppelganger.html' } },
+  { user: '南报记者小周', avatar: '记者头像.png', text: '朋友圈很多朋友在讨论声音加密，我觉得这还是蛮有意思的。声音的波形、频谱都可以传递信息，有些声音甚至可以转换成图片，相应的图片也能通过声音的方式发射出去，蛮有意思的～', time: '2026-05-15 10:42' },
+  { user: '南报记者小周', avatar: '记者头像.png', text: '小编不知道她到底是怎么了', time: '2026-05-14 18:36', link: { title: '南京游客渭南游玩遇网聊骗局，数千元损失背后的防诈提醒', desc: '南报网 · 防诈提醒', url: 'nanbao-weinan-fraud.html' } },
+  { user: '苏苏', avatar: '苏苏.jpg', text: '送给自己一束花！', time: '2026-06-26 13:18', photos: ['苏苏朋友圈-绿色洋桔梗.png'] },
+  { user: '苏苏', avatar: '苏苏.jpg', text: '到南京咯～', time: '2026-06-08 14:30', photos: ['苏苏朋友圈01.png', '苏苏朋友圈02.png'] },
+  { user: '苏苏', avatar: '苏苏.jpg', text: '依旧是小说创作前的调查日志以及其他构思，密码照旧，是我的微聊号～', time: '2026-05-31 20:15', link: { title: 'C2-01', desc: '加密档案 · 需密码验证', url: 'c2-01.html' } },
+  { user: '苏苏', avatar: '苏苏.jpg', text: '给到夯！！！', time: '2026-06-16 19:50', photos: ['奶汤面.png'] },
+  { user: '迟来的晴天', avatar: '荷花头像.jpg', text: '蹲一个周末一起去文君井的搭子，这周末去🙋', time: '2026-03-15 14:02' },
+  { user: '迟来的晴天', avatar: '荷花头像.jpg', text: '我向往自由 我要谈恋爱 我真是 我X了狗了 我找不着对象 我去', time: '2026-04-08 22:31' },
+  { user: '迟来的晴天', avatar: '荷花头像.jpg', text: '好兄弟，一辈子🤝', time: '2026-05-20 19:47' },
+  { user: '小胡加把劲', avatar: '小胡.png', text: '入职邮件终于落地！收到了南京「金陵旧籍藏本库」的 offer，之后负责旧籍整理。史同女进藏本库工作，这是什么同人照进现实。以后白天修书，晚上继续给古人拉郎。', time: '2025-07-18 20:36' },
+  { user: '小胡加把劲', avatar: '小胡.png', text: '把微聊号改成工号了。现在连下班聊天都像在打卡，牛马感稳定上升。', time: '2025-09-03 22:11' },
+  { user: '小胡加把劲', avatar: '小胡.png', text: '年终总结：<br>旧籍整理进度尚可，史同文草稿坑比填得多。<br>明年想去陕西走走<br>想谈个男朋友<br>想把我磕的那对写出一篇真正能看的长篇。', time: '2025-12-31 23:42' },
+  { user: '小胡加把劲', avatar: '小胡.png', text: '最近总觉得以前那套密码设置方式不太稳。藏本库的密码只有四位，把数字保存在哪里都觉得不安全。换了个办法，用声音存一点只有自己知道的东西，安心多了。', time: '2026-02-19 00:17' },
+  { user: '小胡加把劲', avatar: '小胡.png', text: '年假批下来了，准备去爬华山！朋友圈有熟悉路线的吗？第一次去，除了山上之外，周边还有没有适合古建和历史爱好者顺路逛逛的地方？', time: '2026-05-09 18:26' },
+  { user: '小胡加把劲', avatar: '小胡.png', text: '渭南这趟刚结束，腿已经不是自己的了。回去前还要见一面网上认识的朋友，然后继续回南京做牛马。', time: '2026-05-12 16:08' }
+];
+
+function showMoments() {
+  const container = document.getElementById('momentsContent');
+  const contact = contactsData.find(c => c.id === currentDetailContactId);
+  const userName = contact ? contact.name : '';
+  const userAvatar = contact ? contact.avatar : '';
+  const filtered = momentsData.filter(p => p.user === userName);
+  const sorted = [...filtered].sort((a, b) => b.time.localeCompare(a.time));
+  container.innerHTML = `
+    <div style="height:200px;background:linear-gradient(135deg,#667085 0%,#3b4252 50%,#2d3748 100%);position:relative;flex-shrink:0;">
+      <span style="position:absolute;bottom:4px;right:88px;color:rgba(255,255,255,0.85);font-size:16px;font-weight:500;">${userName}</span>
+      <div style="position:absolute;bottom:-28px;right:20px;display:flex;align-items:flex-end;gap:10px;">
+        <div style="width:56px;height:56px;border-radius:6px;${userAvatar.startsWith('#') ? 'background:'+userAvatar : bgImage(userAvatar)};border:2px solid rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;">${userAvatar.startsWith('#') ? contact.letter : ''}</div>
+      </div>
+    </div>
+    <div style="padding:44px 20px 20px;">
+      ${sorted.map(p => `
+        <div style="display:flex;gap:12px;padding:16px 0;border-bottom:1px solid #efefef;">
+          <div style="width:40px;height:40px;border-radius:4px;${p.avatar.startsWith('#') ? 'background:'+p.avatar : bgImage(p.avatar)};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;">${p.avatar.startsWith('#') ? (p.letter || p.user.slice(0,1)) : ''}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;color:#576b95;font-weight:500;margin-bottom:4px;">${p.user}</div>
+            <div style="font-size:14px;color:#333;line-height:1.7;word-break:break-word;text-align:justify;">${p.text}</div>
+            ${p.photos && p.photos.length > 0 ? `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">${p.photos.map(ph => `<div style="border-radius:4px;overflow:hidden;border:1px solid #eee;width:160px;height:160px;flex-shrink:0;"><img src="${imgUrl(ph)}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`).join('')}</div>` : ''}
+            ${p.link ? `<div onclick="window.open('${p.link.url}','_blank')" style="margin-top:8px;border:1px solid #e6e6e6;border-radius:4px;overflow:hidden;cursor:pointer;background:#fafafa;display:flex;align-items:center;gap:10px;padding:10px 12px;">
+              <div style="width:36px;height:36px;border-radius:4px;background:#e8edee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;color:#8a9a96;">&#9670;</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:13px;color:#405051;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.link.title}</div>
+                <div style="font-size:11px;color:#a7b1b1;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.link.desc}</div>
+              </div>
+            </div>` : ''}
+            <div style="font-size:11px;color:#b0b0b0;margin-top:8px;">${p.time}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  document.getElementById('momentsModal').classList.add('show');
+}
+
+function toggleMenu() {
+  document.getElementById('menuModal').classList.add('show');
+}
+
+function closeMenu() {
+  document.getElementById('menuModal').classList.remove('show');
+}
+
+// Auto-resize textarea
+document.getElementById('wxMsgInput').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+});
+
+// Close menus on overlay click
+document.querySelectorAll('.wx-modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+});
+
+// Init chat UI after loading saved data
+loadAccountState();
+updateAccountUI();
+refreshStaticImages();
+loadChatData();
+if (accountState.current === 'secondary') {
+  if (!chatData.susu.messages.length) seedEmithAccount();
+  enforceEmithContacts();
+}
+restoreSidebar();
+if (accountState.current === 'secondary') addSidebarChat('susu');
+['kefu','file','system','susu'].forEach(refreshSidebarTime);
+clearSelectedChat();
+</script>
+</body>
+</html>

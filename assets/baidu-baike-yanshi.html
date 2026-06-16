@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>偃师_白度百科</title>
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: #f5f5f5;
+  color: #333;
+  font: 14px/1.8 Arial, "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+a { color: #136ec2; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.top {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 28px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+}
+.logo {
+  color: #2440b3;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+.search {
+  flex: 1;
+  display: flex;
+  max-width: 520px;
+}
+.search input {
+  flex: 1;
+  height: 32px;
+  border: 1px solid #b8b8b8;
+  border-right: 0;
+  padding: 0 9px;
+  color: #333;
+}
+.search button {
+  width: 86px;
+  height: 32px;
+  border: 1px solid #3385ff;
+  background: #3385ff;
+  color: #fff;
+}
+.page {
+  width: min(1080px, calc(100% - 32px));
+  margin: 18px auto 40px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 286px;
+  gap: 18px;
+}
+.main, .side {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+}
+.main { padding: 24px 30px 34px; }
+.crumb { color: #888; font-size: 12px; margin-bottom: 12px; }
+h1 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 400;
+  color: #222;
+}
+.summary {
+  margin-top: 12px;
+  padding: 14px 16px;
+  background: #fafafa;
+  border-left: 4px solid #4e8bd8;
+  color: #444;
+  text-indent: 2em;
+}
+.summary p { margin: 0 0 8px; }
+.summary p:last-child { margin-bottom: 0; }
+.basic {
+  margin-top: 18px;
+  border: 1px solid #e5e5e5;
+}
+.basic-title {
+  padding: 8px 12px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #e5e5e5;
+  font-weight: 700;
+}
+.basic-grid {
+  display: grid;
+  grid-template-columns: 118px 1fr 118px 1fr;
+}
+.term, .value {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+.term {
+  background: #fbfbfb;
+  color: #777;
+}
+.value { color: #333; }
+.section h2 {
+  margin: 24px 0 10px;
+  padding-left: 10px;
+  border-left: 4px solid #4e8bd8;
+  font-size: 22px;
+  font-weight: 400;
+}
+.section p {
+  margin: 0 0 10px;
+  text-indent: 2em;
+  text-align: justify;
+}
+.side { align-self: start; padding: 16px; }
+.card {
+  border: 1px solid #ececec;
+  background: #fafafa;
+  padding: 12px;
+}
+.card-title { font-weight: 700; margin-bottom: 10px; }
+.map {
+  height: 142px;
+  border: 1px solid #dfe8ee;
+  overflow: hidden;
+  background: #eef3f7;
+}
+.side-list {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  color: #666;
+  font-size: 13px;
+}
+.side-list li { padding: 7px 0; border-bottom: 1px dashed #e5e5e5; }
+.footer {
+  width: min(1080px, calc(100% - 32px));
+  margin: 0 auto 24px;
+  color: #999;
+  font-size: 12px;
+}
+@media (max-width: 820px) {
+  .page { display: block; }
+  .side { margin-top: 16px; }
+  .basic-grid { grid-template-columns: 98px 1fr; }
+  .top { padding: 0 12px; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">白度百科</div>
+  <form class="search">
+    <input value="偃" aria-label="搜索词">
+    <button type="button">进入词条</button>
+  </form>
+</header>
+
+<div class="page">
+  <main class="main">
+    <div class="crumb">首页 &gt; 词条 &gt; 人物 &gt; 古代人物</div>
+    <h1>偃师</h1>
+    <div class="summary">
+      <p>偃师，古代传说人物，见于《列子·汤问》等文献记载。相传其善作机关人偶，能使木偶举手投足、歌舞应节，形貌动作几可乱真。</p>
+      <p>相关故事中，偃师曾向周穆王献其所制倡者。此倡者不仅能行走唱和，还能顾盼示意，使旁观者一时难辨其为人还是机巧之物。</p>
+    </div>
+
+    <section class="basic">
+      <div class="basic-title">基本信息</div>
+      <div class="basic-grid">
+        <div class="term">中文名</div><div class="value">偃师</div>
+        <div class="term">身份</div><div class="value">古代传说中的工巧之人</div>
+        <div class="term">出处</div><div class="value">《列子·汤问》</div>
+        <div class="term">相关人物</div><div class="value">周穆王</div>
+        <div class="term">主要技艺</div><div class="value">机关、木偶、倡者制作</div>
+        <div class="term">资料状态</div><div class="value">历史词条缓存</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>人物记载</h2>
+      <p>据传，周穆王西巡归来时，偃师谒见并献上所造机关倡者。倡者外貌似人，行动亦似人，能随节拍歌舞，甚至向旁人递送眼色。穆王起初以为偃师带来真人，后见其剖开机关，才知其由革、木、胶、漆等物构成。</p>
+      <p>该故事常被视作中国古代关于机关术、仿生人偶和工巧想象的重要叙述之一。偃师之名也因此与“造人”“操纵”“以假乱真”等意象相连。</p>
+    </section>
+
+    <section class="section">
+      <h2>后世影响</h2>
+      <p>后世论及傀儡、机关、木偶与幻术时，常援引偃师故事。故事本身带有强烈的不安意味：被观看者似人而非人，被操纵者近似有心，却终究只是被拆解后露出内部结构的器物。</p>
+      <p>在现代语境中，偃师有时被重新解释为“傀儡师”式人物，即隐藏于幕后、使他者代为行动的人。</p>
+    </section>
+  </main>
+
+  <aside class="side">
+    <div class="card">
+      <div class="card-title">相关图片</div>
+      <div class="map"><img src="yanshi.png" alt="机关倡者" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+      <ul class="side-list">
+        <li>词条分类：古代人物</li>
+        <li>编辑次数：216</li>
+        <li>最近更新：2026-06-01</li>
+        <li>缓存来源：白度百科镜像</li>
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<div class="footer">本页面为百科类公开页面缓存，部分链接与编辑功能不可用。</div>
+</body>
+</html>

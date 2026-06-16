@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登源古会图录</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      padding: 12px;
+      background: #e5dfd1 url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAQAAAC1HAwCAAAADklEQVR42mNk+M+ACzAAADQAAf83Y3YAAAAASUVORK5CYII=");
+      color: #3b2b21;
+      font-family: SimSun, "宋体", serif;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    a { color: #7d271f; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .site {
+      width: min(1060px, 100%);
+      margin: 0 auto;
+      border: 1px solid #9a8467;
+      background: #fffdf6;
+      box-shadow: 0 2px 8px rgba(74,47,21,.22);
+    }
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 3px 10px;
+      border-bottom: 1px solid #c6af8c;
+      background: #f5eedc;
+      color: #876f55;
+      font-size: 12px;
+    }
+    .hero {
+      position: relative;
+      height: 188px;
+      overflow: hidden;
+      border-bottom: 1px solid #8f7758;
+      background: #6c4725;
+    }
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 54%;
+      filter: saturate(.78) contrast(.9) sepia(.22);
+      image-rendering: auto;
+    }
+    .hero:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, rgba(0,0,0,.08) 1px 3px),
+        radial-gradient(circle at center, transparent 62%, rgba(55,36,19,.28));
+      mix-blend-mode: multiply;
+    }
+    .hero:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(90deg, rgba(48,26,12,.48), rgba(48,26,12,.06) 64%, rgba(48,26,12,.22));
+    }
+    .hero-copy {
+      position: absolute;
+      left: 26px;
+      top: 35px;
+      z-index: 2;
+      color: #fff8df;
+      text-shadow: 1px 1px 2px #4b2516;
+    }
+    .hero-copy h1 {
+      margin: 0;
+      font-family: STKaiti, KaiTi, "楷体", serif;
+      font-size: 43px;
+      font-weight: normal;
+      letter-spacing: 0;
+    }
+    .hero-copy p {
+      margin: 4px 0 0;
+      padding-top: 4px;
+      border-top: 1px solid rgba(255,242,188,.62);
+      font-size: 16px;
+    }
+    .hero-stamp {
+      position: absolute;
+      right: 22px;
+      bottom: 18px;
+      z-index: 2;
+      width: 78px;
+      height: 78px;
+      padding-top: 15px;
+      border: 3px double #eed692;
+      border-radius: 50%;
+      color: #ffe6a6;
+      text-align: center;
+      font-family: STKaiti, KaiTi, serif;
+      font-size: 16px;
+      line-height: 1.35;
+      text-shadow: 1px 1px #6e321d;
+    }
+    .nav {
+      padding: 6px 13px;
+      border-top: 3px solid #b3201d;
+      border-bottom: 1px solid #c79e68;
+      background: #8e211c;
+      color: #f9e9bf;
+      font-weight: bold;
+      word-spacing: 9px;
+    }
+    .nav a { color: #fff2d1; }
+    .ticker {
+      display: flex;
+      align-items: center;
+      margin: 7px 9px 0;
+      padding: 4px 8px;
+      border: 1px solid #d0b98c;
+      background: #fff8df;
+      color: #8f3023;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .ticker b {
+      flex: 0 0 auto;
+      padding-right: 9px;
+      color: #b11918;
+    }
+    .ticker-track {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .ticker span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: crawl 22s linear infinite;
+    }
+    @keyframes crawl { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+    .layout {
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr);
+      gap: 10px;
+      padding: 9px;
+    }
+    .side-box, .main-box {
+      margin-bottom: 9px;
+      border: 1px solid #c2a47a;
+      background: #fffdf8;
+    }
+    .box-head {
+      padding: 4px 8px;
+      border-bottom: 1px solid #c2a47a;
+      background: linear-gradient(#f3e3bd, #e6c98d);
+      color: #783026;
+      font-weight: bold;
+    }
+    .menu { padding: 5px 9px; }
+    .menu a {
+      display: block;
+      padding: 4px 2px 4px 13px;
+      border-bottom: 1px dotted #cab58f;
+      background: linear-gradient(90deg, #fff8df, #fffdf8);
+    }
+    .menu a:before { content: "▪ "; color: #b5251e; }
+    .side-text { padding: 7px 9px; color: #6e5942; font-size: 13px; }
+    .lanterns { display: flex; justify-content: space-around; padding: 10px 5px; }
+    .lantern {
+      width: 37px;
+      height: 44px;
+      padding-top: 10px;
+      border: 2px solid #a3201d;
+      border-radius: 10px;
+      background: #e75232;
+      color: #ffe0a1;
+      text-align: center;
+      font-size: 15px;
+      box-shadow: inset 0 0 0 3px rgba(255,196,77,.35);
+    }
+    .counter {
+      padding: 10px 8px;
+      color: #765d40;
+      text-align: center;
+      font-size: 12px;
+    }
+    .digits {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 1px 5px;
+      border: 2px inset #aaa;
+      background: #222;
+      color: #8df07e;
+      font-family: "Courier New", monospace;
+      letter-spacing: 2px;
+    }
+    .article { padding: 11px 14px 14px; }
+    .article h2 {
+      margin: 0 0 8px;
+      padding: 0 0 4px 11px;
+      border-bottom: 2px solid #b62a20;
+      border-left: 6px solid #b62a20;
+      color: #772f26;
+      font-family: SimHei, "黑体", sans-serif;
+      font-size: 19px;
+      letter-spacing: 0;
+    }
+    .article h3 {
+      margin: 12px 0 5px;
+      color: #8d3828;
+      font-size: 15px;
+    }
+    .article p { margin: 7px 0; text-indent: 2em; }
+    .notice {
+      padding: 8px 10px;
+      border: 1px solid #dfc48d;
+      background: #fff8df;
+    }
+    .notice p { margin: 3px 0; }
+    .schedule {
+      width: 100%;
+      margin-top: 8px;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .schedule th, .schedule td {
+      padding: 5px 7px;
+      border: 1px solid #cbb68d;
+      text-align: left;
+    }
+    .schedule th { background: #f2e1bc; color: #783026; }
+    .ico { color: #b52820; font-weight: bold; }
+    .route {
+      position: relative;
+      height: 170px;
+      margin-top: 10px;
+      overflow: hidden;
+      border: 1px solid #cbb68d;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 24px, rgba(180,152,103,.11) 25px),
+        repeating-linear-gradient(90deg, transparent 0 24px, rgba(180,152,103,.11) 25px),
+        #fbf4df;
+    }
+    .route-map {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .route-map line {
+      stroke: #b02c23;
+      stroke-width: 1.4;
+      stroke-linecap: round;
+      filter: drop-shadow(0 1px 0 rgba(255,249,230,.75));
+    }
+    .route-map circle {
+      fill: #c15a31;
+      stroke: #fff8df;
+      stroke-width: .8;
+    }
+    .route-dot {
+      position: absolute;
+      z-index: 2;
+      min-width: 44px;
+      padding: 2px 4px;
+      border: 1px solid #ba8e53;
+      background: #fffaf0;
+      color: #75402f;
+      text-align: center;
+      font-size: 12px;
+      transform: translate(-50%, -50%);
+    }
+    .route-dot.center { left: 50%; top: 50%; border-color: #a21f1a; background: #f2d58e; font-weight: bold; }
+    .route-dot.n1 { left: 91%; top: 50%; }
+    .route-dot.n2 { left: 78%; top: 84%; }
+    .route-dot.n3 { left: 23%; top: 84%; }
+    .route-dot.n4 { left: 14%; top: 28%; }
+    .route-dot.n5 { left: 72%; top: 15%; }
+    .route-note {
+      position: absolute;
+      z-index: 3;
+      right: 5px;
+      top: 5px;
+      padding: 2px 5px;
+      border-left: 1px solid #bfa371;
+      color: #967a54;
+      font-size: 11px;
+      line-height: 1.35;
+      text-align: right;
+    }
+    .route-note b {
+      color: #795d39;
+      font-family: STKaiti, KaiTi, serif;
+      font-size: 16px;
+      font-weight: normal;
+    }
+    .photos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-top: 8px;
+    }
+    .photo {
+      padding: 7px 7px 4px;
+      border: 1px solid #c6ad82;
+      background: #eee2c8;
+      box-shadow: 1px 1px #ded0b5, inset 0 0 0 1px rgba(255,255,255,.35);
+    }
+    .photo-img {
+      height: 88px;
+      border: 1px solid #8d7a60;
+      background-image: url("spring-festival-procession-2007.jpg");
+      background-size: 360%;
+      filter: grayscale(.38) sepia(.48) contrast(.82) brightness(.96);
+      position: relative;
+      overflow: hidden;
+    }
+    .photo-img:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.07) 0 1px, rgba(0,0,0,.07) 1px 3px),
+        linear-gradient(135deg, rgba(255,245,210,.16), transparent 42%);
+      pointer-events: none;
+    }
+    .p1 { background-position: 7% 55%; }
+    .p2 { background-position: 39% 61%; }
+    .p3 { background-position: 66% 56%; }
+    .p4 { background-position: 91% 58%; }
+    .p5 { background-position: 53% 34%; }
+    .p6 { background-position: 25% 40%; }
+    .photo p { margin: 2px 0 0; text-indent: 0; color: #665442; text-align: center; font-size: 12px; }
+    .quote {
+      margin: 9px 0;
+      padding: 8px 12px;
+      border-left: 4px solid #c59652;
+      background: #f8efdc;
+      color: #694735;
+      font-family: STKaiti, KaiTi, serif;
+      font-size: 16px;
+    }
+    .goods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .goods span {
+      padding: 2px 8px;
+      border: 1px solid #d0b483;
+      background: #fff8df;
+      color: #79513b;
+    }
+    .guestbook { border-collapse: collapse; width: 100%; margin-top: 7px; font-size: 13px; }
+    .guestbook td { padding: 6px 7px; border: 1px solid #d0ba92; vertical-align: top; }
+    .guestbook td:first-child { width: 106px; background: #f6edda; color: #8b513d; }
+    .footer {
+      padding: 8px 10px;
+      border-top: 3px solid #8e211c;
+      background: #efe6d3;
+      color: #78664f;
+      text-align: center;
+      font-size: 12px;
+    }
+    @media (max-width: 760px) {
+      body { padding: 4px; }
+      .hero { height: 158px; }
+      .hero-copy { left: 14px; top: 32px; }
+      .hero-copy h1 { font-size: 33px; }
+      .layout { grid-template-columns: 1fr; }
+      aside { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+      .side-box { margin: 0; }
+      .photos { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="site">
+    <div class="topline"><span>欢迎访问登源古会民俗资料页</span><span>收藏本站 ｜ 设为首页 ｜ 联系我们</span></div>
+    <header class="hero">
+      <img src="spring-festival-procession-2007.jpg" alt="春季古会巡游旧照">
+      <div class="hero-copy"><h1>登源古会图录</h1><p>乡土民俗 · 春祀巡境 · 旧影辑录</p></div>
+      <div class="hero-stamp">乡人<br>共奉</div>
+    </header>
+    <nav class="nav"><a href="#notice">祭典公告</a>｜<a href="#history">古会沿革</a>｜<a href="#route">巡游流程</a>｜<a href="#photos">旧照图录</a>｜<a href="#story">传说小记</a>｜<a href="#guest">访客留言</a></nav>
+    <div class="ticker"><b>滚动公告：</b><div class="ticker-track"><span>花朝春祀古会将于本月举行，乡人共奉，祈安迎光。请沿街住户留意巡境队伍经过时段，夜巡灯火切勿拥挤。</span></div></div>
+    <div class="layout">
+      <aside>
+        <section class="side-box">
+          <div class="box-head">栏目导航</div>
+          <div class="menu">
+            <a href="#notice">祭典公告</a><a href="#history">古会沿革</a><a href="#route">巡游流程</a>
+            <a href="#photos">旧照图录</a><a href="#story">传说小记</a><a href="#goods">地方风物</a><a href="#guest">访客留言</a>
+          </div>
+        </section>
+        <section class="side-box">
+          <div class="box-head">古会印象</div>
+          <div class="lanterns"><div class="lantern">祈</div><div class="lantern">安</div><div class="lantern">春</div></div>
+          <div class="side-text">桥畔鼓乐，祠前香烟。四乡迎驾，灯火照路。每至会期，山里山外都添一层热闹。</div>
+        </section>
+        <section class="side-box">
+          <div class="box-head">资料整理</div>
+          <div class="side-text">本站收录乡人旧照、口述片段与历年会期简表，供民俗爱好者查阅。</div>
+        </section>
+        <section class="side-box counter">
+          您是第<br><span class="digits">008936</span><br>位来访者
+        </section>
+      </aside>
+      <main>
+        <section class="main-box article" id="notice">
+          <h2>祭典公告</h2>
+          <div class="notice">
+            <b>花朝春祀古会活动通知</b>
+            <p>本年古会依旧例启坛。会中设迎驾、巡境、祈安、鼓乐、献礼、夜巡、回銮诸仪，沿途经过古桥、河街、宗祠与旧戏台。愿护境安民，四时太平。</p>
+            <p>请参加巡游的乡亲依时到场，红绸、彩旗与灯笼队伍按木牌次序列队。香案沿街安置，乡人共奉，静候迎光。</p>
+          </div>
+        </section>
+        <section class="main-box article" id="history">
+          <h2>古会沿革</h2>
+          <p>登源古会流传已久。老人们说，早年山河多难，有一位古人少时起于乡间，后来聚众安民，护土守境，使一方乡里得免兵乱。其人身后，百姓念其恩德，于春日设坛迎驾，以寄托祈安之愿。</p>
+          <p>旧抄本中，常见“六地同祀”“一境共仰”“四乡迎驾”等语。地方旧称虽不尽相同，却多尊其为“越国旧封”“护境之主”或“太平之主”。每逢会期，河街、古道与村口牌楼前皆可见献礼队伍。</p>
+        </section>
+        <section class="main-box article" id="route">
+          <h2>巡游流程</h2>
+          <table class="schedule">
+            <tr><th>时辰</th><th>仪程</th><th>简记</th></tr>
+            <tr><td>清晨</td><td><span class="ico">♨</span> 启坛</td><td>祠前燃香，木牌依次安放</td></tr>
+            <tr><td>辰时</td><td><span class="ico">◆</span> 迎驾出会</td><td>神轿出门，彩旗列队</td></tr>
+            <tr><td>上午</td><td><span class="ico">≋</span> 过桥巡街</td><td>越古桥，入河街，沿石板古道巡行</td></tr>
+            <tr><td>巳时</td><td><span class="ico">●</span> 鼓乐开道</td><td>锣鼓齐鸣，社火队随行</td></tr>
+            <tr><td>午时</td><td><span class="ico">♨</span> 入庙献礼 · 祈安</td><td>乡人献糕、茶与祈福红绸</td></tr>
+            <tr><td>傍晚</td><td><span class="ico">⚑</span> 巡境</td><td>分路行至四乡，护境安民</td></tr>
+            <tr><td>夜间</td><td><span class="ico">◇</span> 回銮</td><td>花灯照路，过桥归祠</td></tr>
+          </table>
+          <h3>旧例巡行示意</h3>
+          <div class="route">
+            <svg class="route-map" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <line x1="50" y1="50" x2="91" y2="50"></line>
+              <line x1="50" y1="50" x2="78" y2="84"></line>
+              <line x1="50" y1="50" x2="23" y2="84"></line>
+              <line x1="50" y1="50" x2="14" y2="28"></line>
+              <line x1="50" y1="50" x2="72" y2="15"></line>
+              <circle cx="50" cy="50" r="1.6"></circle>
+              <circle cx="91" cy="50" r="1.25"></circle>
+              <circle cx="78" cy="84" r="1.25"></circle>
+              <circle cx="23" cy="84" r="1.25"></circle>
+              <circle cx="14" cy="28" r="1.25"></circle>
+              <circle cx="72" cy="15" r="1.25"></circle>
+            </svg>
+            <span class="route-dot center">宗祠</span><span class="route-dot n1">戏台</span><span class="route-dot n2">河桥</span>
+            <span class="route-dot n3">茶亭</span><span class="route-dot n4">牌楼</span><span class="route-dot n5">山门</span>
+            <span class="route-note"><b>☶</b><br>东北艮位，主山</span>
+          </div>
+        </section>
+        <section class="main-box article" id="photos">
+          <h2>旧照图录</h2>
+          <div class="photos">
+            <div class="photo"><div class="photo-img p1"></div><p>桥头开路</p></div>
+            <div class="photo"><div class="photo-img p2"></div><p>旧时迎驾影像</p></div>
+            <div class="photo"><div class="photo-img p3"></div><p>乡民献礼</p></div>
+            <div class="photo"><div class="photo-img p4"></div><p>古会夜巡</p></div>
+            <div class="photo"><div class="photo-img p5"></div><p>河畔鼓乐</p></div>
+            <div class="photo"><div class="photo-img p6"></div><p>祠前灯火</p></div>
+          </div>
+        </section>
+        <section class="main-box article" id="story">
+          <h2>传说小记</h2>
+          <p>乡间传说里，那位受奉者并非高坐云端的神祇。他曾在乱世中带人守住乡土，开境护民，使许多人得以安居。后世有称“某公”的，也有敬称“大帝”的，更多人只说他是护境之主、太平之主，是照临乡里者。</p>
+          <div class="quote">“每逢会期，老一辈总说，灯一亮，心就安了。”</div>
+          <p>所以古会里总少不了迎光、献灯与夜巡。鼓声从河桥一路传到山道，家家门前系起红绸，盼的是驱乱迎明、四时安顺。</p>
+        </section>
+        <section class="main-box article" id="goods">
+          <h2>地方风物</h2>
+          <p>这里山路回转，河道贴着村落穿行。白墙黑瓦之间，宗祠、木雕门楼与旧戏台彼此相望。春日访古，可以尝新茶、米糕，也能看见社火花灯与桥边古道。</p>
+          <div class="goods"><span>河边古道</span><span>石拱古桥</span><span>宗祠木雕</span><span>春茶</span><span>米糕</span><span>社火</span><span>花灯</span><span>祈福红绸</span></div>
+        </section>
+        <section class="main-box article" id="guest">
+          <h2>访客留言</h2>
+          <table class="guestbook">
+            <tr><td>山边人家<br>2008-03-12</td><td>小时候最盼这几天，锣鼓一响，全村都热闹起来了。</td></tr>
+            <tr><td>桥西旧客<br>2008-03-16</td><td>夜巡那段最有气氛，灯火一路照过去。</td></tr>
+            <tr><td>溪畔茶客<br>2009-02-28</td><td>老人总说，这场会保一年的顺当。</td></tr>
+            <tr><td>阿芸<br>2009-03-03</td><td>每年桥边都挤满人，抬轿队伍一过，大家都跟着走。</td></tr>
+            <tr><td>木楼听戏<br>2010-03-21</td><td>那些旧称呼现在年轻人不太懂了，但家里老人还记得。</td></tr>
+          </table>
+        </section>
+      </main>
+    </div>
+    <footer class="footer">登源古会民俗资料页 ｜ 地方文化影像整理小组 ｜ 2006-2010<br>本站资料仅作乡土文化交流使用</footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-04 安宁</title>
+<link rel="stylesheet" href="sys-frame.css">
+<link rel="preload" as="image" href="yuanyichumeeting.png">
+<link rel="preload" as="audio" href="结局04.WAV">
+<style>
+.meeting-screen {
+  width: min(980px, calc(100vw - 32px));
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  animation: endingAppear 1.1s ease both;
+}
+.meeting-screen.hidden {
+  display: none;
+}
+.meeting-frame {
+  width: min(560px, 72vw);
+  background: #050505;
+}
+.meeting-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: blur(24px);
+  opacity: 0;
+  transition: opacity 2.4s ease, filter 4s ease;
+}
+.meeting-frame img.visible {
+  opacity: 1;
+}
+.meeting-frame img.revealing {
+  filter: blur(0);
+}
+.meeting-audio {
+  display: none;
+}
+.meeting-actions {
+  min-height: 96px;
+  display: grid;
+  place-items: end center;
+}
+.story.leaving {
+  opacity: 0 !important;
+  filter: blur(6px);
+  transition: opacity 1.8s ease, filter 1.8s ease;
+}
+.story.leaving .line-in.shown {
+  opacity: 0;
+  visibility: visible;
+  filter: blur(6px);
+  transition: opacity 1.8s ease, filter 1.8s ease;
+}
+</style>
+</head>
+<body class="ending-e04">
+<main class="ending-shell" id="screen">
+  <section class="ending-content fade" id="titleScreen">
+    <div class="ending-id">E-04</div>
+    <h1 class="ending-title"><span class="gold">安宁</span></h1>
+  </section>
+
+  <section class="story hidden" id="storyScreen"></section>
+  <section class="story hidden" id="secondScreen"></section>
+  <section class="story hidden" id="thirdScreen"></section>
+  <section class="story hidden" id="fourthScreen"></section>
+  <section class="meeting-screen hidden" id="meetingScreen">
+    <div class="meeting-frame">
+      <img id="meetingImage" src="yuanyichumeeting.png?v=20260615-1449" alt="线上会议画面">
+    </div>
+    <audio id="endingAudio" class="meeting-audio" src="结局04.WAV" preload="auto"></audio>
+    <div class="meeting-actions">
+      <button class="ending-back hidden" id="backButton" type="button">回到结局前</button>
+    </div>
+  </section>
+</main>
+
+<script>
+const titleScreen = document.getElementById('titleScreen');
+const storyScreen = document.getElementById('storyScreen');
+const secondScreen = document.getElementById('secondScreen');
+const thirdScreen = document.getElementById('thirdScreen');
+const fourthScreen = document.getElementById('fourthScreen');
+const meetingScreen = document.getElementById('meetingScreen');
+const meetingImage = document.getElementById('meetingImage');
+const endingAudio = document.getElementById('endingAudio');
+const backButton = document.getElementById('backButton');
+const firstLines = [
+  '恶魔接受了交换。',
+  '大阿卡那沉入黑暗。',
+  '附着其上的魂，终于离席。',
+  '献祭之物失而复还。',
+  '这是属于你的伟大胜利。'
+];
+const secondLines = [
+  '“还没准备好吗？”',
+  '线上会议里，',
+  '朋友的声音打乱了你的思绪。',
+  '你又想起了之前的事。',
+  '事件解决后，你尝试联系了其他人。',
+  '并没有人回应你。'
+];
+const thirdLines = [
+  '“好了没，还不开摄像头？”',
+  '你不太懂为什么老师在周末安排这种活动，',
+  '这对于学习没有太大帮助吧。',
+  '这种时刻你总想起之前，',
+  '之前嘛……',
+  '奇怪……'
+];
+const fourthLines = [
+  '“那我开摄像头了哈。”'
+];
+const LINE_STEP = 72;
+const BUTTON_GAP = 50;
+
+function place(el, index, extra) {
+  el.style.setProperty('--line-top', ((index * LINE_STEP) + (extra || 0)) + 'px');
+}
+
+function addLine(section, text, className, index) {
+  const p = document.createElement('p');
+  p.textContent = text;
+  if (className) p.className = className;
+  p.classList.add('line-in');
+  place(p, index);
+  section.appendChild(p);
+  return p;
+}
+
+function addButton(section, text, onClick, index) {
+  const p = document.createElement('p');
+  p.className = 'center line-in';
+  place(p, index, BUTTON_GAP);
+  const btn = document.createElement('button');
+  btn.className = 'story-btn';
+  btn.type = 'button';
+  btn.textContent = text;
+  btn.addEventListener('click', onClick);
+  p.appendChild(btn);
+  section.appendChild(p);
+  requestAnimationFrame(() => p.classList.add('shown'));
+}
+
+function addBackButton() {
+  backButton.classList.remove('hidden');
+  requestAnimationFrame(() => backButton.classList.add('fade'));
+}
+
+function returnBeforeEnding() {
+  try { localStorage.setItem('citymystery_ending_search_trace', 'E-04'); } catch(e) {}
+  location.href = '../index.html';
+}
+
+function revealLines(section, lines, options) {
+  section.innerHTML = '';
+  const elements = lines.map((text, index) => {
+    let className = '';
+    if (options?.red?.includes(index)) className = 'final-red';
+    if (options?.center?.includes(index)) className = 'center';
+    return addLine(section, text, className, index);
+  });
+  lines.forEach((text, index) => {
+    setTimeout(() => {
+      const line = elements[index];
+      line.classList.add('shown');
+      if (index === lines.length - 1 && options?.after) {
+        setTimeout(options.after, 1750);
+      }
+    }, index * 1550);
+  });
+}
+
+function swap(from, to, reveal) {
+  from.classList.add('hidden');
+  to.classList.remove('hidden');
+  to.classList.add('fade');
+  if (reveal) reveal();
+}
+
+function preloadAssets() {
+  const imagePreload = new Image();
+  imagePreload.src = 'yuanyichumeeting.png?v=20260615-1449';
+  endingAudio.load();
+}
+
+function openCameraPrompt() {
+  window.setTimeout(() => {
+    while (!window.confirm('是否打开摄像头？')) {}
+    showMeeting();
+  }, 1500);
+}
+
+function showMeeting() {
+  fadeOutFourthScreen(() => {
+    fourthScreen.classList.add('hidden');
+    meetingScreen.classList.remove('hidden');
+    meetingScreen.classList.add('fade');
+    try {
+      const playPromise = endingAudio.play();
+      if (playPromise && playPromise.catch) playPromise.catch(() => {});
+    } catch(e) {}
+    window.requestAnimationFrame(() => {
+      meetingImage.classList.add('visible');
+    });
+    window.setTimeout(() => {
+      meetingImage.classList.add('revealing');
+    }, 4000);
+  });
+}
+
+function fadeOutFourthScreen(done) {
+  const targets = [fourthScreen].concat(Array.from(fourthScreen.querySelectorAll('.line-in.shown')));
+  if (!fourthScreen.animate) {
+    fourthScreen.classList.add('leaving');
+    window.setTimeout(done, 1800);
+    return;
+  }
+  targets.forEach((el) => {
+    el.animate([
+      { opacity: 1, filter: 'blur(0)' },
+      { opacity: 0, filter: 'blur(6px)' }
+    ], {
+      duration: 1800,
+      easing: 'ease',
+      fill: 'forwards'
+    });
+  });
+  window.setTimeout(done, 1850);
+}
+
+backButton.addEventListener('click', returnBeforeEnding);
+endingAudio.addEventListener('ended', addBackButton);
+preloadAssets();
+
+setTimeout(() => {
+  titleScreen.classList.add('hidden');
+  storyScreen.classList.remove('hidden');
+  storyScreen.classList.add('fade');
+  revealLines(storyScreen, firstLines, {
+    after: () => addButton(storyScreen, '两周后……', () => {
+      swap(storyScreen, secondScreen, () => revealLines(secondScreen, secondLines, {
+        after: () => addButton(secondScreen, '可能你就是无名英雄的角色吧。', () => {
+          swap(secondScreen, thirdScreen, () => revealLines(thirdScreen, thirdLines, {
+            after: () => addButton(thirdScreen, '算了，没什么好奇怪的。', () => {
+              swap(thirdScreen, fourthScreen, () => revealLines(fourthScreen, fourthLines, {
+                after: openCameraPrompt
+              }));
+            }, thirdLines.length)
+          }));
+        }, secondLines.length)
+      }));
+    }, firstLines.length)
+  });
+}, 3200);
+</script>
+</body>
+</html>

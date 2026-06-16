@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>驴友驿站 - 徒步穿越版 - 华山附近有什么值得逛的？</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#e8e4d8; color:#333; font:13px/1.6 Tahoma,Verdana,"Microsoft YaHei",sans-serif; }
+.top-ad { padding:10px 0; background:linear-gradient(135deg,#2d4a1e,#3d6a2e); border-bottom:1px solid #4a7a3a; color:#888; font-size:11px; letter-spacing:1px; text-align:center; }
+.top-ad span { color:#f0d060; }
+.topbar { display:flex; justify-content:space-between; padding:5px 20px; background:#4a6a3a; border-bottom:1px solid #3a5a2a; color:#ccc; font-size:12px; }
+.topbar a,.footer a { margin-left:12px; color:#c0d8a0; text-decoration:none; }
+.topbar a:hover,.footer a:hover { color:#fff; }
+.header { display:flex; position:relative; align-items:center; gap:24px; padding:18px 20px 14px; background:#5a8a4a; border-bottom:3px solid #4a7a3a; }
+.logo { color:#fff; font-size:24px; font-weight:bold; text-shadow:1px 1px 2px rgba(0,0,0,.3); }
+.logo small { margin-left:8px; color:#c0e0a0; font-size:11px; font-weight:normal; }
+.search-box { display:flex; gap:4px; margin-left:auto; }
+.search-box input { width:180px; padding:4px 8px; background:#f0ede4; border:1px solid #4a7a3a; font-size:12px; }
+.search-box button { padding:4px 12px; background:#4a7a3a; border:0; color:#fff; cursor:pointer; font-size:12px; }
+.search-box button:hover { background:#3a5a2a; }
+.search-result { display:none; position:absolute; z-index:20; top:58px; right:20px; width:420px; background:#fffdf8; border:1px solid #b8b09e; box-shadow:0 4px 12px rgba(60,50,35,.24); color:#555; }
+.search-result.show { display:block; }
+.sr-head { padding:7px 10px; background:#f0ece0; border-bottom:1px solid #d4cec0; color:#888; font-size:11px; }
+.sr-item { display:block; padding:10px 12px; color:#4a6a3a; line-height:1.65; text-decoration:none; }
+.sr-item:hover { background:#f5f2e8; color:#c00; }
+.sr-item small { display:block; color:#999; font-size:11px; }
+.sr-empty { padding:12px; color:#999; font-size:12px; }
+.navbar { padding:6px 20px; background:#f5f2e8; border-bottom:1px solid #d4cec0; font-size:12px; }
+.navbar a { padding:2px 10px; border-right:1px solid #d4cec0; color:#4a6a3a; text-decoration:none; }
+.navbar a:hover { color:#c00; }
+.breadcrumb { padding:8px 20px; background:#f0ece0; border-bottom:1px solid #d4cec0; color:#888; font-size:12px; }
+.breadcrumb a { color:#4a6a3a; text-decoration:none; }
+.board-header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:#f0ece0; border-bottom:1px solid #d4cec0; }
+.board-name { color:#4a6a3a; font-size:16px; font-weight:bold; }
+.board-desc,.page-info { color:#888; font-size:12px; }
+.main { display:flex; max-width:1100px; margin:0 auto; padding:12px 0; gap:14px; }
+.content { min-width:0; flex:1; }
+.post-header,.post-main,.reply,.panel { background:#faf8f2; border:1px solid #d4cec0; }
+.post-header { padding:14px 16px; margin-bottom:10px; }
+.post-header h1 { margin-bottom:6px; color:#222; font-size:18px; }
+.post-meta { color:#999; font-size:12px; }
+.post-meta a { color:#4a6a3a; text-decoration:none; }
+.post-main,.reply { margin-bottom:8px; }
+.post-head,.reply-head { display:flex; justify-content:space-between; padding:7px 16px; background:#f0ece0; border-bottom:1px solid #d4cec0; color:#888; font-size:12px; }
+.floor { color:#c00; font-weight:bold; }
+.post-body,.reply-body { display:flex; gap:14px; padding:13px 16px; }
+.user-info { width:110px; flex-shrink:0; text-align:center; }
+.avatar { display:flex; align-items:center; justify-content:center; width:46px; height:46px; margin:0 auto 5px; border-radius:50%; background:#d4cec0; color:#888; font-size:15px; }
+.uname { color:#4a6a3a; font-size:12px; font-weight:bold; }
+.utitle,.uinfo { margin-top:3px; color:#aaa; font-size:11px; line-height:1.5; }
+.post-content,.reply-content { min-width:0; flex:1; color:#444; font-size:13px; line-height:1.85; }
+.post-content p,.reply-content p { margin-bottom:7px; }
+.quote { margin:5px 0 7px; padding:6px 10px; background:#f0ece0; border-left:2px solid #bbb; color:#888; font-size:12px; }
+.post-foot,.reply-foot { display:flex; justify-content:space-between; padding:4px 16px; background:#f5f2e8; border-top:1px solid #d4cec0; color:#999; font-size:11px; }
+.post-foot a,.reply-foot a { margin-left:10px; color:#4a6a3a; text-decoration:none; }
+.pagination { padding:14px 0; text-align:center; }
+.pagination a { display:inline-block; padding:4px 10px; background:#4a6a3a; border:1px solid #4a6a3a; color:#fff; text-decoration:none; }
+.sidebar { width:260px; flex-shrink:0; }
+.panel { margin-bottom:10px; }
+.panel h3 { padding:6px 12px; background:#4a6a3a; color:#fff; font-size:12px; letter-spacing:1px; }
+.panel-body { padding:10px 12px; color:#888; font-size:12px; line-height:2; }
+.panel-body a { display:block; overflow:hidden; color:#4a6a3a; text-decoration:none; text-overflow:ellipsis; white-space:nowrap; }
+.panel-body a:hover { color:#c00; }
+.panel-body span { color:#333; }
+.hot-tag { display:inline-block; margin-right:4px; padding:0 4px; background:#c00; color:#fff !important; font-size:10px; }
+.bottom-ad { margin-top:10px; padding:14px; background:#f0ece0; border-top:1px solid #d4cec0; border-bottom:1px solid #d4cec0; color:#aaa; font-size:11px; text-align:center; }
+.footer { margin-top:10px; padding:16px; background:#4a6a3a; border-top:3px solid #3a5a2a; color:#888; font-size:11px; text-align:center; }
+@media(max-width:760px) { .main{display:block;padding:8px}.sidebar{width:auto}.header{padding:14px 12px}.logo{font-size:20px}.search-box input{width:155px}.search-result{right:12px;width:min(420px,calc(100vw - 24px))}.board-header{padding:10px 12px}.page-info{display:none}.post-body,.reply-body{display:block;padding:11px 12px}.user-info{display:flex;width:auto;align-items:center;gap:7px;margin-bottom:8px;text-align:left}.avatar{width:34px;height:34px;margin:0}.utitle,.uinfo{display:none} }
+</style>
+</head>
+<body>
+<div class="top-ad"><span>[广告]</span> 驴友驿站 · 爱旅行爱生活 | 注册送 50 元旅行优惠券</div>
+<div class="topbar">
+  <div>欢迎您，<a href="#">游客</a><a href="#">登录</a><a href="#">注册</a></div>
+  <div><a href="#">收藏本页</a><a href="#">RSS</a><a href="#">帮助</a></div>
+</div>
+<div class="header">
+  <div class="logo">驴友驿站 <small>Travelers' Inn</small></div>
+  <div class="search-box"><input id="siteSearch" type="text" placeholder="搜索游记、攻略、目的地..."><button type="button" onclick="searchSite()">搜索</button></div>
+  <div class="search-result" id="searchResult"></div>
+</div>
+<div class="navbar"><a href="#">首页</a><a href="#">自驾旅行</a><a href="#">徒步穿越</a><a href="#">人文古迹</a><a href="#">自然风光</a><a href="#">摄影天地</a><a href="#">装备交流</a><a href="#">结伴同行</a><a href="#">论坛事务</a></div>
+<div class="breadcrumb"><a href="#">驴友驿站</a> &raquo; <a href="#">徒步穿越</a> &raquo; <a href="#">旅行咨询</a> &raquo; 华山附近有什么值得逛的？</div>
+<div class="board-header"><div><div class="board-name">徒步穿越</div><div class="board-desc">登山徒步 / 路线攻略 / 旅行咨询 / 结伴同行</div></div><div class="page-info">帖数: 3,287　主题: 406　今日: 18</div></div>
+<div class="main">
+  <div class="content">
+    <div class="post-header"><h1>华山附近有什么值得逛的？</h1><div class="post-meta">发表在 <a href="#">旅行咨询</a>　|　楼主 <a href="#">古月爱古籍</a>　|　2026-05-10 18:42　|　回复 4　|　阅读 119</div></div>
+    <div class="post-main">
+      <div class="post-head"><span><span class="floor">#1</span> 楼主</span><span>发表于 2026-05-10 18:42</span></div>
+      <div class="post-body"><div class="user-info"><div class="avatar">古</div><div><div class="uname">古月爱古籍</div><div class="utitle">注册驴友</div><div class="uinfo">帖 12<br>积分 86</div></div></div><div class="post-content"><p>第一次来爬华山，打算在附近多留一两天。除了登山之外，周边有没有适合慢慢逛的地方？我平时做古籍研究，对古建、碑刻和历史遗迹比较感兴趣。</p><p>另外也想请大家推荐些当地吃的，行程还没完全定下来，交通方便的话都可以考虑。谢谢！</p></div></div>
+      <div class="post-foot"><span><a href="#">引用</a><a href="#">回复</a><a href="#">报告</a></span><span><a href="#">顶部</a></span></div>
+    </div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#2</span></span><span>发表于 2026-05-10 19:06</span></div><div class="reply-body"><div class="user-info"><div class="avatar">星</div><div><div class="uname">背包客阿星</div><div class="utitle">金牌驴友</div></div></div><div class="reply-content"><p>欢迎来陕西！华山下来可以先逛西岳庙，离得近，古建格局也完整。时间宽裕的话，潼关古城、黄河古渡口也可以顺路看看，傍晚走走挺舒服。</p><p>吃的可以试试肉夹馍、油泼面、凉皮，还有当地的踅面。你既然对历史遗迹感兴趣，也可以看看渭南市的地图，某个区县可能有你会喜欢的名胜古迹。<strong>比如有个地方是一位西汉史学大家的故乡呢。</strong></p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 8</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#3</span></span><span>发表于 2026-05-10 19:18</span></div><div class="reply-body"><div class="user-info"><div class="avatar">古</div><div class="uname">古月爱古籍</div></div><div class="reply-content"><div class="quote">引用 背包客阿星：也可以看看渭南市的地图，某个区县可能有你会喜欢的名胜古迹。</div><p>谢谢阿星老师！西岳庙和潼关我先记下来，地图也会认真看看。吃的看着都很适合爬山以后补充体力。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 1</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#4</span></span><span>发表于 2026-05-10 19:31</span></div><div class="reply-body"><div class="user-info"><div class="avatar">星</div><div class="uname">背包客阿星</div></div><div class="reply-content"><p>不客气。我手里还有一份比较细的路线攻略，论坛附件不太方便发。可以加个微聊，到时候把路线和交通方式发给你。</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 3</span></div></div>
+    <div class="reply"><div class="reply-head"><span><span class="floor">#5</span></span><span>发表于 2026-05-10 19:39</span></div><div class="reply-body"><div class="user-info"><div class="avatar">古</div><div class="uname">古月爱古籍</div></div><div class="reply-content"><p>好的，麻烦阿星老师加我吧。我的微聊号是：GZ-1002</p></div></div><div class="reply-foot"><span><a href="#">引用</a><a href="#">回复</a></span><span>点赞 0</span></div></div>
+    <div class="pagination"><a href="#">1</a></div>
+  </div>
+  <aside class="sidebar">
+    <div class="panel"><h3>版块统计</h3><div class="panel-body">主题: <span>406</span><br>帖子: <span>3,287</span><br>今日发帖: <span>18</span><br>在线人数: <span>37</span></div></div>
+    <div class="panel"><h3>热门帖子</h3><div class="panel-body"><a href="#"><span class="hot-tag">热</span> 华山一日上下山路线分享</a><a href="#"><span class="hot-tag">热</span> 第一次徒步需要带哪些装备</a><a href="#">太行山徒步穿越实用装备清单</a><a href="#">雨季登山鞋防滑体验记录</a><a href="#">秦岭轻装徒步路线求推荐</a><a href="#">一个人背包走了十五天</a><a href="#">山里夜间露营注意事项</a></div></div>
+    <div class="panel"><h3>本周活跃</h3><div class="panel-body">1. 背包客阿星 (47帖)<br>2. 城南旧事 (35帖)<br>3. 拂晓晨曦 (29帖)<br>4. 单车环游 (22帖)<br>5. 月下独酌 (16帖)</div></div>
+    <div class="panel"><h3 style="background:#c00;">赞助商</h3><div class="panel-body" style="text-align:center;color:#aaa;font-size:11px;line-height:1.6;">驴友驿站 · 旅行者的精神家园<br>本站由 途游网络 提供支持<br><span style="color:#bbb;">广告投放请联系 admin@lvyouinn.com</span></div></div>
+  </aside>
+</div>
+<div class="bottom-ad"><span style="color:#c00;">[广告]</span> 春季登山装备特惠　|　徒步鞋、登山杖、轻便背包　|　会员满额包邮</div>
+<div class="footer"><p><a href="#">关于我们</a> | <a href="#">联系我们</a> | <a href="#">版权声明</a> | <a href="#">隐私条款</a></p><p style="margin-top:6px;">Travelers' Inn &copy; 2026 驴友驿站 | Powered by Emith</p></div>
+<script>
+function searchSite() {
+  var query = document.getElementById('siteSearch').value.trim();
+  var result = document.getElementById('searchResult');
+  if (query === '华山附近有什么值得逛的') {
+    result.innerHTML = '<div class="sr-head">站内搜索：找到 1 条相关主题</div><a class="sr-item" href="huashan-consult.html">华山附近有什么值得逛的？<small>古月爱古籍 · 2026-05-10 18:42 · 徒步穿越 / 旅行咨询</small></a>';
+  } else if (query === '洛阳洛河沿岸古代城址遗址两日记录') {
+    result.innerHTML = '<div class="sr-head">站内搜索：找到 1 条相关主题</div><a class="sr-item" href="forum-warring-states.html">洛阳洛河沿岸古代城址遗址两日记录<small>背包客阿星 · 2026-04-12 09:30 · 自驾旅行 / 人文古迹</small></a>';
+  } else {
+    result.innerHTML = '<div class="sr-head">站内搜索</div><div class="sr-empty">没有找到相关主题，请尝试更完整的关键词。</div>';
+  }
+  result.classList.add('show');
+}
+document.getElementById('siteSearch').addEventListener('keydown', function(e) { if (e.key === 'Enter') searchSite(); });
+</script>
+</body>
+</html>

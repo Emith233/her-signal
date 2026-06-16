@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>贴吧 · 冷知识讨论</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background: #f0f2f5;
+  color: #2d2d2d;
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  background: #fff;
+  min-height: 100vh;
+}
+.header {
+  background: #2b4f8c;
+  color: #fff;
+  padding: 12px 16px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header .name { font-weight: 600; }
+.header .info { font-size: 11px; opacity: 0.7; }
+
+.main-post {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid #e8e8e8;
+}
+.main-post .title {
+  font-size: 17px;
+  font-weight: 650;
+  color: #111;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.main-post .meta {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.main-post .meta .uname { color: #2b4f8c; font-weight: 600; }
+.main-post .meta .tag {
+  background: #f0f2f5;
+  color: #666;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+.main-post .body { font-size: 14px; color: #333; line-height: 1.8; }
+
+.floor {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e8e8e8;
+}
+.floor .f-meta {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.floor .f-meta .uname { color: #2b4f8c; font-weight: 600; }
+.floor .f-meta .floor-num { color: #bbb; font-size: 11px; }
+.floor .f-meta .ip  {
+  font-size: 11px;
+  color: #aaa;
+}
+.floor .f-body { font-size: 14px; color: #333; line-height: 1.8; }
+.floor .f-body .highlight { color: #b85c3a; }
+
+.footer {
+  padding: 20px 16px;
+  text-align: center;
+  font-size: 11px;
+  color: #ccc;
+  background: #fafafa;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <span class="name">冷知识吧</span>
+  <span class="info">· 讨论区</span>
+</div>
+
+<div class="main-post">
+  <div class="title">封狼居胥的大将军是我们这里人，为什么从来不宣传呢？</div>
+  <div class="meta">
+    <span class="uname">河西布衣</span>
+    <span>05-24</span>
+    <span class="tag">讨论</span>
+  </div>
+  <div class="body">
+    如题。那位封狼居胥的大将军，故里就在我们这一带。但是从小到大，从来没见当地宣传过这件事。附近几个村的长辈倒是都知道，可外面的人几乎没听说的。<br><br>
+    隔壁省随便一个历史人物都能吹上天，我们这位可是封狼居胥的主儿，怎么就没人提呢？想不通。
+  </div>
+</div>
+
+<div class="floor">
+  <div class="f-meta">
+    <span class="uname">历史爱好者001</span>
+    <span class="floor-num">1楼</span>
+    <span class="ip">IP: 山西</span>
+  </div>
+  <div class="f-body">真的假的？头一回听说这事，有史料依据吗？</div>
+</div>
+
+<div class="floor">
+  <div class="f-meta">
+    <span class="uname">赵铁柱</span>
+    <span class="floor-num">2楼</span>
+    <span class="ip">IP: 山西</span>
+  </div>
+  <div class="f-body">
+    我们高堆村的。确实从小就听说大将军是从我们村出去的，村口以前还有祠堂呢。<br><br>
+    不过我一直有个疑问——既然我们村叫高堆，那他为什么不姓高呢？
+  </div>
+</div>
+
+<div class="floor">
+  <div class="f-meta">
+    <span class="uname">关中大侠</span>
+    <span class="floor-num">3楼</span>
+    <span class="ip">IP: 陕西</span>
+  </div>
+  <div class="f-body">高堆这个地名很古了，跟姓氏应该没关系。况且你不是叫赵铁柱吗？也不姓高啊。</div>
+</div>
+
+<div class="floor">
+  <div class="f-meta">
+    <span class="uname">路人丁</span>
+    <span class="floor-num">4楼</span>
+    <span class="ip">IP: 河南</span>
+  </div>
+  <div class="f-body">不是，封狼居胥的大将军哎，这都不宣传？浪费啊。我们这出个秀才都恨不得立碑。</div>
+</div>
+
+<div class="floor">
+  <div class="f-meta">
+    <span class="uname">爱吃猫的鱼</span>
+    <span class="floor-num">5楼</span>
+    <span class="ip">IP: 未知</span>
+  </div>
+  <div class="f-body">当地确实不重视文化宣传，我去过那边，也没看到什么标识牌。</div>
+</div>
+
+<div class="floor">
+  <div class="f-meta">
+    <span class="uname">史海沉钩</span>
+    <span class="floor-num">6楼</span>
+    <span class="ip">IP: 北京</span>
+  </div>
+  <div class="f-body">
+    高堆村没错，确实是那位大将军的故里。《史记》和《汉书》里都提到了他的籍贯，就在这一带。<br><br>
+    不宣传的原因嘛，可能跟当地经济条件有关，也可能是没意识到这个资源的价值。隔壁省一个名人故居都能搞成景区，咱们这守着这么大的 IP 不用，确实可惜。
+  </div>
+</div>
+
+<div class="floor">
+  <div class="f-meta">
+    <span class="uname">杏花村酒徒</span>
+    <span class="floor-num">7楼</span>
+    <span class="ip">IP: 山西</span>
+  </div>
+  <div class="f-body">@赵铁柱 大将军不姓高，高堆是地名，古称&ldquo;膏腴之堆&rdquo;，意思是土地肥沃的地方。跟姓氏没有关系。</div>
+</div>
+
+<div class="floor">
+  <div class="f-meta">
+    <span class="uname">南柯一梦</span>
+    <span class="floor-num">8楼</span>
+    <span class="ip">IP: 江苏</span>
+  </div>
+  <div class="f-body">楼主说的是那位冠军侯吗？确实是顶级名将，这都不宣传属实想不通。</div>
+</div>
+
+<div class="floor">
+  <div class="f-meta">
+    <span class="uname">河西布衣</span>
+    <span class="floor-num">9楼</span>
+    <span class="ip">IP: 山西</span>
+  </div>
+  <div class="f-body">
+    感谢各位科普。看来确实是我们这的，就是当地不上心。<br><br>
+    希望以后能重视起来吧，这么好的历史文化资源，埋没了真的可惜。
+  </div>
+</div>
+
+<div class="footer">
+  Powered by <b>Emith</b>
+</div>
+
+</div>
+</body>
+</html>

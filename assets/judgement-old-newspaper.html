@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>越郡旧报影印存页</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 14px;
+      background: #2f2b28;
+      color: #292018;
+      font-family: SimSun, "宋体", serif;
+    }
+    .desk {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      padding: 16px;
+      border: 1px solid #4a3b31;
+      background:
+        repeating-linear-gradient(91deg, rgba(255,255,255,.025) 0 2px, transparent 2px 17px),
+        #4b3930;
+      box-shadow: inset 0 0 32px rgba(0,0,0,.44);
+    }
+    .archive-strip {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      padding: 5px 8px;
+      border: 1px solid #99856d;
+      background: #d5c39e;
+      color: #67523d;
+      font-size: 12px;
+    }
+    .paper {
+      position: relative;
+      min-height: 1020px;
+      overflow: hidden;
+      border: 1px solid #b49d73;
+      background:
+        radial-gradient(circle at 14% 9%, rgba(135,89,38,.13), transparent 19%),
+        radial-gradient(circle at 84% 70%, rgba(112,65,25,.11), transparent 18%),
+        repeating-linear-gradient(0deg, transparent 0 25px, rgba(100,70,40,.035) 26px),
+        #e9dbb8;
+      box-shadow: 0 5px 13px rgba(0,0,0,.35);
+      user-select: none;
+      touch-action: none;
+      --lamp-x: 78%;
+      --lamp-y: 78%;
+    }
+    .paper, .paper * {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .paper:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, transparent 49.7%, rgba(95,62,31,.14) 50%, transparent 50.3%),
+        linear-gradient(0deg, transparent 86%, rgba(83,48,23,.08) 86.4%, transparent 87%);
+      mix-blend-mode: multiply;
+    }
+    .print {
+      position: absolute;
+      inset: 0;
+      padding: 22px 25px 32px;
+    }
+    .base {
+      z-index: 2;
+    }
+    .reveal {
+      z-index: 3;
+      pointer-events: none;
+      -webkit-mask-image: radial-gradient(circle 145px at var(--lamp-x) var(--lamp-y), #000 0 43%, rgba(0,0,0,.75) 61%, transparent 100%);
+      mask-image: radial-gradient(circle 145px at var(--lamp-x) var(--lamp-y), #000 0 43%, rgba(0,0,0,.75) 61%, transparent 100%);
+    }
+    .masthead {
+      padding-bottom: 7px;
+      border-bottom: 4px double #4d3927;
+      text-align: center;
+    }
+    .masthead h1 {
+      margin: 0;
+      font-family: STKaiti, KaiTi, "楷体", serif;
+      font-size: 44px;
+      font-weight: normal;
+      letter-spacing: 6px;
+    }
+    .masthead p {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0 0;
+      color: #64523f;
+      font-size: 12px;
+      letter-spacing: 0;
+    }
+    .headline {
+      margin: 16px 0 5px;
+      text-align: center;
+      font-family: STKaiti, KaiTi, serif;
+      font-size: 31px;
+      letter-spacing: 2px;
+    }
+    .subhead {
+      margin: 0 0 13px;
+      text-align: center;
+      color: #6f543b;
+      font-size: 14px;
+    }
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      font-size: 15px;
+      line-height: 1.75;
+      text-align: justify;
+    }
+    .col + .col { border-left: 1px solid #988466; padding-left: 18px; }
+    .columns p { margin: 0 0 12px; text-indent: 2em; }
+    .columns p.drop { text-indent: 0; }
+    .drop:first-letter {
+      float: left;
+      margin: 5px 5px 0 0;
+      font-size: 39px;
+      line-height: .85;
+    }
+    .ink {
+      position: relative;
+      display: inline-block;
+      min-width: 48px;
+      height: 1.05em;
+      transform: rotate(-1deg);
+      border-radius: 38%;
+      background:
+        repeating-linear-gradient(8deg, #28221e 0 4px, #3d332b 5px 7px);
+      vertical-align: -.12em;
+      box-shadow: 0 0 2px #211b17;
+    }
+    .ink em {
+      position: absolute;
+      inset: 0;
+      color: #8a201c;
+      font-style: normal;
+      font-weight: bold;
+      line-height: 1.05em;
+      text-align: center;
+      opacity: 0;
+      transition: opacity .12s;
+    }
+    .reveal .ink { background: rgba(234,213,166,.96); box-shadow: none; }
+    .reveal .ink em { opacity: 1; }
+    .ink.wide { min-width: 82px; }
+    .ink.short { min-width: 48px; }
+    .feature {
+      display: grid;
+      grid-template-columns: 148px 1fr;
+      gap: 12px;
+      margin: 14px 0;
+      padding: 9px;
+      border: 1px solid #aa956f;
+      background: rgba(255,248,224,.33);
+    }
+    .portrait {
+      position: relative;
+      height: 190px;
+      overflow: hidden;
+      border: 4px solid #d8c59f;
+      outline: 1px solid #7e6b50;
+      background: linear-gradient(#99866c, #d1bd95);
+      filter: grayscale(1) sepia(.55) contrast(.88);
+    }
+    .portrait.blank {
+      background:
+        repeating-linear-gradient(0deg, rgba(100,81,52,.045) 0 1px, transparent 1px 8px),
+        #d9c8a4;
+    }
+    .portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+    }
+    .caption { margin-top: 5px; color: #66513b; text-align: center; font-size: 12px; }
+    .feature h2 { margin: 0 0 5px; border-bottom: 1px solid #aa956f; font-size: 19px; }
+    .feature p { margin: 6px 0; font-size: 14px; line-height: 1.65; }
+    .editorial {
+      margin: 14px 0 10px;
+      padding: 10px 13px;
+      border: 1px solid #a58e68;
+      background: rgba(255,250,235,.44);
+    }
+    .editorial h2 { margin: 0 0 4px; font-size: 18px; }
+    .editorial p { margin: 3px 0; font-size: 14px; line-height: 1.8; }
+    .hand-note {
+      margin: 10px 5px 0;
+      color: #782c24;
+      font-family: STKaiti, KaiTi, serif;
+      font-size: 21px;
+      transform: rotate(-1deg);
+    }
+    .stamp {
+      position: absolute;
+      right: 42px;
+      bottom: 70px;
+      z-index: 4;
+      width: 104px;
+      height: 104px;
+      padding-top: 26px;
+      transform: rotate(-13deg);
+      border: 5px double rgba(146,45,32,.64);
+      border-radius: 50%;
+      color: rgba(146,45,32,.67);
+      text-align: center;
+      font-weight: bold;
+      line-height: 1.35;
+    }
+    .lamp {
+      position: absolute;
+      left: var(--lamp-x);
+      top: var(--lamp-y);
+      z-index: 8;
+      width: 106px;
+      height: 150px;
+      transform: translate(-50%, -52%);
+      cursor: grab;
+      filter: drop-shadow(3px 5px 3px rgba(0,0,0,.5));
+    }
+    .lamp:active { cursor: grabbing; }
+    .lamp-glow {
+      position: absolute;
+      left: 50%;
+      top: 38%;
+      z-index: -1;
+      width: 260px;
+      height: 260px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,219,119,.34), rgba(255,199,83,.13) 38%, transparent 68%);
+      pointer-events: none;
+    }
+    .lamp img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+    .lamp-note {
+      position: absolute;
+      right: 17px;
+      bottom: 14px;
+      z-index: 7;
+      padding: 3px 7px;
+      border: 1px solid #ad956e;
+      background: rgba(239,220,176,.84);
+      color: #6b543e;
+      font-size: 12px;
+    }
+    @media (max-width: 720px) {
+      body { padding: 5px; }
+      .desk { padding: 7px; }
+      .paper { min-height: 1390px; }
+      .print { padding: 16px 14px 25px; }
+      .masthead h1 { font-size: 31px; letter-spacing: 3px; }
+      .headline { font-size: 24px; }
+      .columns { grid-template-columns: 1fr; gap: 0; font-size: 14px; }
+      .col + .col { border-left: 0; padding-left: 0; }
+      .feature { grid-template-columns: 118px 1fr; }
+      .portrait { height: 170px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="desk">
+    <div class="archive-strip"><span>地方文献影印存页 · 卷七</span><span>纸本缺损，部分墨迹待辨</span></div>
+    <section class="paper" id="paper">
+      <article class="print base">
+        <header class="masthead">
+          <h1>越郡旧报</h1>
+          <p><span>光绪三十三年丁未六月初七</span><span>第七百二十九号 · 石印本</span><span>每份售钱五文</span></p>
+        </header>
+        <h2 class="headline">城中学堂夜半遭围　女界闻人案情未明</h2>
+        <p class="subhead">搜检书札若干　堂中器物封存　地方议论纷纷</p>
+        <div class="columns">
+          <div class="col"><p class="drop">本埠昨夜风雨骤作，巡勇忽集于城中一所学堂之外。更深时分，堂门开启，一女子随役而出。闻其平日往来女学诸处，曾倡办讲习，劝女子读书习艺。其姓名为墨迹所污，已难辨认。</p><p>据邻里言，此人早年曾东渡海外，归来后衣着简朴，言谈慷慨。案发之夜，堂内尚有书册、短札及一柄佩剑。巡勇检点多时，至天将明始散。</p></div>
+          <div class="col"><p>有老报人记曰：此案仓促，未闻详讯，亦未见供词。押行所至，近城中一处<span class="ink wide"><em>轩亭口</em></span>。雨声不止，沿街门户半闭，惟远处更鼓可闻。</p><p>学堂旧为讲习之所，门额大通已被墨笔重涂。又有一处旧居，堂名<span class="ink wide"><em>和畅堂</em></span>，据说庭中植有腊梅。</p></div>
+          <div class="col"><p>女界中人多不敢言。有学生在散落纸片上写道：“读书明理，不应仅为男子设。”末署已破损，仅余一个模糊的“竞”字旁形。</p><p>至于此案缘由，传闻不一。有人说她在海外时已剪短发、习骑射；也有人说她常以剑自随。此等小节，难作凭据。惟其兴女学、办报章之事，城中识者多有耳闻。</p></div>
+        </div>
+        <section class="feature">
+          <div><div class="portrait blank"></div><div class="caption">旧照残片 · 来源不详</div></div>
+          <div>
+            <h2>旧照旁记</h2>
+            <p>残片背面以铅笔记有：“短发，长衫，佩剑。女学诸生曾往来于此。”</p>
+            <p>照片边角可见学堂门额，已被后人剪去。纸背另有两句诗：</p>
+            <p>“……秋雨愁煞人。”</p>
+          </div>
+        </section>
+        <section class="editorial">
+          <h2>报馆附记</h2>
+          <p>此页传抄数次，涂抹尤多。亭口、学堂、旧居诸地名皆被墨覆，疑为后人有意为之。</p>
+          <p>页边红字不知何人所留：“此案无供词，何以定罪？”</p>
+        </section>
+        <div class="hand-note">此案无供词，何以定罪？</div>
+      </article>
+      <div class="stamp">馆藏影印<br>残页</div>
+      <div class="lamp-note">拖动油灯查看墨迹</div>
+      <div class="lamp" id="lamp" role="button" aria-label="拖动油灯查看墨迹">
+        <i class="lamp-glow"></i><img src="kerosene-lamp.png" alt="" draggable="false">
+      </div>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const paper = document.getElementById('paper');
+      const lamp = document.getElementById('lamp');
+      const base = paper.querySelector('.base');
+      const reveal = base.cloneNode(true);
+      let dragging = false;
+
+      reveal.className = 'print reveal';
+      reveal.setAttribute('aria-hidden', 'true');
+      reveal.querySelector('.portrait.blank').innerHTML = '<img src="qiu-jin-portrait.jpg" alt="">';
+      reveal.querySelector('.portrait.blank').classList.remove('blank');
+      base.insertAdjacentElement('afterend', reveal);
+
+      function moveLamp(clientX, clientY) {
+        const rect = paper.getBoundingClientRect();
+        const x = Math.max(28, Math.min(rect.width - 28, clientX - rect.left));
+        const y = Math.max(34, Math.min(rect.height - 34, clientY - rect.top));
+        paper.style.setProperty('--lamp-x', x + 'px');
+        paper.style.setProperty('--lamp-y', y + 'px');
+      }
+
+      lamp.addEventListener('pointerdown', event => {
+        event.preventDefault();
+        dragging = true;
+        lamp.setPointerCapture(event.pointerId);
+        moveLamp(event.clientX, event.clientY);
+      });
+      paper.addEventListener('pointermove', event => {
+        if (dragging) moveLamp(event.clientX, event.clientY);
+      });
+      function stopDragging(event) {
+        dragging = false;
+        if (lamp.hasPointerCapture(event.pointerId)) lamp.releasePointerCapture(event.pointerId);
+      }
+
+      paper.addEventListener('pointerup', stopDragging);
+      paper.addEventListener('pointercancel', stopDragging);
+      lamp.addEventListener('dragstart', event => event.preventDefault());
+      paper.addEventListener('dragstart', event => event.preventDefault());
+      paper.addEventListener('selectstart', event => event.preventDefault());
+    })();
+  </script>
+</body>
+</html>

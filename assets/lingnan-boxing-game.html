@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>岭南纪念擂台</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 12px;
+      background: #d8d8d8;
+      color: #202020;
+      font-family: SimSun, "宋体", Arial, sans-serif;
+      font-size: 13px;
+    }
+    button {
+      min-height: 25px;
+      padding: 2px 13px;
+      border: 1px solid #555;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      background: #e5e5e5;
+      color: #111;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    button:active {
+      border-color: #555 #fff #fff #555;
+      background: #d1d1d1;
+    }
+    .page {
+      width: min(920px, 100%);
+      margin: 0 auto;
+      border: 1px solid #777;
+      background: #fff;
+      box-shadow: 2px 2px 0 rgba(0,0,0,.18);
+    }
+    .site-head {
+      padding: 9px 13px 7px;
+      border-bottom: 3px solid #153c86;
+      background: #2658aa;
+      color: #fff;
+    }
+    .site-title {
+      font-family: SimHei, "黑体", sans-serif;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 0;
+      text-shadow: 1px 1px #0b2e6c;
+    }
+    .subtitle { margin-top: 3px; color: #dce9ff; }
+    .nav {
+      padding: 5px 12px;
+      border-bottom: 1px solid #8a8a8a;
+      background: #e9edf5;
+      color: #173f89;
+    }
+    .nav span { cursor: default; }
+    .notice {
+      margin: 9px;
+      padding: 6px 8px;
+      border: 1px solid #9b9b9b;
+      background: #ffffe1;
+      line-height: 1.6;
+    }
+    .content {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 190px;
+      gap: 8px;
+      padding: 0 9px;
+    }
+    .box {
+      border: 1px solid #777;
+      background: #fff;
+    }
+    .box-title {
+      padding: 4px 7px;
+      border-bottom: 1px solid #777;
+      background: #dce6f5;
+      color: #173f89;
+      font-weight: bold;
+    }
+    .game-wrap { padding: 7px; background: #eee; }
+    .scoreboard {
+      display: grid;
+      grid-template-columns: 1fr 94px 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border: 2px inset #aaa;
+      background: #1a1a1a;
+      color: #fff;
+      font-family: "Courier New", monospace;
+    }
+    .health-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .health {
+      height: 13px;
+      border: 1px solid #aaa;
+      background: #4c4c4c;
+      overflow: hidden;
+    }
+    .health > i {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #38c452;
+      transition: width .2s, background .2s;
+    }
+    .round {
+      color: #ffd958;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.25;
+    }
+    .ring {
+      position: relative;
+      height: 330px;
+      margin-top: 6px;
+      overflow: hidden;
+      outline: 0;
+      border: 4px ridge #ababab;
+      background:
+        linear-gradient(#afc7e9 0 51%, #dde6ef 51% 54%, #bdc7cf 54% 100%);
+    }
+    .ring:focus { border-color: #315eaa; }
+    .venue {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 51%;
+      background:
+        radial-gradient(circle at 15% 46%, #eee 0 2px, transparent 3px),
+        radial-gradient(circle at 48% 33%, #e8e8e8 0 2px, transparent 3px),
+        radial-gradient(circle at 81% 52%, #eee 0 2px, transparent 3px),
+        #42516b;
+      background-size: 33px 24px, 37px 29px, 41px 22px, auto;
+      opacity: .78;
+    }
+    .banner {
+      position: absolute;
+      top: 17px;
+      left: 50%;
+      width: 230px;
+      margin-left: -115px;
+      padding: 5px;
+      border: 2px solid #e8e8c8;
+      background: #b72d2d;
+      color: #fff9d5;
+      text-align: center;
+      font-weight: bold;
+    }
+    .rope {
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      height: 4px;
+      border-top: 1px solid #fff;
+      background: #d03b35;
+      box-shadow: 0 2px #681d1c;
+    }
+    .rope.one { top: 46%; }
+    .rope.two { top: 59%; }
+    .rope.three { top: 73%; }
+    .post {
+      position: absolute;
+      top: 40%;
+      bottom: 4%;
+      z-index: 3;
+      width: 12px;
+      border: 2px solid #5d1616;
+      background: #be312e;
+    }
+    .post.left { left: 9px; }
+    .post.right { right: 9px; }
+    .fighter {
+      position: absolute;
+      bottom: 28px;
+      z-index: 5;
+      width: 76px;
+      height: 145px;
+      margin-left: -38px;
+      transition: left .18s ease;
+    }
+    .fighter .shadow {
+      position: absolute;
+      bottom: -7px;
+      left: 11px;
+      width: 61px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.26);
+    }
+    .fighter .head {
+      position: absolute;
+      top: 8px;
+      left: 25px;
+      width: 30px;
+      height: 34px;
+      border: 3px solid #242424;
+      border-radius: 9px 9px 7px 7px;
+      background: #d8a078;
+    }
+    .fighter .hair {
+      position: absolute;
+      top: 8px;
+      left: 25px;
+      width: 30px;
+      height: 10px;
+      border: 3px solid #242424;
+      border-bottom: 0;
+      background: #252525;
+    }
+    .fighter .torso {
+      position: absolute;
+      top: 43px;
+      left: 22px;
+      width: 37px;
+      height: 52px;
+      border: 3px solid #242424;
+      background: #e6e6e6;
+    }
+    .fighter .shorts {
+      position: absolute;
+      top: 91px;
+      left: 20px;
+      width: 41px;
+      height: 25px;
+      border: 3px solid #242424;
+      background: #2455a1;
+    }
+    .fighter .leg {
+      position: absolute;
+      top: 112px;
+      width: 14px;
+      height: 28px;
+      border: 3px solid #242424;
+      background: #d7a078;
+    }
+    .fighter .leg.l { left: 21px; }
+    .fighter .leg.r { right: 14px; }
+    .fighter .arm {
+      position: absolute;
+      top: 50px;
+      width: 29px;
+      height: 15px;
+      border: 3px solid #242424;
+      background: #d7a078;
+      transition: transform .1s;
+    }
+    .fighter .arm.front { right: -1px; transform-origin: left center; }
+    .fighter .arm.back { left: 1px; transform-origin: right center; }
+    .fighter .glove {
+      position: absolute;
+      top: -5px;
+      width: 18px;
+      height: 20px;
+      border: 3px solid #242424;
+      border-radius: 45%;
+      background: #c72929;
+    }
+    .fighter .front .glove { right: -10px; }
+    .fighter .back .glove { left: -10px; }
+    .rival { transform: scaleX(-1); }
+    .rival .shorts { background: #a43731; }
+    .rival .glove { background: #1c56a5; }
+    .fighter.punch .front { transform: translateX(24px); }
+    .fighter.heavy .front { transform: translateX(35px) scaleX(1.2); }
+    .fighter.guard .front { transform: translate(-7px,-23px) rotate(-67deg); }
+    .fighter.guard .back { transform: translate(11px,-22px) rotate(66deg); }
+    .fighter.hurt { animation: hurt .24s steps(2) 2; }
+    .fighter.dodge { animation: dodge .24s steps(2) 1; }
+    @keyframes hurt { 50% { filter: brightness(2); margin-left: -47px; } }
+    @keyframes dodge { 50% { bottom: 35px; } }
+    .feedback {
+      position: absolute;
+      top: 89px;
+      left: 50%;
+      z-index: 8;
+      width: 250px;
+      margin-left: -125px;
+      color: #fff200;
+      text-align: center;
+      font-family: SimHei, "黑体", sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 2px 2px #202020;
+      opacity: 0;
+    }
+    .feedback.show { animation: pop .65s steps(3); }
+    @keyframes pop { 15%,75% { opacity: 1; transform: scale(1.08); } }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 6px 2px 0;
+      color: #333;
+      font-size: 12px;
+    }
+    .key {
+      display: inline-block;
+      min-width: 19px;
+      padding: 1px 4px;
+      border: 1px outset #ccc;
+      background: #fff;
+      color: #173f89;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+    }
+    .status { padding: 7px; line-height: 1.8; }
+    .status table { width: 100%; border-collapse: collapse; }
+    .status td {
+      padding: 4px 3px;
+      border: 1px solid #b5b5b5;
+      vertical-align: top;
+    }
+    .status td:first-child { width: 72px; background: #ededed; }
+    .locked { color: #ad1e1e; font-weight: bold; }
+    .unlocked { color: #087625; font-weight: bold; }
+    .archive-note {
+      margin-top: 8px;
+      padding: 5px;
+      border: 1px dashed #999;
+      background: #ffffe1;
+      color: #555;
+      font-size: 12px;
+    }
+    .log-box { margin: 8px 9px; }
+    .logs {
+      height: 84px;
+      padding: 5px 7px;
+      overflow-y: auto;
+      background: #101010;
+      color: #7cf47c;
+      font: 12px/1.45 "Courier New", monospace;
+    }
+    .footer {
+      padding: 7px 10px;
+      border-top: 1px solid #999;
+      background: #eee;
+      color: #666;
+      text-align: center;
+      font-size: 12px;
+    }
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0,0,0,.48);
+    }
+    .modal-mask.show { display: flex; }
+    .modal {
+      width: min(410px, 100%);
+      border: 3px ridge #ccc;
+      background: #eee;
+      box-shadow: 4px 4px rgba(0,0,0,.38);
+    }
+    .modal-bar {
+      padding: 5px 8px;
+      background: #2457a6;
+      color: #fff;
+      font-weight: bold;
+    }
+    .modal-body {
+      padding: 14px;
+      text-align: center;
+      line-height: 1.7;
+    }
+    .modal h2 { margin: 0; color: #b51e1e; font: bold 24px SimHei, "黑体"; }
+    .modal h3 { margin: 4px 0 8px; color: #173f89; font-size: 15px; }
+    .modal-actions { display: flex; justify-content: center; gap: 8px; margin-top: 11px; }
+    .trophy { margin: 5px auto 10px; width: 190px; }
+    .cup {
+      position: relative;
+      width: 90px;
+      height: 62px;
+      margin: auto;
+      border: 4px solid #9e6b00;
+      border-radius: 4px 4px 38px 38px;
+      background: #ffd95a;
+      box-shadow: inset 8px 0 #fff099, inset -8px 0 #d99a00;
+    }
+    .cup:before, .cup:after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      width: 30px;
+      height: 32px;
+      border: 6px solid #bd8500;
+      border-radius: 50%;
+    }
+    .cup:before { left: -31px; }
+    .cup:after { right: -31px; }
+    .stem { width: 17px; height: 28px; margin: auto; background: #d69b13; }
+    .base {
+      min-height: 31px;
+      padding: 6px 5px;
+      border: 3px solid #714500;
+      background: #b97813;
+      color: #fff4bb;
+      font-weight: bold;
+      text-shadow: 1px 1px #6e3f00;
+    }
+    @media (max-width: 720px) {
+      body { padding: 5px; }
+      .content { grid-template-columns: 1fr; }
+      .ring { height: 300px; }
+      .status { padding: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="site-head">
+      <div class="site-title">岭南纪念擂台</div>
+      <div class="subtitle">民俗竞技挑战赛 · 网页小游戏</div>
+    </header>
+    <nav class="nav"><span>首页</span>｜<span>人物资料</span>｜<span>小游戏</span>｜<span>活动记录</span>｜<span>帮助</span></nav>
+    <section class="notice">
+      <b>游戏说明：</b>按 A 出拳，S 防御，D 重击，方向键移动。<br>
+      击败对手后可获得纪念奖杯。
+    </section>
+    <section class="content">
+      <div class="box">
+        <div class="box-title">岭南民俗竞技 · 决赛现场</div>
+        <div class="game-wrap">
+          <div class="scoreboard">
+            <div>
+              <div class="health-label"><span>PLAYER</span><span id="playerHpText">100</span></div>
+              <div class="health"><i id="playerHp"></i></div>
+            </div>
+            <div class="round">FINAL<br>ROUND</div>
+            <div>
+              <div class="health-label"><span>RIVAL</span><span id="rivalHpText">100</span></div>
+              <div class="health"><i id="rivalHp"></i></div>
+            </div>
+          </div>
+          <div class="ring" id="ring" tabindex="0" aria-label="拳击比赛区域">
+            <div class="venue"></div>
+            <div class="banner">岭南地方纪念挑战赛</div>
+            <div class="rope one"></div><div class="rope two"></div><div class="rope three"></div>
+            <div class="post left"></div><div class="post right"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="fighter player" id="player">
+              <i class="shadow"></i><i class="head"></i><i class="hair"></i><i class="torso"></i><i class="shorts"></i>
+              <i class="arm back"><b class="glove"></b></i><i class="arm front"><b class="glove"></b></i>
+              <i class="leg l"></i><i class="leg r"></i>
+            </div>
+            <div class="fighter rival" id="rival">
+              <i class="shadow"></i><i class="head"></i><i class="hair"></i><i class="torso"></i><i class="shorts"></i>
+              <i class="arm back"><b class="glove"></b></i><i class="arm front"><b class="glove"></b></i>
+              <i class="leg l"></i><i class="leg r"></i>
+            </div>
+          </div>
+          <div class="controls">
+            <span><b class="key">A</b> 出拳</span>
+            <span><b class="key">S</b> 防御</span>
+            <span><b class="key">D</b> 重击</span>
+            <span><b class="key">←</b><b class="key">→</b> 移动 / 闪避</span>
+          </div>
+        </div>
+      </div>
+      <aside class="box">
+        <div class="box-title">比赛状态</div>
+        <div class="status">
+          <table>
+            <tr><td>当前回合</td><td>FINAL ROUND</td></tr>
+            <tr><td>挑战状态</td><td id="challengeStatus">进行中</td></tr>
+            <tr><td>奖杯状态</td><td id="rewardStatus" class="locked">未获得</td></tr>
+          </table>
+          <div class="archive-note">地方纪念赛事。请完成本场挑战。</div>
+          <p><button id="restartSide">重新开始</button></p>
+        </div>
+      </aside>
+    </section>
+    <section class="box log-box">
+      <div class="box-title">比赛日志</div>
+      <div class="logs" id="logs"></div>
+    </section>
+    <footer class="footer">地方文化活动资料页 2004-2007</footer>
+  </main>
+  <div class="modal-mask" id="modalMask">
+    <section class="modal">
+      <div class="modal-bar">岭南纪念擂台 - 系统提示</div>
+      <div class="modal-body" id="modalBody"></div>
+    </section>
+  </div>
+  <script>
+    (() => {
+      const $ = id => document.getElementById(id);
+      const playerEl = $('player');
+      const rivalEl = $('rival');
+      const ring = $('ring');
+      let playerHp = 100;
+      let rivalHp = 100;
+      let playerX = 24;
+      let rivalX = 76;
+      let playerGuard = false;
+      let rivalGuard = false;
+      let dodging = false;
+      let finished = false;
+      let matchStarted = false;
+      let nextPunch = 0;
+      let nextHeavy = 0;
+      let combo = 0;
+      let lastHitAt = 0;
+      let rivalTimer;
+      let audioContext;
+
+      function getAudio() {
+        if (!audioContext) {
+          const AudioCtor = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtor) audioContext = new AudioCtor();
+        }
+        if (audioContext && audioContext.state === 'suspended') audioContext.resume();
+        return audioContext;
+      }
+
+      function playHit(heavy = false, blocked = false) {
+        const audio = getAudio();
+        if (!audio) return;
+        const now = audio.currentTime;
+        const oscillator = audio.createOscillator();
+        const gain = audio.createGain();
+        oscillator.type = blocked ? 'square' : 'sawtooth';
+        oscillator.frequency.setValueAtTime(heavy ? 118 : 165, now);
+        oscillator.frequency.exponentialRampToValueAtTime(blocked ? 75 : 48, now + (heavy ? .17 : .11));
+        gain.gain.setValueAtTime(blocked ? .14 : .24, now);
+        gain.gain.exponentialRampToValueAtTime(.001, now + (heavy ? .18 : .12));
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+        oscillator.start(now);
+        oscillator.stop(now + .2);
+      }
+
+      function playBell() {
+        const audio = getAudio();
+        if (!audio) return;
+        [0, .16].forEach(delay => {
+          const oscillator = audio.createOscillator();
+          const gain = audio.createGain();
+          oscillator.type = 'sine';
+          oscillator.frequency.value = 720;
+          gain.gain.setValueAtTime(.14, audio.currentTime + delay);
+          gain.gain.exponentialRampToValueAtTime(.001, audio.currentTime + delay + .32);
+          oscillator.connect(gain);
+          gain.connect(audio.destination);
+          oscillator.start(audio.currentTime + delay);
+          oscillator.stop(audio.currentTime + delay + .34);
+        });
+      }
+
+      function log(text) {
+        const line = document.createElement('div');
+        line.textContent = '[LOG] ' + text;
+        $('logs').appendChild(line);
+        while ($('logs').children.length > 8) $('logs').removeChild($('logs').firstChild);
+        $('logs').scrollTop = $('logs').scrollHeight;
+      }
+
+      function flash(text) {
+        const el = $('feedback');
+        el.textContent = text;
+        el.classList.remove('show');
+        void el.offsetWidth;
+        el.classList.add('show');
+      }
+
+      function animate(el, cls, ms = 220) {
+        el.classList.remove(cls);
+        void el.offsetWidth;
+        el.classList.add(cls);
+        setTimeout(() => el.classList.remove(cls), ms);
+      }
+
+      function update() {
+        playerEl.style.left = playerX + '%';
+        rivalEl.style.left = rivalX + '%';
+        $('playerHpText').textContent = playerHp;
+        $('rivalHpText').textContent = rivalHp;
+        $('playerHp').style.width = playerHp + '%';
+        $('rivalHp').style.width = rivalHp + '%';
+        $('playerHp').style.background = playerHp < 30 ? '#e13732' : '#38c452';
+        $('rivalHp').style.background = rivalHp < 30 ? '#e13732' : '#38c452';
+      }
+
+      function distance() { return Math.abs(rivalX - playerX); }
+
+      function hitRival(amount, kind) {
+        if (distance() > 23) {
+          flash('距离太远！');
+          log('PLAYER 攻击落空');
+          combo = 0;
+          return;
+        }
+        const now = Date.now();
+        combo = now - lastHitAt < 1250 ? Math.min(3, combo + 1) : 1;
+        lastHitAt = now;
+        const comboBonus = combo === 2 ? 3 : combo >= 3 ? 7 : 0;
+        const rawDamage = amount + (rivalGuard ? 0 : comboBonus);
+        const damage = rivalGuard ? Math.ceil(rawDamage * .28) : rawDamage;
+        rivalHp = Math.max(0, rivalHp - damage);
+        playHit(kind === 'heavy', rivalGuard);
+        animate(rivalEl, 'hurt');
+        flash(rivalGuard ? '对手防住部分伤害' : (combo > 1 ? combo + '连击  -' + damage : '-' + damage));
+        log('RIVAL 受到伤害 -' + damage + (combo > 1 ? ' / ' + combo + '连击' : ''));
+        update();
+        if (rivalHp === 0) finish(true);
+      }
+
+      function playerAttack(heavy) {
+        if (finished) return;
+        const now = Date.now();
+        if (heavy) {
+          if (now < nextHeavy) return;
+          nextHeavy = now + 960;
+          animate(playerEl, 'heavy', 240);
+          log('PLAYER 发动重击');
+          setTimeout(() => hitRival(combo >= 2 ? 22 : 18, 'heavy'), 100);
+        } else {
+          if (now < nextPunch) return;
+          nextPunch = now + 360;
+          animate(playerEl, 'punch', 180);
+          log('PLAYER 出拳');
+          setTimeout(() => hitRival(9, 'punch'), 70);
+        }
+      }
+
+      function guard() {
+        if (finished || playerGuard) return;
+        playerGuard = true;
+        playerEl.classList.add('guard');
+        log('PLAYER 防御');
+        setTimeout(() => {
+          playerGuard = false;
+          playerEl.classList.remove('guard');
+        }, 620);
+      }
+
+      function move(delta) {
+        if (finished) return;
+        playerX = Math.max(13, Math.min(69, playerX + delta));
+        dodging = true;
+        animate(playerEl, 'dodge', 260);
+        update();
+        setTimeout(() => { dodging = false; }, 250);
+      }
+
+      function rivalAct() {
+        if (finished) return;
+        if (distance() > 22) {
+          rivalX = Math.max(playerX + 15, rivalX - 6);
+          update();
+          log('RIVAL 正在接近');
+          return;
+        }
+        const roll = Math.random();
+        const pressure = rivalHp < 35 ? 0.06 : 0;
+        if (roll < .2) {
+          rivalGuard = true;
+          rivalEl.classList.add('guard');
+          log('RIVAL 防御');
+          setTimeout(() => {
+            rivalGuard = false;
+            rivalEl.classList.remove('guard');
+          }, 760);
+          return;
+        }
+        const heavy = roll > (.64 - pressure);
+        animate(rivalEl, heavy ? 'heavy' : 'punch', heavy ? 240 : 180);
+        log('RIVAL ' + (heavy ? '发动重击' : '出拳'));
+        setTimeout(() => {
+          if (finished) return;
+          if (dodging || distance() > 24) {
+            flash('闪避成功！');
+            log('PLAYER 闪避成功');
+            return;
+          }
+          const base = heavy ? 30 : 18;
+          const damage = playerGuard ? Math.ceil(base * .42) : base;
+          playerHp = Math.max(0, playerHp - damage);
+          playHit(heavy, playerGuard);
+          animate(playerEl, 'hurt');
+          flash(playerGuard ? '防御减伤' : '-' + damage);
+          log('PLAYER 受到伤害 -' + damage);
+          update();
+          if (playerHp === 0) finish(false);
+        }, heavy ? 170 : 110);
+      }
+
+      function beginIfNeeded() {
+        if (matchStarted || finished) return;
+        matchStarted = true;
+        log('FINAL ROUND 开始');
+        rivalTimer = setInterval(rivalAct, 480);
+      }
+
+      function finish(won) {
+        finished = true;
+        clearInterval(rivalTimer);
+        $('challengeStatus').textContent = won ? '挑战成功' : '挑战失败';
+        if (won) {
+          $('rewardStatus').textContent = '已获得';
+          $('rewardStatus').className = 'unlocked';
+          log('Match complete');
+          log('Trophy awarded');
+          playBell();
+          $('modalBody').innerHTML =
+            '<h2>挑战成功！</h2><h3>纪念奖杯已获得</h3>' +
+            '<div class="trophy"><div class="cup"></div><div class="stem"></div><div class="base">谯国夫人荣誉杯</div></div>' +
+            '<div class="modal-actions"><button id="retryBtn">重新挑战</button></div>';
+        } else {
+          log('Match failed');
+          $('modalBody').innerHTML =
+            '<h2>挑战失败</h2><div>请重新挑战。</div>' +
+            '<div class="modal-actions"><button id="retryBtn">重新挑战</button></div>';
+        }
+        $('retryBtn').onclick = reset;
+        $('modalMask').classList.add('show');
+      }
+
+      function reset() {
+        clearInterval(rivalTimer);
+        playerHp = rivalHp = 100;
+        playerX = 24;
+        rivalX = 76;
+        playerGuard = rivalGuard = dodging = finished = matchStarted = false;
+        combo = 0;
+        lastHitAt = 0;
+        nextPunch = nextHeavy = 0;
+        playerEl.className = 'fighter player';
+        rivalEl.className = 'fighter rival';
+        $('challengeStatus').textContent = '进行中';
+        $('rewardStatus').textContent = '未获得';
+        $('rewardStatus').className = 'locked';
+        $('modalMask').classList.remove('show');
+        $('modalBody').innerHTML = '';
+        $('logs').innerHTML = '';
+        update();
+        log('比赛开始');
+        log('按键后对手开始行动');
+        ring.focus();
+      }
+
+      document.addEventListener('keydown', event => {
+        const key = event.key.toLowerCase();
+        if (['a','s','d','arrowleft','arrowright'].includes(key)) event.preventDefault();
+        if (['a','s','d','arrowleft','arrowright'].includes(key)) beginIfNeeded();
+        if (key === 'a') playerAttack(false);
+        if (key === 's') guard();
+        if (key === 'd') playerAttack(true);
+        if (key === 'arrowleft') move(-5);
+        if (key === 'arrowright') move(5);
+      });
+      $('restartSide').onclick = reset;
+      ring.addEventListener('click', () => ring.focus());
+      reset();
+    })();
+  </script>
+</body>
+</html>
