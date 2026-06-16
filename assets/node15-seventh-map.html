@@ -18,6 +18,12 @@ body { padding: 18px; }
 .node.prefecture { border-width: 2px; }
 .result { position: absolute; left: 18px; bottom: 16px; min-width: 190px; border-left: 2px solid #6fa18f; background: rgba(28,39,43,.92); padding: 10px 13px; color: #cbd8d3; font-size: 12px; opacity: 0; transform: translateY(5px); transition: .2s; pointer-events: none; }
 .result.show { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 640px) {
+  body { padding: 10px 8px; font-size: 13px; }
+  img { max-width: 100%; height: auto; }
+  .wrap, .page, .content, .main { width: 100%; }
+}
 </style>
 </head>
 <body>
