@@ -295,6 +295,7 @@ function finish() {
 try { endingBgm.load(); } catch(e) {}
 armBgmFallback();
 setTimeout(function() {
+  try { endingBgm.play().catch(function(){}); } catch(e) {}
   titleScreen.classList.add('hidden');
   storyScreen.classList.remove('hidden');
   storyScreen.classList.add('fade');

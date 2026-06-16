@@ -12,14 +12,19 @@ a { color: #8aa99a; }
 <script>
 (function() {
   var path = location.pathname.replace(/\/+$/, '');
-  var idx = path.indexOf('/assets/');
-  var base = location.origin + (idx >= 0 ? path.substring(0, idx + 7) : '/');
+  var as = path.indexOf('/assets/');
+  // 优先用 assets 目录，否则用仓库根目录
+  var base = location.origin + (as >= 0 ? path.substring(0, as + 7) : path.split('/').slice(0, 2).join('/') + '/');
+
+  // 解析出根目录和 assets 目录
+  var root = location.origin + path.split('/').slice(0, 2).join('/') + '/';
+  var assetBase = root + 'assets/';
 
   if (path.endsWith('/collect')) {
-    location.replace(base + 'emith-search.html#/collect');
+    location.replace(assetBase + 'emith-search.html#/collect');
     return;
   } else if (path.endsWith('/sujianwei')) {
-    location.replace(base + 'profile-sjw-74.html');
+    location.replace(assetBase + 'profile-sjw-74.html');
     return;
   }
   // 显示 404 信息

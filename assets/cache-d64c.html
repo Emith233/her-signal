@@ -211,8 +211,6 @@ function preloadAssets() {
 function openCameraPrompt() {
   window.setTimeout(function() {
     while (!window.confirm('是否打开摄像头？')) {}
-    // 确认后立即播放音频（用户手势窗口内）
-    try { endingAudio.play().catch(function(){}); } catch(e) {}
     showMeeting();
   }, 1500);
 }
@@ -222,6 +220,7 @@ function showMeeting() {
     fourthScreen.classList.add('hidden');
     meetingScreen.classList.remove('hidden');
     meetingScreen.classList.add('fade');
+    try { endingAudio.play().catch(function(){}); } catch(e) {}
     window.requestAnimationFrame(function() {
       meetingImage.classList.add('visible');
     });
