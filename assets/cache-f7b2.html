@@ -169,10 +169,7 @@ function addButton(section, text, onClick, index) {
   btn.className = 'story-btn';
   btn.type = 'button';
   btn.textContent = text;
-  btn.addEventListener('click', () => {
-    playBgm();
-    onClick();
-  });
+  btn.addEventListener('click', function() { onClick(); });
   p.appendChild(btn);
   section.appendChild(p);
   requestAnimationFrame(() => p.classList.add('shown'));
