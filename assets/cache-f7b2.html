@@ -89,8 +89,10 @@ body.ending-e05 .ending-title {
   <section class="ending-content fade" id="titleScreen">
     <div class="ending-id">E-05</div>
     <h1 class="ending-title"><span class="purple">生路</span></h1>
-    <div class="continue-prompt hidden" id="continueHint">— 轻触继续 —</div>
+    
   </section>
+
+  <div class="continue-prompt hidden" id="continueHint">— 轻触继续 —</div>
   <div class="doom-bg" id="doomBg"></div>
   <section class="story hidden" id="storyScreen"></section>
   <section class="story hidden" id="secondScreen"></section>
@@ -180,11 +182,15 @@ function playBgm() {
   if (bgmStarted) return;
   bgmStarted = true;
   endingBgm.volume = 0;
-  const playPromise = endingBgm.play();
-  if (playPromise && playPromise.catch) {
-    playPromise.catch(() => {
-      bgmStarted = false;
-    });
+  // 确保音频已加载再播放
+  var tryPlay = function() {
+    var p = endingBgm.play();
+    if (p && p.catch) p.catch(function(){ bgmStarted = false; });
+  };
+  if (endingBgm.readyState >= 2) {
+    tryPlay();
+  } else {
+    endingBgm.addEventListener('canplay', tryPlay, { once: true });
   }
   fadeInBgm();
 }
@@ -281,7 +287,7 @@ function finish() {
 })();
 
 try { endingBgm.load(); } catch(e) {}
-setTimeout(function() { titleScreen.style.cursor = 'pointer'; document.getElementById('continueHint')?.classList.remove('hidden'); }, 1200);
+setTimeout(function() { titleScreen.style.cursor = 'pointer'; document.getElementById('continueHint')?.classList.add('show'); }, 1200);
 function startStory() {
   try { endingBgm.play().catch(function(){}); } catch(e) {}
   document.getElementById('continueHint')?.remove();
