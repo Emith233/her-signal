@@ -269,17 +269,14 @@ function finish() {
 }
 
 // 用户首次交互时唤醒音频上下文
-(function wakeAudio() {
-  var wake = function() {
-    try {
-      var ctx = new (window.AudioContext || window.webkitAudioContext)();
-      if (ctx.state === 'suspended') ctx.resume();
-    } catch(e) {}
-    document.removeEventListener('pointerdown', wake, true);
-    document.removeEventListener('keydown', wake, true);
-  };
-  document.addEventListener('pointerdown', wake, true);
-  document.addEventListener('keydown', wake, true);
+(function unlockAudio() {
+  function unlock() {
+    try { endingBgm.load(); endingBgm.play().then(function(){ endingBgm.pause(); endingBgm.currentTime = 0; }).catch(function(){}); } catch(e) {}
+    document.removeEventListener('pointerdown', unlock, true);
+    document.removeEventListener('keydown', unlock, true);
+  }
+  document.addEventListener('pointerdown', unlock, true);
+  document.addEventListener('keydown', unlock, true);
 })();
 
 try { endingBgm.load(); } catch(e) {}
