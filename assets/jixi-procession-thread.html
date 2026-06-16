@@ -84,11 +84,13 @@ body { background:#e8e4d8; color:#333; font:13px/1.6 Tahoma,Verdana,"Microsoft Y
   .post-meta{font-size:11px}
   .post-head,.reply-head{font-size:11px;padding:6px 8px}
   .post-body,.reply-body{display:block;padding:8px}
+  .post-body .post-content,.reply-body .reply-content{width:100%;overflow-wrap:break-word;word-break:break-word}
   .user-info{display:flex;align-items:center;gap:6px;margin-bottom:6px;text-align:left;width:auto}
   .user-info .avatar{width:28px;height:28px;font-size:12px;margin:0;flex-shrink:0}
   .user-info .uname{font-size:11px;display:inline}
   .user-info .utitle,.user-info .uinfo{display:none}
-  .post-content,.reply-content{font-size:13px;line-height:1.7}
+  .post-content,.reply-content{font-size:13px;line-height:1.7;word-break:break-word;overflow-wrap:break-word;max-width:100%}
+  .post-content p,.reply-content p{word-break:break-word;overflow-wrap:break-word}
   .post-foot,.reply-foot{font-size:10px;padding:4px 8px;flex-wrap:wrap;gap:4px}
   .post-foot a,.reply-foot a{font-size:10px}
   .quote{font-size:11px;padding:5px 8px}
