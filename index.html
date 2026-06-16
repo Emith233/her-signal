@@ -658,6 +658,10 @@
     flex-direction: column;
     overflow-y: auto;
   }
+  @keyframes fadePulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
   .signal-viewport::-webkit-scrollbar { width: 6px; }
   .signal-viewport::-webkit-scrollbar-track { background: #171d21; }
   .signal-viewport::-webkit-scrollbar-thumb { background: #465660; border-radius: 6px; }
@@ -727,7 +731,7 @@
     height: 100%;
     border: 1px solid #465660;
     border-radius: 6px;
-    background: transparent;
+    background: #1d2428;
     transform: translateZ(0);
   }
   .signal-viewport .frag-body iframe.dark-frame {
@@ -3134,15 +3138,11 @@ function showSignal(nodeId, startIdx) {
   signalScreen.classList.remove('collapsing', 'appearing');
   signalOverlay.classList.add('active');
   startSignalMorse();
-  if (forceNextSignalAppear) {
-    forceNextSignalAppear = false;
-    void signalScreen.offsetWidth;
-    signalScreen.classList.add('appearing');
-    setTimeout(() => signalScreen.classList.remove('appearing'), 460);
-  }
+  signalViewport.innerHTML = '<div class="fragment active" style="justify-content:center;align-items:center;text-align:center;color:#6a7a72;font-size:12px;letter-spacing:2px;animation:fadePulse 1.2s ease-in-out infinite;"><div style="margin-bottom:10px;font-size:18px;">◌</div>接入信号中...</div>';
   signalIndex = startIdx || 0;
   signalDataRef = data;
-  renderFragment(data);
+  // 延迟一帧渲染，让加载提示先显示
+  requestAnimationFrame(() => { renderFragment(data); });
 
   // 导航
   if (data.fragments.length <= 1) {
