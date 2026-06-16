@@ -194,14 +194,23 @@ function preloadAssets() {
   endingAudio.load();
 }
 
+// 用户首次交互时唤醒音频上下文
+(function wakeAudio() {
+  var wake = function() {
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+    } catch(e) {}
+    document.removeEventListener('pointerdown', wake, true);
+    document.removeEventListener('keydown', wake, true);
+  };
+  document.addEventListener('pointerdown', wake, true);
+  document.addEventListener('keydown', wake, true);
+})();
+
 function openCameraPrompt() {
   window.setTimeout(() => {
     while (!window.confirm('是否打开摄像头？')) {}
-    // 在用户手势上下文中立即播放音频
-    try {
-      const playPromise = endingAudio.play();
-      if (playPromise && playPromise.catch) playPromise.catch(() => {});
-    } catch(e) {}
     showMeeting();
   }, 1500);
 }
@@ -211,6 +220,10 @@ function showMeeting() {
     fourthScreen.classList.add('hidden');
     meetingScreen.classList.remove('hidden');
     meetingScreen.classList.add('fade');
+    try {
+      var p = endingAudio.play();
+      if (p && p.catch) p.catch(function(){});
+    } catch(e) {}
     window.requestAnimationFrame(() => {
       meetingImage.classList.add('visible');
     });
