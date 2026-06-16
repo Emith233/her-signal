@@ -28,7 +28,7 @@
   height: auto;
   filter: blur(24px);
   opacity: 0;
-  transition: opacity 2.4s ease, filter 4s ease;
+  transition: opacity 2.4s ease, filter 3.5s ease;
 }
 .meeting-frame img.visible {
   opacity: 1;
@@ -230,11 +230,9 @@ function preloadAssets() {
 })();
 
 function openCameraPrompt() {
-  window.setTimeout(function() {
-    while (!window.confirm('是否打开摄像头？')) {}
-    try { endingAudio.play().catch(function(){}); } catch(e) {}
-    showMeeting();
-  }, 1500);
+  while (!window.confirm('是否打开摄像头？')) {}
+  try { endingAudio.play().catch(function(){}); } catch(e) {}
+  showMeeting();
 }
 
 function showMeeting() {
@@ -247,7 +245,7 @@ function showMeeting() {
     });
     window.setTimeout(function() {
       meetingImage.classList.add('revealing');
-    }, 4000);
+    }, 3000);
   });
 }
 
@@ -255,7 +253,7 @@ function fadeOutFourthScreen(done) {
   const targets = [fourthScreen].concat(Array.from(fourthScreen.querySelectorAll('.line-in.shown')));
   if (!fourthScreen.animate) {
     fourthScreen.classList.add('leaving');
-    window.setTimeout(done, 1800);
+    window.setTimeout(done, 1200);
     return;
   }
   targets.forEach((el) => {
@@ -263,12 +261,12 @@ function fadeOutFourthScreen(done) {
       { opacity: 1, filter: 'blur(0)' },
       { opacity: 0, filter: 'blur(6px)' }
     ], {
-      duration: 1800,
+      duration: 1200,
       easing: 'ease',
       fill: 'forwards'
     });
   });
-  window.setTimeout(done, 1850);
+  window.setTimeout(done, 1250);
 }
 
 backButton.addEventListener('click', returnBeforeEnding);
