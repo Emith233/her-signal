@@ -221,10 +221,7 @@ function preloadAssets() {
 // 用户首次交互时解锁音频自动播放
 (function unlockAudio() {
   function unlock() {
-    try {
-      var ctx = new (window.AudioContext || window.webkitAudioContext)();
-      if (ctx.state === 'suspended') ctx.resume();
-    } catch(e) {}
+    try { endingAudio.volume = 0; endingAudio.play().then(function(){ endingAudio.pause(); endingAudio.currentTime = 0; endingAudio.volume = 1; }).catch(function(){}); } catch(e) {}
     document.removeEventListener('pointerdown', unlock, true);
     document.removeEventListener('keydown', unlock, true);
   }
