@@ -415,9 +415,26 @@
     }
     @media (max-width: 720px) {
       body { padding: 5px; }
-      .content { grid-template-columns: 1fr; }
-      .ring { height: 300px; }
+      .site-head { padding: 10px; }
+      .site-title { font-size: 18px; }
+      .content { grid-template-columns: 1fr; gap: 6px; }
+      .ring { height: 280px; }
       .status { padding: 5px; }
+      .controls { flex-wrap: wrap; gap: 4px; }
+      .controls button { font-size: 12px; padding: 5px 10px; min-height: 36px; }
+    }
+    @media (max-width: 480px) {
+      body { padding: 3px; font-size: 12px; }
+      .site-head { padding: 6px; }
+      .site-title { font-size: 16px; }
+      .subtitle { font-size: 11px; }
+      .nav { font-size: 11px; overflow-x: auto; white-space: nowrap; }
+      .notice { font-size: 11px; padding: 6px; }
+      .ring { height: 220px; }
+      .status { font-size: 11px; }
+      .fighter-indicator { font-size: 11px; }
+      .controls button { font-size: 11px; padding: 4px 8px; min-height: 36px; min-width: 44px; }
+      .box { padding: 8px; }
     }
   </style>
 </head>
