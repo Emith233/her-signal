@@ -197,6 +197,11 @@ function preloadAssets() {
 function openCameraPrompt() {
   window.setTimeout(() => {
     while (!window.confirm('是否打开摄像头？')) {}
+    // 在用户手势上下文中立即播放音频
+    try {
+      const playPromise = endingAudio.play();
+      if (playPromise && playPromise.catch) playPromise.catch(() => {});
+    } catch(e) {}
     showMeeting();
   }, 1500);
 }
@@ -206,10 +211,6 @@ function showMeeting() {
     fourthScreen.classList.add('hidden');
     meetingScreen.classList.remove('hidden');
     meetingScreen.classList.add('fade');
-    try {
-      const playPromise = endingAudio.play();
-      if (playPromise && playPromise.catch) playPromise.catch(() => {});
-    } catch(e) {}
     window.requestAnimationFrame(() => {
       meetingImage.classList.add('visible');
     });

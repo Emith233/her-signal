@@ -281,7 +281,6 @@ function finish() {
 try { endingBgm.load(); } catch(e) {}
 armBgmFallback();
 setTimeout(() => {
-  playBgm();
   titleScreen.classList.add('hidden');
   storyScreen.classList.remove('hidden');
   storyScreen.classList.add('fade');
