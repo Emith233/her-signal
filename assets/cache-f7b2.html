@@ -82,6 +82,25 @@ body.ending-e05 .ending-title {
     gap: 14px;
   }
 }
+
+.continue-prompt {
+  position: fixed; bottom: 56px; left: 50%; transform: translateX(-50%);
+  color: #999; font-size: 13px; letter-spacing: 3px;
+  cursor: pointer; z-index: 10;
+  opacity: 0; transition: opacity 1.2s ease;
+  pointer-events: none;
+  visibility: visible !important; display: block !important;
+}
+.continue-prompt.show {
+  opacity: 0.7;
+  pointer-events: auto;
+  animation: promptBlink 2.4s ease-in-out infinite;
+}
+@keyframes promptBlink {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+
 </style>
 </head>
 <body class="ending-e05">
