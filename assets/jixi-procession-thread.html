@@ -59,48 +59,36 @@ body { background:#e8e4d8; color:#333; font:13px/1.6 Tahoma,Verdana,"Microsoft Y
 .hot-tag { display:inline-block; margin-right:4px; padding:0 4px; background:#c00; color:#fff !important; font-size:10px; }
 .bottom-ad { margin-top:10px; padding:14px; background:#f0ece0; border-top:1px solid #d4cec0; border-bottom:1px solid #d4cec0; color:#aaa; font-size:11px; text-align:center; }
 .footer { margin-top:10px; padding:16px; background:#4a6a3a; border-top:3px solid #3a5a2a; color:#888; font-size:11px; text-align:center; }
-@media(max-width:760px) { .main{display:block !important;padding:8px}.sidebar{display:none !important}.content{width:100% !important;min-width:0}.header{padding:14px 12px}.logo{font-size:20px}.search-box input{width:155px}.search-result{right:12px;width:min(420px,calc(100vw - 24px))}.board-header{padding:10px 12px}.page-info{display:none}.post-body,.reply-body{display:block !important;padding:11px 12px;width:100% !important}.post-body .post-content,.reply-body .reply-content{width:100% !important}.user-info{display:flex;width:auto;align-items:center;gap:7px;margin-bottom:8px;text-align:left}.avatar{width:34px;height:34px;margin:0}.utitle,.uinfo{display:none} }
-@media(max-width:480px) {
-  .topbar{flex-wrap:wrap;gap:2px;font-size:10px;padding:4px 6px}
-  .topbar a{margin-left:6px;font-size:10px}
-  .header{flex-direction:column;gap:8px;padding:10px 8px}
-  .logo{font-size:17px}
-  .logo small{display:none}
-  .search-box{width:100%}
-  .search-box input{width:100%;font-size:11px}
-  .search-box button{font-size:11px;padding:4px 8px}
-  .search-result{top:50px;right:8px;width:calc(100vw - 16px);left:8px}
-  .navbar{padding:4px 6px;font-size:10px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
-  .navbar a{padding:2px 5px;font-size:10px}
-  .breadcrumb{padding:6px 8px;font-size:10px}
-  .board-header{flex-direction:column;gap:4px;padding:8px}
-  .board-name{font-size:14px}
-  .board-desc{font-size:11px}
-  .page-info{display:none}
-  .main{display:block;padding:4px}
-  .sidebar{display:none}
-  .post-header{padding:10px 8px}
-  .post-header h1{font-size:16px;line-height:1.4}
-  .post-meta{font-size:11px}
-  .post-head,.reply-head{font-size:11px;padding:6px 8px}
-  .post-body,.reply-body{display:block;padding:8px}
-  .post-body .post-content,.reply-body .reply-content{width:100%;overflow-wrap:break-word;word-break:break-word}
-  .user-info{display:flex;align-items:center;gap:6px;margin-bottom:6px;text-align:left;width:auto}
-  .user-info .avatar{width:28px;height:28px;font-size:12px;margin:0;flex-shrink:0}
-  .user-info .uname{font-size:11px;display:inline}
+@media(max-width:860px) {
+  body{margin:0;padding:0}
+  .topbar{padding:2px 6px}
+  .header{padding:10px 8px}
+  .navbar{padding:2px 4px}
+  .breadcrumb{padding:4px 6px}
+  .board-header{padding:6px 8px}
+  .main{display:block !important;padding:0 !important;max-width:none !important}
+  .sidebar{display:none !important}
+  .content{width:100% !important;min-width:0}
+  .post-header{padding:8px 6px}
+  .post-header h1{font-size:15px}
+  .post-body,.reply-body{display:block !important;padding:6px !important;width:100% !important}
+  .post-content,.reply-content{width:100% !important;min-width:0 !important;padding:0}
+  .post-content p,.reply-content p{font-size:13px}
+  .user-info{display:flex;align-items:center;gap:6px;margin-bottom:4px;text-align:left;width:auto}
+  .user-info .avatar{width:26px;height:26px;font-size:11px;margin:0;flex-shrink:0}
+  .user-info .uname{font-size:11px}
   .user-info .utitle,.user-info .uinfo{display:none}
-  .post-content,.reply-content{font-size:13px;line-height:1.7;word-break:break-word;overflow-wrap:break-word;max-width:100%}
-  .post-content p,.reply-content p{word-break:break-word;overflow-wrap:break-word}
-  .post-foot,.reply-foot{font-size:10px;padding:4px 8px;flex-wrap:wrap;gap:4px}
-  .post-foot a,.reply-foot a{font-size:10px}
-  .quote{font-size:11px;padding:5px 8px}
-  .pagination{font-size:11px;padding:10px 0}
-  .pagination a{padding:3px 8px;font-size:11px}
-  .footer{font-size:10px;padding:10px 6px}
-  .footer a{font-size:10px}
-  .bottom-ad{font-size:10px;padding:8px}
-  body{font-size:12px}
+  .page-info{display:none}
+  .board-desc{font-size:11px}
+  .post-head,.reply-head{padding:4px 6px;font-size:11px}
+  .post-foot,.reply-foot{padding:3px 6px;font-size:10px}
+  .pagination{padding:8px 0}
+  .bottom-ad{padding:6px}
+  .footer{padding:8px 6px}
+  .search-box input{width:140px}
+  .search-result{width:calc(100vw - 40px);right:8px}
 }
+
 </style>
 </head>
 <body>
