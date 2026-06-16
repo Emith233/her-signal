@@ -275,10 +275,13 @@ function finish() {
   }, 9800);
 }
 
-// 用户首次交互时唤醒音频上下文
+// 用户首次交互时解锁音频自动播放
 (function unlockAudio() {
   function unlock() {
-    try { endingBgm.load(); endingBgm.play().then(function(){ endingBgm.pause(); endingBgm.currentTime = 0; }).catch(function(){}); } catch(e) {}
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+    } catch(e) {}
     document.removeEventListener('pointerdown', unlock, true);
     document.removeEventListener('keydown', unlock, true);
   }

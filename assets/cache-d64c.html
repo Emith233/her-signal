@@ -202,7 +202,10 @@ function preloadAssets() {
 // 用户首次交互时解锁音频自动播放
 (function unlockAudio() {
   function unlock() {
-    try { endingAudio.load(); endingAudio.play().then(function(){ endingAudio.pause(); endingAudio.currentTime = 0; }).catch(function(){}); } catch(e) {}
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+    } catch(e) {}
     document.removeEventListener('pointerdown', unlock, true);
     document.removeEventListener('keydown', unlock, true);
   }
