@@ -1359,32 +1359,20 @@ const introHelpPanel = document.getElementById('intro-help-panel');
 
 // 后台预加载核心图片
 (function preloadAssets() {
-  const list = [
-    'assets/kerosene-lamp.png',
-    'assets/kerosene-lamp-chroma.png',
-    'assets/hand-grip.png',
-    'assets/hand-cut.png',
-    'assets/hand.png',
-    'assets/qiu-jin-portrait.jpg',
-    'assets/yuanyichumeeting.png',
-    'assets/yuanyichu.png',
-    'assets/yaunyichu_b.png',
-    'assets/yaunyichu_c.png',
-    'assets/sujianwei2.png',
-    'assets/sujianwei.png',
+  var list = [
+    'assets/kerosene-lamp.png','assets/kerosene-lamp-chroma.png','assets/hand-grip.png',
+    'assets/hand-cut.png','assets/hand.png','assets/qiu-jin-portrait.jpg',
+    'assets/yuanyichumeeting.png','assets/yuanyichu.png','assets/yaunyichu_b.png',
+    'assets/yaunyichu_c.png','assets/sujianwei2.png','assets/sujianwei.png',
     'assets/yanshi.png',
-    'assets/小初头像.png',
-    'assets/archive-scan-0315.png',
-    'assets/CAESAR3vhdufkSN.png',
-    'assets/spring-festival-procession-2007.jpg',
-    'assets/spring-festival-procession-banner.png',
-    'assets/苏苏朋友圈01.png',
-    'assets/苏苏朋友圈02.png',
+    'assets/xiaochu-avatar.png','assets/archive-scan-0315.png','assets/CAESAR3vhdufkSN.png',
+    'assets/spring-festival-procession-2007.jpg','assets/spring-festival-procession-banner.png',
+    'assets/susu-friend-01.png','assets/susu-friend-02.png',
   ];
-  let i = 0;
+  var i = 0;
   function next() {
     if (i >= list.length) return;
-    const img = new Image();
+    var img = new Image();
     img.onload = img.onerror = function() { i++; setTimeout(next, 30); };
     img.src = list[i];
   }
