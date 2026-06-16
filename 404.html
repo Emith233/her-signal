@@ -2,7 +2,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>跳转中...</title>
+<title>404 - 未找到</title>
+<style>
+body { font-family: "Courier New", monospace; background: #171b1e; color: #96a09d; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; flex-direction: column; gap: 16px; }
+h1 { font-size: 48px; color: #5a6a62; font-weight: normal; letter-spacing: 6px; }
+p { font-size: 14px; color: #6a7a72; }
+a { color: #8aa99a; }
+</style>
 <script>
 (function() {
   var path = location.pathname.replace(/\/+$/, '');
@@ -11,13 +17,22 @@
 
   if (path.endsWith('/collect')) {
     location.replace(base + 'emith-search.html#/collect');
+    return;
   } else if (path.endsWith('/sujianwei')) {
     location.replace(base + 'profile-sjw-74.html');
+    return;
   }
+  // 显示 404 信息
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('path').textContent = location.href;
+  });
 })();
 </script>
 </head>
 <body>
-<p>跳转中...</p>
+  <h1>404</h1>
+  <p>页面未找到</p>
+  <p id="path" style="color:#5a6a62;font-size:11px;"></p>
+  <p><a href="javascript:history.back()">返回</a> · <a href="index.html">回到首页</a></p>
 </body>
 </html>
