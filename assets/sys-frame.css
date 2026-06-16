@@ -141,6 +141,8 @@ body.ending-e05 .ending-title {
   opacity: 0;
   transition: opacity 1.2s ease;
   pointer-events: none;
+  visibility: visible !important;
+  display: block !important;
 }
 .continue-prompt.show {
   opacity: 0.7;
