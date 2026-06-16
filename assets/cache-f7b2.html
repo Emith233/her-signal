@@ -199,13 +199,6 @@ function fadeInBgm() {
   tick();
 }
 
-function armBgmFallback() {
-  const start = () => playBgm();
-  window.addEventListener('pointerdown', start, { once: true });
-  window.addEventListener('keydown', start, { once: true });
-  window.addEventListener('touchstart', start, { once: true });
-}
-
 function fadeOutBgm() {
   const startVolume = endingBgm.volume || BGM_TARGET_VOLUME;
   const startedAt = Date.now();
@@ -290,7 +283,6 @@ function finish() {
 })();
 
 try { endingBgm.load(); } catch(e) {}
-armBgmFallback();
 setTimeout(function() {
   try { endingBgm.play().catch(function(){}); } catch(e) {}
   titleScreen.classList.add('hidden');

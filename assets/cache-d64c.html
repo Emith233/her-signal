@@ -213,8 +213,6 @@ function preloadAssets() {
 function openCameraPrompt() {
   window.setTimeout(function() {
     while (!window.confirm('是否打开摄像头？')) {}
-    // 用户手势窗口内立即启动音频（静音），动画完再渐入
-    try { endingAudio.volume = 0; endingAudio.play().catch(function(){}); } catch(e) {}
     showMeeting();
   }, 1500);
 }
@@ -224,16 +222,7 @@ function showMeeting() {
     fourthScreen.classList.add('hidden');
     meetingScreen.classList.remove('hidden');
     meetingScreen.classList.add('fade');
-    // 音量渐入（从0过渡到1）
-    endingAudio.volume = 0;
-    var fadeTarget = 1;
-    var fadeStart = Date.now();
-    function tickVolume() {
-      var p = Math.min(1, (Date.now() - fadeStart) / 1200);
-      endingAudio.volume = p;
-      if (p < 1) requestAnimationFrame(tickVolume);
-    }
-    tickVolume();
+    try { endingAudio.play().catch(function(){}); } catch(e) {}
     window.requestAnimationFrame(function() {
       meetingImage.classList.add('visible');
     });
