@@ -313,7 +313,7 @@ function finish() {
 try { endingBgm.load(); } catch(e) {}
 setTimeout(function() { titleScreen.style.cursor = 'pointer'; document.getElementById('continueHint')?.classList.add('show'); }, 1200);
 function startStory() {
-  try { endingBgm.play().catch(function(){}); } catch(e) {}
+  playBgm();
   document.getElementById('continueHint')?.remove();
   titleScreen.style.cursor = '';
   titleScreen.classList.add('hidden');
