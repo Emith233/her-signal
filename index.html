@@ -7,13 +7,17 @@
 <style>
   /* ===== 全局重置 ===== */
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --font-base: 'Courier New', 'Noto Sans SC', monospace;
+    --font-mono: 'Courier New', monospace;
+  }
   body {
     background:
       radial-gradient(circle at 18% 16%, rgba(52, 90, 96, 0.16), transparent 32%),
       radial-gradient(circle at 82% 76%, rgba(75, 91, 72, 0.12), transparent 30%),
       #171b1e;
     color: #d7ddd8;
-    font-family: 'Courier New', 'Noto Sans SC', monospace;
+    font-family: var(--font-base);
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
@@ -63,7 +67,7 @@
   }
   .intro-copy .time {
     color: #9bd8bd;
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-mono);
     text-align: left;
   }
   .intro-copy strong {
@@ -357,13 +361,13 @@
     overflow-wrap: anywhere;
   }
   .chat-area .msg.system { color: #8f9b98; font-style: italic; font-size: 12px; }
-  .chat-area .msg.hint { color: #7a8a7a; font-size: 11px; font-family: 'Courier New', monospace; white-space: pre-line; text-align: justify; }
-  .chat-area .msg.guide { color: #9aafa8; font-size: 11px; font-family: 'Courier New', monospace; white-space: pre-line; background: rgba(35, 50, 48, 0.5); border: 1px solid #3a5550; border-radius: 6px; padding: 10px 14px; margin: 4px 0; line-height: 1.8; }
+  .chat-area .msg.hint { color: #7a8a7a; font-size: 11px; font-family: var(--font-mono); white-space: pre-line; text-align: justify; }
+  .chat-area .msg.guide { color: #9aafa8; font-size: 11px; font-family: var(--font-mono); white-space: pre-line; background: rgba(35, 50, 48, 0.5); border: 1px solid #3a5550; border-radius: 6px; padding: 10px 14px; margin: 4px 0; line-height: 1.8; }
   .chat-area .msg.e { color: #b7d9e8; }
   .chat-area .msg.e::before { content: "小E > "; color: #83b8cf; font-weight: bold; }
   .chat-area .msg.e.ritual-red {
     color: #ff4a4a;
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-mono);
     text-shadow: 0 0 8px rgba(255, 40, 40, 0.28);
   }
   .chat-area .msg.e.ritual-red::before {
@@ -532,7 +536,7 @@
     padding: 4px 0;
     border-top: 1px solid #3a2a2a;
     margin-top: 6px;
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-mono);
   }
   .corruption-warning.show { display: block; }
   body.corrupted #cmd-input { border-color: #5a3030; }

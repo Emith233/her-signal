@@ -1,9 +1,14 @@
 * { box-sizing: border-box; }
+:root {
+  --font-serif: "Songti SC", SimSun, serif;
+  --font-mono: "Courier New", monospace;
+  --font-sans: "Microsoft YaHei", "PingFang SC", sans-serif;
+}
 html, body { min-height: 100%; margin: 0; }
 body {
   background: #000;
   color: #eee;
-  font-family: "Songti SC", SimSun, serif;
+  font-family: var(--font-serif);
   overflow: hidden;
 }
 .ending-shell {
@@ -25,7 +30,7 @@ body {
   color: #d6d6d6;
   font-size: 13px;
   letter-spacing: 6px;
-  font-family: "Courier New", monospace;
+  font-family: var(--font-mono);
 }
 .ending-title {
   margin: 0;
@@ -161,7 +166,7 @@ body.ending-e05 .ending-title {
   background: transparent;
   color: #c9c9c9;
   padding: 14px 34px;
-  font: 18px/1 "Microsoft YaHei", "PingFang SC", sans-serif;
+  font: 18px/1 var(--font-sans);
   letter-spacing: 1.5px;
   cursor: pointer;
 }
