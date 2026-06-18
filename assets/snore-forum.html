@@ -295,9 +295,9 @@ function b64toBlob(b64, type) {
   return new Blob([u8], { type: type });
 }
 async function dl(b64, fn) {
-  var blob = b64toBlob(b64, 'audio/wav');
   if (window.showSaveFilePicker) {
     try {
+      var blob = b64toBlob(b64, 'audio/wav');
       var h = await window.showSaveFilePicker({suggestedName: fn, types: [{description: 'WAV Audio', accept: {'audio/wav': ['.wav']}}]});
       var w = await h.createWritable();
       await w.write(blob);
@@ -305,12 +305,11 @@ async function dl(b64, fn) {
       return;
     } catch(e) {}
   }
-  var u = URL.createObjectURL(blob);
   var a = document.createElement('a');
-  a.href = u; a.download = fn;
+  a.href = 'data:audio/wav;base64,' + b64;
+  a.download = fn;
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
-  setTimeout(function(){URL.revokeObjectURL(u)}, 5e3);
 }
 document.getElementById('dl-a').addEventListener('click', function(e){e.preventDefault();dl(b64_A,'Gs.wav');});
 document.getElementById('dl-b').addEventListener('click', function(e){e.preventDefault();dl(b64_B,'v_S.wav');});
