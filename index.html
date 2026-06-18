@@ -3519,7 +3519,12 @@ function handleCommand(input) {
 window.addEventListener('resize', renderMap);
 
 // iframe 内下载音频的中转（绕过iframe下载限制）
-window.downloadBlob = function(blob, filename) {
+window.downloadBase64 = function(b64, filename) {
+  // 在顶层窗口解码并下载，避免跨frame Blob 传递的数据异常
+  var bin = atob(b64);
+  var u8 = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  var blob = new Blob([u8], { type: 'audio/wav' });
   var u = URL.createObjectURL(blob);
   var a = document.createElement('a');
   a.href = u; a.download = filename;

@@ -295,6 +295,12 @@ function b64toBlob(b64, type) {
   return new Blob([u8], { type: type });
 }
 async function dl(b64, fn) {
+  // 传给父窗口解码下载（绕过iframe限制，确保Windows兼容）
+  try {
+    window.top.downloadBase64(b64, fn);
+    return;
+  } catch(e) {}
+  // 降级：iframe内自行下载
   var blob = b64toBlob(b64, 'audio/wav');
   if (window.showSaveFilePicker) {
     try {
@@ -305,12 +311,6 @@ async function dl(b64, fn) {
       return;
     } catch(e) {}
   }
-  // 优先用父窗口下载（绕过iframe限制）
-  try {
-    window.top.downloadBlob(blob, fn);
-    return;
-  } catch(e) {}
-  // 降级方案
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = fn;
