@@ -295,9 +295,9 @@ function b64toBlob(b64, type) {
   return new Blob([u8], { type: type });
 }
 async function dl(b64, fn) {
+  var blob = b64toBlob(b64, 'audio/wav');
   if (window.showSaveFilePicker) {
     try {
-      var blob = b64toBlob(b64, 'audio/wav');
       var h = await window.showSaveFilePicker({suggestedName: fn, types: [{description: 'WAV Audio', accept: {'audio/wav': ['.wav']}}]});
       var w = await h.createWritable();
       await w.write(blob);
@@ -305,8 +305,14 @@ async function dl(b64, fn) {
       return;
     } catch(e) {}
   }
+  // 优先用父窗口下载（绕过iframe限制）
+  try {
+    window.top.downloadBlob(blob, fn);
+    return;
+  } catch(e) {}
+  // 降级方案
   var a = document.createElement('a');
-  a.href = 'data:audio/wav;base64,' + b64;
+  a.href = URL.createObjectURL(blob);
   a.download = fn;
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);

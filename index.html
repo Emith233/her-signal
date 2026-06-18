@@ -3518,6 +3518,16 @@ function handleCommand(input) {
 // 窗口改变时重绘地图
 window.addEventListener('resize', renderMap);
 
+// iframe 内下载音频的中转（绕过iframe下载限制）
+window.downloadBlob = function(blob, filename) {
+  var u = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = u; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(u)}, 5e3);
+};
+
 // ============================================================
 //  启动 — 有存档则跳过开场
 // ============================================================
