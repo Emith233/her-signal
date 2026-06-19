@@ -1,0 +1,205 @@
+@media (max-width: 860px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  body * {
+    min-width: 0;
+  }
+
+  img,
+  video,
+  canvas,
+  svg,
+  iframe {
+    max-width: 100%;
+  }
+
+  table {
+    max-width: 100%;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font-size: max(16px, 1em);
+  }
+
+  button,
+  [role="button"],
+  a,
+  input,
+  textarea,
+  select {
+    touch-action: manipulation;
+  }
+
+  .wrap,
+  .page,
+  .content,
+  .main,
+  .site,
+  .shell,
+  .article,
+  .container,
+  .top-inner,
+  .header,
+  .nav-inner,
+  .footer {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .search,
+  .search-box,
+  .search-result {
+    max-width: 100% !important;
+  }
+
+  .wrap,
+  .page,
+  .content,
+  .main,
+  .site,
+  .shell {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .top-inner,
+  .nav-inner {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .search input,
+  .search-box input {
+    min-width: 0;
+  }
+
+  pre,
+  code,
+  .hash,
+  .code,
+  .mono,
+  .addr,
+  .record,
+  .trace {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .card,
+  .panel,
+  .post,
+  .reply,
+  .note,
+  .doc,
+  .notepad,
+  .phone,
+  .gate,
+  .monitor {
+    max-width: 100%;
+  }
+
+  .pw-layer .panel,
+  .login-panel,
+  .dialog,
+  .wx-modal {
+    min-width: 0 !important;
+    width: min(100%, 420px) !important;
+  }
+
+  .body,
+  .post-body,
+  .reply-body,
+  .rbody,
+  .panel-body,
+  .doc-layer .body {
+    overflow-wrap: anywhere;
+  }
+
+  .attachment,
+  .file-main {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    padding-left: max(env(safe-area-inset-left), 0px);
+    padding-right: max(env(safe-area-inset-right), 0px);
+  }
+
+  img {
+    height: auto;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  th,
+  td {
+    overflow-wrap: anywhere;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    max-width: 100%;
+  }
+
+  button,
+  input[type="button"],
+  input[type="submit"],
+  .btn {
+    min-height: 40px;
+  }
+
+  .top-inner,
+  .header,
+  .nav-inner,
+  .wrap,
+  .page,
+  .content,
+  .main,
+  .site,
+  .shell,
+  .article,
+  .footer {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .sidebar,
+  aside {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .search,
+  .search-box {
+    flex-wrap: wrap;
+  }
+
+  .search input,
+  .search-box input {
+    width: 100% !important;
+    flex: 1 1 100%;
+  }
+
+  .search button,
+  .search-box button {
+    flex: 1 1 auto;
+  }
+}

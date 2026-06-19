@@ -1046,8 +1046,14 @@
 
   /* ===== 响应式 ===== */
   @media (max-width: 768px) {
+    body {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
     #main-ui {
       grid-template-rows: auto minmax(0, 1fr);
+      min-height: 100dvh;
+      height: auto;
       gap: 8px;
       padding: 8px;
     }
@@ -1060,12 +1066,14 @@
     }
     .main-content {
       grid-template-columns: 1fr;
-      grid-template-rows: minmax(280px, 42vh) minmax(240px, 1fr);
+      grid-template-rows: minmax(280px, 42dvh) minmax(420px, auto);
       gap: 8px;
+      overflow: visible;
     }
     .map-panel { padding: 10px; }
     .map-title { font-size: 10px; margin-bottom: 10px; }
     .side-panel { border-left: 1px solid #34424a; border-top: 1px solid #34424a; }
+    .side-panel { min-height: min(560px, 54dvh); }
     .task-info { padding: 12px 14px; }
     .task-name { font-size: 15px; }
     .chat-area { padding: 10px 14px; }
@@ -1144,7 +1152,7 @@
     }
     .status-item .account-id { font-size: 9px; border-left: none; padding-left: 0; margin-left: 0; }
     .main-content {
-      grid-template-rows: minmax(200px, 35vh) minmax(200px, 1fr);
+      grid-template-rows: minmax(230px, 38dvh) minmax(460px, auto);
       gap: 6px;
     }
     .map-panel { padding: 8px; }
@@ -1215,6 +1223,7 @@
     .integration-notice { font-size: 11px; padding: 10px 12px; width: min(340px, calc(100vw - 20px)); }
   }
 </style>
+<link rel="stylesheet" href="assets/mobile-fix.css">
 </head>
 <body>
 
