@@ -1866,19 +1866,19 @@ function sendXiaoERitualLines(lines, done, options) {
 }
 
 function startSuAccessRitual() {
-  const shouldStartChat = !xiaoERitualStarted;
-  if (shouldStartChat) {
-    xiaoERitualStarted = true;
-    xiaoERitualChatClass = 'ritual-red';
-    setXiaoERitualControls('speaking');
-  }
+  xiaoERitualStarted = true;
+  xiaoERitualChatClass = 'ritual-red';
+  setXiaoERitualControls('speaking');
   closeSignalForRitual(() => {
     const sidePanel = document.querySelector('.side-panel');
     sidePanel.classList.remove('ritual-attention');
     void sidePanel.offsetWidth;
     sidePanel.classList.add('ritual-attention');
     document.getElementById('chat-area').scrollIntoView({ block: 'nearest' });
-    if (!shouldStartChat) return;
+    // 清除之前的仪式状态，确保每次都能重新触发
+    clearXiaoERitualChoices();
+    cmdInput.disabled = false;
+    document.querySelector('.side-input')?.classList.remove('choice-mode');
     sendXiaoERitualLines([
       '小心，刚刚那个窗口很危险。',
       '哦对了，你的名字是？'

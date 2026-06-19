@@ -395,23 +395,16 @@ body.abnormal .actions { animation: shiver 3s linear infinite; }
       if (wish === '苏见微') {
         setFeedback('熟悉的名字……像是很久以前就被登记过。<small>是否继续追问它的代价。</small>', true);
         actions(function() {
-          setFeedback('正在校验访问权限……', true);
-          requestSujianweiRitualSeen(function(ritualSeen) {
-            if (!ritualSeen) {
-              setFeedback('记录仍在。<small>当前访问权限不足。你尚未<strong>倒视</strong>她的仪式。</small>', true);
-              return;
-            }
-            setFeedback('访问权限已打开。', true);
+          setFeedback('正在重新建立连接……', true);
+          setTimeout(function() {
             try {
               localStorage.setItem('citymystery_su_access_opened_event', String(Date.now()));
             } catch(e) {}
             try {
               window.parent.postMessage({ type: 'citymystery-su-access-opened' }, '*');
             } catch(e) {}
-            setTimeout(function() {
-              document.body.innerHTML = '';
-            }, 180);
-          });
+            document.body.innerHTML = '';
+          }, 480);
         }, reject);
         return;
       }
