@@ -1116,7 +1116,7 @@ function selectChat(id) {
     if (m.ts && m.type !== 'warn' && m.type !== 'notice' && (lastRealTs === 0 || m.ts - lastRealTs > 300000)) {
       const sep = document.createElement('div');
       sep.className = 'wx-time-sep';
-      sep.textContent = formatTimeSeparator(m.ts) + (m.sep ? ' · ' + m.sep : '');
+      sep.textContent = formatTimeSeparator(m.ts);
       body.appendChild(sep);
       lastRealTs = m.ts;
     }
