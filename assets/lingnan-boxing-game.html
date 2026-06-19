@@ -315,6 +315,17 @@
       font-family: Arial, sans-serif;
       font-weight: bold;
     }
+    .touch-pad {
+      display: none;
+    }
+    .touch-pad button {
+      min-height: 48px;
+      border-radius: 6px;
+      font: bold 13px/1 SimHei, "黑体", sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
     .status { padding: 7px; line-height: 1.8; }
     .status table { width: 100%; border-collapse: collapse; }
     .status td {
@@ -422,6 +433,40 @@
       .status { padding: 5px; }
       .controls { flex-wrap: wrap; gap: 4px; }
       .controls button { font-size: 12px; padding: 5px 10px; min-height: 36px; }
+      .touch-pad {
+        display: grid;
+        grid-template-columns: 1fr 1.35fr;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .touch-pad .move-pad,
+      .touch-pad .action-pad {
+        display: grid;
+        gap: 6px;
+      }
+      .touch-pad .move-pad {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .touch-pad .action-pad {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .touch-pad button {
+        min-width: 0;
+        width: 100%;
+        min-height: 48px;
+      }
+      .touch-pad .punch {
+        background: #f5f8ff;
+        color: #173f89;
+      }
+      .touch-pad .guard {
+        background: #fffbe8;
+        color: #7a5a00;
+      }
+      .touch-pad .heavy {
+        background: #fff0ef;
+        color: #a21f1f;
+      }
     }
     @media (max-width: 480px) {
       body { padding: 3px; font-size: 12px; }
@@ -434,10 +479,30 @@
       .status { font-size: 11px; }
       .fighter-indicator { font-size: 11px; }
       .controls button { font-size: 11px; padding: 4px 8px; min-height: 36px; min-width: 44px; }
+      .controls {
+        display: none;
+      }
+      .touch-pad {
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .touch-pad .move-pad {
+        grid-template-columns: repeat(2, 43px);
+      }
+      .touch-pad .action-pad {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .touch-pad button {
+        min-height: 44px;
+        padding: 4px 6px;
+        font-size: 12px;
+      }
       .box { padding: 8px; }
     }
   </style>
 <link rel="stylesheet" href="mobile-fix.css">
+<script src="mobile-fix.js" defer></script>
 </head>
 <body>
   <main class="page">
@@ -487,6 +552,17 @@
             <span><b class="key">S</b> 防御</span>
             <span><b class="key">D</b> 重击</span>
             <span><b class="key">←</b><b class="key">→</b> 移动 / 闪避</span>
+          </div>
+          <div class="touch-pad" aria-label="触屏操作">
+            <div class="move-pad">
+              <button type="button" data-touch-action="left" aria-label="向左移动">←</button>
+              <button type="button" data-touch-action="right" aria-label="向右移动">→</button>
+            </div>
+            <div class="action-pad">
+              <button type="button" class="punch" data-touch-action="punch">出拳</button>
+              <button type="button" class="guard" data-touch-action="guard">防御</button>
+              <button type="button" class="heavy" data-touch-action="heavy">重击</button>
+            </div>
           </div>
         </div>
       </div>
@@ -782,6 +858,41 @@
         if (key === 'arrowleft') move(-5);
         if (key === 'arrowright') move(5);
       });
+
+      let moveHoldTimer = null;
+      function stopTouchMove() {
+        if (moveHoldTimer) {
+          clearInterval(moveHoldTimer);
+          moveHoldTimer = null;
+        }
+      }
+
+      function runTouchAction(action) {
+        beginIfNeeded();
+        if (action === 'punch') playerAttack(false);
+        if (action === 'guard') guard();
+        if (action === 'heavy') playerAttack(true);
+        if (action === 'left') move(-5);
+        if (action === 'right') move(5);
+      }
+
+      document.querySelectorAll('[data-touch-action]').forEach(button => {
+        const action = button.dataset.touchAction;
+        button.addEventListener('pointerdown', event => {
+          event.preventDefault();
+          button.setPointerCapture?.(event.pointerId);
+          runTouchAction(action);
+          if (action === 'left' || action === 'right') {
+            stopTouchMove();
+            moveHoldTimer = setInterval(() => runTouchAction(action), 190);
+          }
+        });
+        button.addEventListener('pointerup', stopTouchMove);
+        button.addEventListener('pointercancel', stopTouchMove);
+        button.addEventListener('pointerleave', stopTouchMove);
+        button.addEventListener('click', event => event.preventDefault());
+      });
+
       $('restartSide').onclick = reset;
       ring.addEventListener('click', () => ring.focus());
       reset();

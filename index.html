@@ -1090,22 +1090,41 @@
     }
     .side-input { margin: 0 12px 10px; padding: 10px 12px; }
     .side-input input { font-size: 14px; }
-    .signal-overlay { padding: 6px; }
+    .signal-overlay { padding: 0; align-items: stretch; justify-content: stretch; }
     .signal-screen {
-      width: calc(100vw - 12px);
-      height: calc(100dvh - 12px);
+      width: 100vw;
+      height: 100dvh;
       max-height: none;
-      border-radius: 6px;
+      border: 0;
+      border-radius: 0;
     }
     .signal-header {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: 6px;
-      padding: 8px 12px;
+      padding: max(8px, env(safe-area-inset-top)) 10px 8px;
       font-size: 10px;
+      min-height: 42px;
+    }
+    .signal-header .signal-source {
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .signal-header .sig-loc {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .signal-close-btn {
+      min-width: 38px;
+      min-height: 34px;
     }
     .signal-page-nav { order: 3; grid-column: 1 / -1; justify-self: center; }
-    .signal-viewport .fragment { padding: 10px; }
+    .signal-viewport .fragment { padding: 8px; }
     .signal-viewport .frag-body { font-size: 13px; }
+    .signal-viewport .frag-body iframe {
+      border-left: 0;
+      border-right: 0;
+      border-radius: 4px;
+    }
     .log-overlay { padding: 6px; }
     .log-screen {
       width: calc(100vw - 12px);
@@ -1187,8 +1206,14 @@
     }
     .signal-header .signal-source { gap: 4px; }
     .signal-header .sig-loc { padding-left: 6px; }
-    .signal-viewport .fragment { padding: 6px; }
+    .signal-viewport .fragment { padding: 4px 0 0; }
     .signal-viewport .frag-body { font-size: 12px; line-height: 1.7; }
+    .signal-viewport .frag-body iframe {
+      border-radius: 0;
+      border-left: 0;
+      border-right: 0;
+      border-bottom: 0;
+    }
     .signal-viewport .frag-header .forum-meta { gap: 6px; }
     .signal-viewport .frag-header .avatar { width: 26px; height: 26px; font-size: 11px; }
     .signal-viewport .frag-header .uname { font-size: 11px; }
@@ -1224,6 +1249,7 @@
   }
 </style>
 <link rel="stylesheet" href="assets/mobile-fix.css">
+<script src="assets/mobile-fix.js" defer></script>
 </head>
 <body>
 
@@ -2137,6 +2163,7 @@ function buildArchivedLogSrc(log) {
   if (log.src.includes('emith-log-03.html') && gameState.searchEngineEnabled) {
     params.push('connected=1');
   }
+  params.push('embedded=1');
   return log.src + (params.length ? (log.src.includes('?') ? '&' : '?') + params.join('&') : '');
 }
 
@@ -2241,6 +2268,17 @@ function setControlsLocked(locked) {
 // ============================================================
 const signalOverlay = document.getElementById('signalOverlay');
 const signalScreen = document.querySelector('.signal-screen');
+
+function markEmbeddedFrames(root) {
+  root.querySelectorAll('iframe[src]').forEach(frame => {
+    try {
+      const url = new URL(frame.getAttribute('src'), window.location.href);
+      url.searchParams.set('embedded', '1');
+      frame.setAttribute('src', url.pathname.replace(/^\//, '') + url.search + url.hash);
+      frame.setAttribute('loading', 'eager');
+    } catch(e) {}
+  });
+}
 const signalViewport = document.getElementById('signalViewport');
 const signalPrev = document.getElementById('signalPrev');
 const signalNext = document.getElementById('signalNext');
@@ -3077,6 +3115,7 @@ function renderFragment(data) {
     <div class="frag-body">${f.body}</div>
     ${f.footer ? `<div class="frag-footer">${f.footer}</div>` : ''}
   </div>`;
+  markEmbeddedFrames(signalViewport);
   signalViewport.scrollTop = 0;
   signalPrev.classList.toggle('hidden', signalIndex === 0);
   signalNext.classList.toggle('hidden', signalIndex === data.fragments.length - 1);
