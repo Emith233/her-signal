@@ -1844,6 +1844,7 @@ function restoreXiaoERitualNormal() {
   document.body.classList.remove('ritual-input-active');
   clearXiaoERitualChoices();
   setControlsLocked(false);
+  suAccessRitualPending = false;
 }
 
 function sendXiaoERitualLines(lines, done, options) {
@@ -1865,7 +1866,10 @@ function sendXiaoERitualLines(lines, done, options) {
   });
 }
 
+let suAccessRitualPending = false;
 function startSuAccessRitual() {
+  if (suAccessRitualPending) return;
+  suAccessRitualPending = true;
   xiaoERitualStarted = true;
   xiaoERitualChatClass = 'ritual-red';
   setXiaoERitualControls('speaking');
