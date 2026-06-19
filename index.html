@@ -2274,7 +2274,7 @@ function markEmbeddedFrames(root) {
     try {
       const url = new URL(frame.getAttribute('src'), window.location.href);
       url.searchParams.set('embedded', '1');
-      frame.setAttribute('src', url.pathname.replace(/^\//, '') + url.search + url.hash);
+      frame.setAttribute('src', url.href);
       frame.setAttribute('loading', 'eager');
     } catch(e) {}
   });
