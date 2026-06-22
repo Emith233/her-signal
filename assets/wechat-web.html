@@ -13,6 +13,7 @@ html, body { width:100%; height:100%; overflow:hidden; font-family: "Microsoft Y
   width:min(1180px, calc(100% - 36px)); height:calc(100% - 36px); display:flex;
   margin:18px auto; background:#fff; border:1px solid #d9dede;
   box-shadow:0 12px 36px rgba(42,55,55,0.12);
+  position:relative;
 }
 
 /* ===== 左侧面板 ===== */
@@ -267,6 +268,7 @@ html, body { width:100%; height:100%; overflow:hidden; font-family: "Microsoft Y
 .wx-detail .actions .act {
   padding:14px 20px; font-size:15px; color:#333; cursor:pointer; border-bottom:1px solid #f0f0f0;
   display:flex; align-items:center; gap:10px;
+  touch-action:manipulation;
 }
 .wx-detail .actions .act:hover { background:#f8f8f8; }
 .wx-detail .actions .act .icon { font-size:18px; width:24px; text-align:center; }
@@ -354,6 +356,31 @@ html, body { width:100%; height:100%; overflow:hidden; font-family: "Microsoft Y
   color:#94a09f;
 }
 .account-error { min-height:18px; margin-top:8px; color:#d2685e; font-size:12px; }
+.moments-window {
+  width:480px;
+  max-width:92%;
+  height:84vh;
+  background:#f7f7f7;
+  border-radius:8px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+.moment-photo {
+  border-radius:4px;
+  overflow:hidden;
+  border:1px solid #eee;
+  width:160px;
+  height:160px;
+  flex-shrink:0;
+}
+.moment-photo img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
 
 /* ===== 响应式 ===== */
 @media (max-width:720px) {
@@ -434,8 +461,16 @@ html, body { width:100%; height:100%; overflow:hidden; font-family: "Microsoft Y
   .wx-detail {
     width:100%;
     min-width:0;
-    flex:1;
+    position:absolute;
+    inset:0;
+    z-index:80;
     min-height:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    box-shadow:0 0 0 1px rgba(0,0,0,0.04);
+  }
+  .wx-detail .actions .act {
+    min-height:48px;
   }
   .wx-modal-overlay {
     padding:12px;
@@ -443,6 +478,17 @@ html, body { width:100%; height:100%; overflow:hidden; font-family: "Microsoft Y
   .wx-modal,
   .wx-modal-overlay > div {
     max-width:100% !important;
+  }
+  .moments-window {
+    width:100%;
+    height:min(84dvh, 720px);
+    max-width:100%;
+  }
+  .moment-photo {
+    width:calc((100vw - 86px) / 2);
+    height:calc((100vw - 86px) / 2);
+    max-width:146px;
+    max-height:146px;
   }
 }
 @media (max-width:480px) {
@@ -548,6 +594,10 @@ html, body { width:100%; height:100%; overflow:hidden; font-family: "Microsoft Y
   .wx-detail .profile {
     padding:26px 16px 20px;
   }
+  .wx-detail .actions .act {
+    min-height:50px;
+    padding:13px 16px;
+  }
   .wx-modal {
     padding:20px 16px 16px;
   }
@@ -557,6 +607,16 @@ html, body { width:100%; height:100%; overflow:hidden; font-family: "Microsoft Y
   .wx-modal .modal-btns button {
     flex:1 1 auto;
     min-height:40px;
+  }
+  .moments-window {
+    height:100dvh;
+    border-radius:0;
+  }
+  .moment-photo {
+    width:calc((100vw - 58px) / 2);
+    height:calc((100vw - 58px) / 2);
+    max-width:132px;
+    max-height:132px;
   }
 }
 </style>
@@ -669,7 +729,7 @@ html, body { width:100%; height:100%; overflow:hidden; font-family: "Microsoft Y
 
 <!-- 朋友圈弹窗 -->
 <div class="wx-modal-overlay" id="momentsModal" style="background:rgba(0,0,0,0.55);">
-  <div style="width:480px;max-width:92%;height:84vh;background:#f7f7f7;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;position:relative;">
+  <div class="moments-window">
     <button onclick="document.getElementById('momentsModal').classList.remove('show')" style="position:absolute;top:16px;right:16px;background:rgba(0,0,0,0.3);border:none;color:#fff;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>
     <div style="flex:1;overflow-y:auto;" id="momentsContent"></div>
   </div>
@@ -1545,7 +1605,7 @@ function showMoments() {
           <div style="flex:1;min-width:0;">
             <div style="font-size:14px;color:#576b95;font-weight:500;margin-bottom:4px;">${p.user}</div>
             <div style="font-size:14px;color:#333;line-height:1.7;word-break:break-word;text-align:justify;">${p.text}</div>
-            ${p.photos && p.photos.length > 0 ? `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">${p.photos.map(ph => `<div style="border-radius:4px;overflow:hidden;border:1px solid #eee;width:160px;height:160px;flex-shrink:0;"><img src="${imgUrl(ph)}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`).join('')}</div>` : ''}
+            ${p.photos && p.photos.length > 0 ? `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">${p.photos.map(ph => `<div class="moment-photo"><img src="${imgUrl(ph)}" alt=""></div>`).join('')}</div>` : ''}
             ${p.link ? `<div onclick="window.open('${p.link.url}','_blank')" style="margin-top:8px;border:1px solid #e6e6e6;border-radius:4px;overflow:hidden;cursor:pointer;background:#fafafa;display:flex;align-items:center;gap:10px;padding:10px 12px;">
               <div style="width:36px;height:36px;border-radius:4px;background:#e8edee;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;color:#8a9a96;">&#9670;</div>
               <div style="flex:1;min-width:0;">
