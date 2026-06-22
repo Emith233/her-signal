@@ -308,7 +308,7 @@ body {
         <div class="info-row"><span class="label">内容</span> 地方小调残片，旋律低回，人声感模糊</div>
         <div class="info-row"><span class="label">状况</span> 磁带磁粉脱落严重，高频缺失</div>
         <div style="margin-top:8px;">
-          <a class="dl-link" id="dl-a" href="ARC-10-A_raw.wav" download="ARC-10-A_raw.wav">⬇ 下载原始文件</a>
+          <a class="dl-link" id="dl-a" href="0A_raw.wav" download="ARC-10-A_raw.wav">⬇ 下载原始文件</a>
         </div>
       </div>
     </div>
@@ -324,7 +324,7 @@ body {
         <div class="info-row"><span class="label">内容</span> 锣鼓短段，背景混有远处杂音</div>
         <div class="info-row"><span class="label">状况</span> 底噪偏高，部分波形削顶</div>
         <div style="margin-top:8px;">
-          <a class="dl-link" id="dl-b" href="ARC-10-B_raw.wav" download="ARC-10-B_raw.wav">⬇ 下载原始文件</a>
+          <a class="dl-link" id="dl-b" href="0B_raw.wav" download="ARC-10-B_raw.wav">⬇ 下载原始文件</a>
         </div>
       </div>
     </div>
@@ -340,7 +340,7 @@ body {
         <div class="info-row"><span class="label">内容</span> 器乐独奏残片，旋律间歇性中断</div>
         <div class="info-row"><span class="label">状况</span> 信号衰减严重，频段残缺</div>
         <div style="margin-top:8px;">
-          <a class="dl-link" id="dl-c" href="ARC-10-C_raw.wav" download="ARC-10-C_raw.wav">⬇ 下载原始文件</a>
+          <a class="dl-link" id="dl-c" href="0C_raw.wav" download="ARC-10-C_raw.wav">⬇ 下载原始文件</a>
         </div>
       </div>
     </div>
@@ -349,14 +349,14 @@ body {
     <div class="file-card">
       <div class="card-head">
         <span class="fname">ARC-10-D_raw.wav</span>
-        <span class="fstatus"><span class="tag tag-yellow">原始</span> 204 KB</span>
+        <span class="fstatus"><span class="tag tag-yellow">原始</span> 175 KB</span>
       </div>
       <div class="card-body">
         <div class="info-row"><span class="label">时长</span> 00:04.74</div>
         <div class="info-row"><span class="label">内容</span> 多人哼唱残片，词句难辨，夹杂周期性爆音</div>
         <div class="info-row"><span class="label">状况</span> 磁粉大面积脱落，周期性爆音</div>
         <div style="margin-top:8px;">
-          <a class="dl-link" id="dl-d" href="ARC-10-D_raw.wav" download="ARC-10-D_raw.wav">⬇ 下载原始文件</a>
+          <a class="dl-link" id="dl-d" href="0D_raw.wav" download="ARC-10-D_raw.wav">⬇ 下载原始文件</a>
         </div>
       </div>
     </div>
@@ -365,14 +365,14 @@ body {
     <div class="file-card">
       <div class="card-head">
         <span class="fname">ARC-10-E_raw.wav</span>
-        <span class="fstatus"><span class="tag tag-yellow">原始</span> 179 KB</span>
+        <span class="fstatus"><span class="tag tag-yellow">原始</span> 204 KB</span>
       </div>
       <div class="card-body">
         <div class="info-row"><span class="label">时长</span> 00:04.05</div>
         <div class="info-row"><span class="label">内容</span> 中年男性人声呼喊，疑似地名，来源不明</div>
         <div class="info-row"><span class="label">状况</span> 录音清晰度中等，混有微弱底噪</div>
         <div style="margin-top:8px;">
-          <a class="dl-link" id="dl-e" href="ARC-10-E_raw.wav" download="ARC-10-E_raw.wav">⬇ 下载原始文件</a>
+          <a class="dl-link" id="dl-e" href="0E_raw.wav" download="ARC-10-E_raw.wav">⬇ 下载原始文件</a>
         </div>
       </div>
     </div>
@@ -490,30 +490,39 @@ function generateShout() {
   return new Blob([raw.buffer], { type: 'audio/wav' });
 }
 
-const SR = 22050;
 const links = [
-  { id: 'dl-a', dur: 4.60, gen: () => generateTone(190, 4.60, SR) },
-  { id: 'dl-b', dur: 4.35, gen: () => generateNoise(4.35, SR) },
-  { id: 'dl-c', dur: 4.82, gen: () => generateMixed(4.82, SR) },
-  { id: 'dl-d', dur: 4.74, gen: () => generateChorus(4.74, SR) },
-  { id: 'dl-e', dur: 4.05, gen: () => generateShout() },
+  { id: 'dl-a', src: '0A_raw.wav', filename: 'ARC-10-A_raw.wav' },
+  { id: 'dl-b', src: '0B_raw.wav', filename: 'ARC-10-B_raw.wav' },
+  { id: 'dl-c', src: '0C_raw.wav', filename: 'ARC-10-C_raw.wav' },
+  { id: 'dl-d', src: '0D_raw.wav', filename: 'ARC-10-D_raw.wav' },
+  { id: 'dl-e', src: '0E_raw.wav', filename: 'ARC-10-E_raw.wav' },
 ];
 
-links.forEach(({ id, dur, gen }) => {
+async function downloadOriginal(src, filename) {
+  const response = await fetch(src, { cache: 'no-store' });
+  if (!response.ok) throw new Error('download failed');
+  const buffer = await response.arrayBuffer();
+  const blob = new Blob([buffer], { type: 'audio/wav' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+links.forEach(({ id, src, filename }) => {
   const el = document.getElementById(id);
   if (!el) return;
-  el.addEventListener('click', (e) => {
+  el.addEventListener('click', async (e) => {
     e.preventDefault();
-    const result = gen();
-    const blob = result instanceof Blob ? result : generateWAV(result, SR);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = el.getAttribute('download');
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    try {
+      await downloadOriginal(src, filename);
+    } catch (err) {
+      window.location.href = src;
+    }
   });
 });
 </script>

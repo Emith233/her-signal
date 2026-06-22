@@ -243,6 +243,7 @@ const reverseIndicator = document.getElementById('reverseIndicator');
 
 let audioCtx = null;
 let audioBuffer = null;
+let reversedAudioBuffer = null;
 let source = null;
 let isPlaying = false;
 let isReversed = false;
@@ -275,6 +276,7 @@ const FREQ_VIS_BIT0 = 1300;
 function setLoadedBuffer(buffer, name) {
   audioBuffer = buffer;
   duration = audioBuffer.duration;
+  reversedAudioBuffer = null;
   specCache = null;
   playStartOffset = 0;
   fileName.textContent = name;
@@ -289,6 +291,36 @@ function setLoadedBuffer(buffer, name) {
   document.querySelector('.speed-btn[data-zoom="all"]').classList.add('active');
   drawWaveform(audioBuffer, isReversed);
   stopPlayback();
+}
+
+function getReversedBuffer() {
+  if (!audioBuffer) return null;
+  if (
+    reversedAudioBuffer &&
+    reversedAudioBuffer.length === audioBuffer.length &&
+    reversedAudioBuffer.sampleRate === audioBuffer.sampleRate &&
+    reversedAudioBuffer.numberOfChannels === audioBuffer.numberOfChannels
+  ) {
+    return reversedAudioBuffer;
+  }
+
+  const ac = getCtx();
+  const reversed = ac.createBuffer(
+    audioBuffer.numberOfChannels,
+    audioBuffer.length,
+    audioBuffer.sampleRate
+  );
+
+  for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+    const src = audioBuffer.getChannelData(channel);
+    const dst = reversed.getChannelData(channel);
+    for (let i = 0, j = src.length - 1; i < src.length; i++, j--) {
+      dst[i] = src[j];
+    }
+  }
+
+  reversedAudioBuffer = reversed;
+  return reversedAudioBuffer;
 }
 
 function byteToFreq(value) {
@@ -828,14 +860,17 @@ function playBuffer() {
   const ac = getCtx();
   if (source) { try { source.stop(); } catch(e) {} source = null; }
 
+  const playbackBuffer = isReversed ? getReversedBuffer() : audioBuffer;
+  if (!playbackBuffer) return;
+
   source = ac.createBufferSource();
-  source.buffer = audioBuffer;
-  source.playbackRate.value = isReversed ? -speed : speed;
+  source.buffer = playbackBuffer;
+  source.playbackRate.value = speed;
   source.loop = isLooping;
 
   source.connect(ac.destination);
 
-  const offset = isReversed ? duration - playStartOffset : playStartOffset;
+  const offset = Math.max(0, Math.min(playStartOffset, duration));
   source.start(0, Math.max(0, offset));
   playStartTime = ac.currentTime;
   isPlaying = true;
@@ -911,7 +946,7 @@ document.querySelectorAll('.speed-btn[data-speed]').forEach(btn => {
         duration
       );
       playStartTime = audioCtx.currentTime;
-      source.playbackRate.value = isReversed ? -newSpeed : newSpeed;
+      source.playbackRate.value = newSpeed;
     }
     speed = newSpeed;
   });
