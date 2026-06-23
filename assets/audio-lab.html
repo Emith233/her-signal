@@ -188,7 +188,7 @@ body {
 
 <div class="controls">
   <button class="btn load-btn" id="loadBtn">+ 插入音频</button>
-  <input type="file" id="fileInput" accept="audio/*">
+  <input type="file" id="fileInput" accept="audio/*,video/mp4,.mp3,.m4a,.mp4,.wav,.aac">
   <button class="btn load-btn" id="sstvBtn">⇡ SSTV发射</button>
   <input type="file" id="imageInput" accept="image/*">
   <div class="separator"></div>
@@ -776,7 +776,12 @@ fileInput.addEventListener('change', async (e) => {
     const decoded = await ac.decodeAudioData(arrayBuffer);
     setLoadedBuffer(decoded, file.name);
   } catch(err) {
-    fileName.textContent = '文件无法解码';
+    fileName.textContent = '文件无法解码，请换用 MP4 / M4A / WAV';
+    placeholder.textContent = '手机浏览器可能无法解码此 MP3，请尝试 MP4 / M4A / WAV';
+    placeholder.style.display = 'flex';
+    console.warn('Audio decode failed:', file.name, file.type, err);
+  } finally {
+    fileInput.value = '';
   }
 });
 
