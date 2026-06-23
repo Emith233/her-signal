@@ -212,7 +212,33 @@ body {
   .monitor { min-height: 100vh; height: auto; }
   .topbar, .grid { grid-template-columns: 1fr; }
   .time { text-align: left; }
-  .grid { min-height: 900px; }
+  .grid { min-height: 0; }
+  .panel { min-height: 0; }
+  .trace {
+    min-height: 520px;
+    grid-template-rows: minmax(360px, 1fr) 150px;
+  }
+  .map { min-height: 360px; }
+}
+
+@media (max-width: 520px) {
+  .topbar { gap: 5px; padding: 8px 10px; font-size: 11px; }
+  .grid { gap: 8px; padding: 8px; }
+  .trace {
+    min-height: 430px;
+    grid-template-rows: 300px 130px;
+  }
+  .map { min-height: 300px; }
+  .dot {
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+    font-size: 10px;
+  }
+  .feed-line {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 7px;
+  }
 }
 </style>
 <link rel="stylesheet" href="mobile-fix.css">

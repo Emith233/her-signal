@@ -440,7 +440,16 @@ body {
   .breadcrumb{padding:4px 6px}
   .board-header{padding:6px 8px}
   .main{display:block !important;padding:0 !important;max-width:none !important}
-  .sidebar{display:none !important}
+  .sidebar{
+    display:block !important;
+    width:auto !important;
+    margin:8px 6px 0;
+  }
+  .sidebar .panel .panel-body a{
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+  }
   .content{width:100% !important;min-width:0}
   .post-header{padding:8px 6px}
   .post-header h1{font-size:15px}

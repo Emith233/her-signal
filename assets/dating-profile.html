@@ -148,7 +148,48 @@ body {
 @media (max-width: 640px) {
   body { padding: 10px 8px; font-size: 13px; }
   img { max-width: 100%; height: auto; }
-  .wrap, .page, .content, .main { width: 100%; }
+  .wrap, .page, .content, .main, .profile-page { width: 100%; }
+  .nav-bar {
+    height: auto;
+    min-height: 46px;
+    padding: 8px 12px;
+    gap: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+  }
+  .nav-bar .logo {
+    flex: 0 0 auto;
+    margin-right: 4px;
+    font-size: 14px;
+  }
+  .nav-bar a {
+    flex: 0 0 auto;
+    margin-right: 0;
+    font-size: 13px;
+  }
+  .card-header {
+    padding: 18px 16px;
+    gap: 14px;
+    align-items: center;
+  }
+  .card-header img {
+    width: 68px !important;
+    height: 68px !important;
+  }
+  .header-info .name {
+    font-size: 18px;
+    flex-wrap: wrap;
+  }
+  .header-info .basic {
+    gap: 4px 10px;
+    font-size: 13px;
+  }
+  .section,
+  .contact-section {
+    padding: 16px;
+  }
+  .contact-section { display: block; }
 }
 </style>
 <link rel="stylesheet" href="mobile-fix.css">

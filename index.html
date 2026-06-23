@@ -1066,14 +1066,19 @@
     }
     .main-content {
       grid-template-columns: 1fr;
-      grid-template-rows: minmax(280px, 42dvh) minmax(420px, auto);
+      grid-template-rows: minmax(280px, 42dvh) auto;
       gap: 8px;
       overflow: visible;
     }
     .map-panel { padding: 10px; }
     .map-title { font-size: 10px; margin-bottom: 10px; }
-    .side-panel { border-left: 1px solid #34424a; border-top: 1px solid #34424a; }
-    .side-panel { min-height: min(560px, 54dvh); }
+    .side-panel {
+      border-left: 1px solid #34424a;
+      border-top: 1px solid #34424a;
+      height: min(560px, 54dvh);
+      min-height: 380px;
+      max-height: 560px;
+    }
     .task-info { padding: 12px 14px; }
     .task-name { font-size: 15px; }
     .chat-area { padding: 10px 14px; }
@@ -1171,10 +1176,15 @@
     }
     .status-item .account-id { font-size: 9px; border-left: none; padding-left: 0; margin-left: 0; }
     .main-content {
-      grid-template-rows: minmax(230px, 38dvh) minmax(460px, auto);
+      grid-template-rows: minmax(230px, 38dvh) auto;
       gap: 6px;
     }
     .map-panel { padding: 8px; }
+    .side-panel {
+      height: min(520px, 56dvh);
+      min-height: 340px;
+      max-height: 520px;
+    }
     #map-canvas { border-radius: 4px; }
     .node { width: 28px; height: 28px; font-size: 10px; border-width: 1px; }
     .node .node-label { font-size: 8px; bottom: -14px; }

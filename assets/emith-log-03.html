@@ -210,12 +210,40 @@ body::before {
 }
 @media (max-width: 760px) {
   body { overflow: auto; }
-  .app { min-height: 100%; grid-template-columns: 1fr; }
-  .rail { display: none; }
+  html, body { height: auto; min-height: 100%; }
+  .app { min-height: 100vh; height: auto; grid-template-columns: 1fr; }
+  .rail {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    border-right: 0;
+    border-bottom: 1px solid #3c3328;
+    padding: 12px;
+  }
+  .rail-title br { display: none; }
+  .rail-title { font-size: 12px; }
+  .rail-sub { font-size: 10px; }
+  .meta-box {
+    padding: 8px 9px;
+    font-size: 10px;
+    line-height: 1.65;
+  }
+  .hash { margin-top: 0; font-size: 9px; }
   .workspace { padding: 18px 14px 24px; }
   .entry-head { grid-template-columns: 1fr; }
   .log-text { padding: 19px 18px 21px; font-size: 15px; line-height: 1.82; }
   .engine-body { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .rail {
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+  .rail > div:first-child,
+  .rail .hash {
+    grid-column: 1 / -1;
+  }
 }
 </style>
 <link rel="stylesheet" href="mobile-fix.css">

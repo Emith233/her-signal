@@ -229,6 +229,7 @@
       height: 150px;
       transform: translate(-50%, -52%);
       cursor: grab;
+      touch-action: none;
       filter: drop-shadow(3px 5px 3px rgba(0,0,0,.5));
     }
     .lamp:active { cursor: grabbing; }
@@ -259,7 +260,10 @@
     @media (max-width: 720px) {
       body { padding: 5px; }
       .desk { padding: 7px; }
-      .paper { min-height: 1390px; }
+      .paper {
+        min-height: 1390px;
+        touch-action: pan-y;
+      }
       .print { padding: 16px 14px 25px; }
       .masthead h1 { font-size: 31px; letter-spacing: 3px; }
       .headline { font-size: 24px; }
