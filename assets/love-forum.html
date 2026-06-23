@@ -238,9 +238,6 @@ body {
 }
 .footer-bar a { color: #2a5ca8; text-decoration: none; }
 
-  .wrap, .page, .content, .main { width: 100%; }
-}
-
 @media(max-width:860px) {
   body{margin:0;padding:0}
   .wrap{width:100%;border-left:0;border-right:0}
@@ -291,6 +288,25 @@ body {
 
 </style>
 <link rel="stylesheet" href="mobile-fix.css">
+<style>
+@media(max-width:860px) {
+  body.embedded .main {
+    display: block !important;
+  }
+  body.embedded .main-left,
+  body.embedded .main-right {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important;
+  }
+  body.embedded .main-right {
+    margin-top: 10px !important;
+    border-left: 0 !important;
+    border-top: 1px solid #d8d4cc !important;
+  }
+}
+</style>
 <script src="mobile-fix.js" defer></script>
 </head>
 <body>
