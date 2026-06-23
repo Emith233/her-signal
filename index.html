@@ -2104,6 +2104,7 @@ function consumeEndingSearchTrace() {
   if (!searchBtn || searchBtn.style.display === 'none') return;
   setTimeout(() => {
     searchBtn.classList.add('ending-search-trace');
+    renderXiaoERitualChat('搜索模块留下了回声。请留意节点 #15、节点 #18、节点 #3。', false, 'ritual-red');
     setTimeout(() => searchBtn.classList.remove('ending-search-trace'), 3800);
   }, 700);
 }
